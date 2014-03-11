@@ -1,0 +1,44 @@
+*.class
+*.log
+*~
+*.pem
+*.xls
+
+# sbt specific
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+
+# Scala-IDE specific
+.scala_dependencies
+=======
+*.iml
+*.ipr
+*.iws
+/.idea
+
+out
+target
+target/*
+project/boot
+project/build/target
+project/plugins/lib_managed
+project/plugins/src_managed
+project/plugins/target
+project/plugins/project/build.properties
+project/privateplugins.sbt
+ctags
+
+# Idea specific
+idea.iml
+.idea
+.idea/*
+idea_modules
+idea_modules/*
+.classpath
+.project
+.cache
+.settings
