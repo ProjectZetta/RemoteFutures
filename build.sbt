@@ -13,6 +13,8 @@ scalaTestVersion := "2.1.0"
 
 scalaCheckVersion := "1.11.3"
 
+hazelVersion := "3.2-RC1"
+
 scalacOptions in(Compile, compile) ++= Seq("-optimize", "-feature", "-deprecation", "-unchecked", "-Xlint")
 
 scalaSource in Compile <<= baseDirectory(_ / "src/scala")
