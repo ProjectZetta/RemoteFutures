@@ -1,5 +1,7 @@
 val scalaCheckVersion = sbt.settingKey[String]("Version to use for the scalacheck dependency.")
 val scalaTestVersion = sbt.settingKey[String]("Version to use for ScalaTest.")
+val hazelVersion = sbt.settingKey[String]("Version to use for hazelcast dependency.")
+
 
 name := " Distributed Remote Futures"
 
@@ -22,6 +24,8 @@ libraryDependencies += "org.scala-lang" % "scala-dist" % scalaVersion.value
 libraryDependencies += "org.scalacheck" %% "scalacheck" % scalaCheckVersion.value withSources() withJavadoc()
 
 libraryDependencies += "org.scalatest" % "scalatest_2.10" % scalaTestVersion.value % "test" withSources() withJavadoc()
+
+libraryDependencies += "com.hazelcast" % "hazelcast" % hazelVersion.value withSources() withJavadoc()
 
 // ========= Akka dependencies
 // As of http://www.scala-lang.org/news/2014/03/06/release-notes-2.11.0-RC1.html (Available projects)
