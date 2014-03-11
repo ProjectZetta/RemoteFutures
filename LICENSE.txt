@@ -1,3 +1,0 @@
-Suggest Apache 2.0 Licence
-to stay in line with other 
-Scala projects
