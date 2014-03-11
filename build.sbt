@@ -23,6 +23,21 @@ libraryDependencies += "org.scalacheck" %% "scalacheck" % scalaCheckVersion.valu
 
 libraryDependencies += "org.scalatest" % "scalatest_2.10" % scalaTestVersion.value % "test" withSources() withJavadoc()
 
+// ========= Akka dependencies
+// As of http://www.scala-lang.org/news/2014/03/06/release-notes-2.11.0-RC1.html (Available projects)
+// "NOTE: RC1 ships with akka-actor 2.3.0-RC4 (the final is out now, but wasn’t yet available when RC1 was cut). The next Scala 2.11 RC will ship with akka-actor 2.3.0 final."
+// thus we need to include akka-cluster 2.3.0-RC, instead of the already released version Akka 2.3.0
+
+libraryDependencies ++= Seq(
+  // not needed, but here for completeness: "com.typesafe.akka" %% "akka-actor" % "2.3.0",
+  //
+  // Activate these, once Scala 2.11.0 is available
+  // "com.typesafe.akka" %% "akka-testkit" % "2.3.0",
+  // "com.typesafe.akka" %% "akka-cluster" % "2.3.0",
+  "com.typesafe.akka" %% "akka-cluster" % "2.3.0-RC4"
+)
+// ========= Akka dependencies (end)
+
 
 /* Resolvers*/
 resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
