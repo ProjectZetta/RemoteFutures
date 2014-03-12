@@ -16,8 +16,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
-import main.core.Remote
-
+import core.Remote
+import util.LocalExecutor
+import LocalExecutor.Implicits.LocalConfig
+import LocalExecutor.Implicits.LocalExecution
 
 object SimpleRemote extends App {
 

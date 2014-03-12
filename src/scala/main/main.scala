@@ -1,7 +1,6 @@
 import akka.actor.{ ActorRef, ActorSystem, Props, Actor, Inbox }
 import scala.concurrent.duration._
 
-import akka.cluster.Cluster
 
 case object Greet
 case class WhoToGreet(who: String)
@@ -10,7 +9,8 @@ case class Greeting(message: String)
 class Greeter extends Actor {
   var greeting = ""
 
-  def receive = {
+  // The new String interpolation is neat
+  override def receive: PartialFunction[Any, Unit] = {
     case WhoToGreet(who) => greeting = s"hello, $who"
     case Greet           => sender ! Greeting(greeting) // Send the current greeting back to the sender
   }
@@ -58,7 +58,7 @@ object HelloAkkaScala extends App {
 
 // prints a greeting
 class GreetPrinter extends Actor {
-  def receive = {
+  override def receive: PartialFunction[Any, Unit] = {
     case Greeting(message) => println(message)
   }
 }

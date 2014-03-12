@@ -12,7 +12,11 @@ package examples
 
 import scala.annotation.tailrec
 import scala.util.{Failure, Success}
-import main.core.Remote
+import core.Remote
+import util.LocalExecutor
+import scala.concurrent.ExecutionContext.Implicits.global
+import LocalExecutor.Implicits.LocalConfig
+import LocalExecutor.Implicits.LocalExecution
 
 
 /**
