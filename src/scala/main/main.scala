@@ -17,6 +17,28 @@ class Greeter extends Actor {
 }
 
 /**
+ * sample code copied from project page at:
+ * https://github.com/scala/pickling
+ *
+ */
+object HelloPickler extends App {
+
+  import scala.pickling._
+  import json._
+
+  println("Pickling test array")
+  val pckl: Pickle = List(1, 2, 3, 4).pickle
+
+
+  println("Unpickling test array again")
+  // Actually, this should be of type List[Int] not Any....
+  val lst: Any = pckl.unpickle[List[Int]]
+
+  println("Content is, after all: " + lst.toString)
+
+}
+
+/**
  * Example copied from "Hello World" Activator template
  */
 object HelloAkkaScala extends App {
