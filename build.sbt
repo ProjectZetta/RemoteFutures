@@ -15,6 +15,8 @@ scalaCheckVersion := "1.11.3"
 
 hazelVersion := "3.2-RC1"
 
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.0.0-M3" cross CrossVersion.full)
+
 scalacOptions in(Compile, compile) ++= Seq("-optimize", "-feature", "-deprecation", "-unchecked", "-Xlint")
 
 scalaSource in Compile <<= baseDirectory(_ / "src/scala")
@@ -23,8 +25,10 @@ scalaSource in Test <<= baseDirectory(_ / "test/scala")
 
 libraryDependencies += "org.scala-lang" % "scala-dist" % scalaVersion.value
 
+libraryDependencies += "org.scala-lang.macro-paradise" % "scala-reflect" % "2.11.0-SNAPSHOT"
+
 // scala pickling for serialization
-libraryDependencies += "org.scala-lang.macro-paradise" % "scala-pickling_2.11" % "0.8.0-SNAPSHOT" withSources() withJavadoc()
+//libraryDependencies += "org.scala-lang.macro-paradise" % "scala-pickling_2.11" % "0.8.0-SNAPSHOT" withSources() withJavadoc()
 
 libraryDependencies += "org.scalacheck" %% "scalacheck" % scalaCheckVersion.value withSources() withJavadoc()
 
@@ -61,3 +65,4 @@ resolvers += "Maven central" at "http://repo1.maven.org/maven2/"
 
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
+resolvers += Resolver.sonatypeRepo("releases")
