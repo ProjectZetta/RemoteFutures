@@ -1,12 +1,5 @@
-/* Copyright (c) 2014 Marvin Hansen.
-* www.marvin - hansen.tel.
-  * ALl RIGHTS RESERVED
-  ***************************
-* Project: DistributedRemoteFutures
-* User: Marvin Hansen
-  * Web: www.marvin - hansen.tel
-* Date: 3 / 12 / 14(/ dd / mm / yy)
-* Time: 7: 35 PM (CET)
+/*
+ * Copyright (c) 2014 Martin Senne, Marvin Hansen.
 */
 package core
 
@@ -25,16 +18,25 @@ trait RemoteExecutionContext {
 
   def execute(runnable: Runnable): Unit
 
+  /**
+   * Reports that an asynchronous computation failed.
+   */
   def reportFailure(cause: Throwable): Unit
 
+  /**
+   * Prepares for the execution of a task. Returns the prepared
+   * execution context. A valid implementation of `prepare` is one
+   * that simply returns `this`.
+   */
   def prepare(): RemoteExecutionContext = this
 
 }
 
 object RemoteExecutionContext {
 
-  /** Creates an `ExecutionContext` from the given `Executor`.
-    */
+  /**
+   * Creates an `ExecutionContext` from the given `Executor`.
+   */
   def fromRemoteExecutor(e: DistributedRemoteExecutor, reporter: Throwable => Unit): RemoteExecutionContext = ???
 
   /** Creates an `ExecutionContext` from the given `Executor` with the default Reporter. */
@@ -45,7 +47,6 @@ object RemoteExecutionContext {
 }
 
 private class RemoteExecutionContextImpl(es: DistributedRemoteExecutor, reporter: Throwable => Unit) extends RemoteExecutionContext {
-
 
   override def execute[C, T](body: () => T, bodyContext: C): Unit = ???
 
