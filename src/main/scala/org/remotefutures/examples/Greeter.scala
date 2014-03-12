@@ -1,12 +1,19 @@
-import akka.actor.{ActorRef, ActorSystem, Props, Actor, Inbox}
-import scala.concurrent.duration._
+package org.remotefutures.examples
 
+import akka.actor._
+import scala.concurrent.duration._
+import akka.util.Timeout
 
 case object Greet
-
+case class Greeting(message: String)
 case class WhoToGreet(who: String)
 
-case class Greeting(message: String)
+class GreetPrinter extends Actor {
+  override def receive: PartialFunction[Any, Unit] = {
+    case Greeting(message) => println(message)
+  }
+}
+
 
 class Greeter extends Actor {
   var greeting = ""
@@ -18,10 +25,6 @@ class Greeter extends Actor {
   }
 }
 
-
-/**
- * Example copied from "Hello World" Activator template
- */
 object HelloAkkaScala extends App {
 
   // Create the 'helloakka' actor system
@@ -57,11 +60,4 @@ object HelloAkkaScala extends App {
   // after zero seconds, send a Greet message every second to the greeter with a sender of the greetPrinter
   system.scheduler.schedule(0.seconds, 1.second, greeter, Greet)(system.dispatcher, greetPrinter)
 
-}
-
-// prints a greeting
-class GreetPrinter extends Actor {
-  override def receive: PartialFunction[Any, Unit] = {
-    case Greeting(message) => println(message)
-  }
 }

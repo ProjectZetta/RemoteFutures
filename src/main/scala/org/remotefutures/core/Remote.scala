@@ -8,7 +8,7 @@
  * Date: 3/11/14 (/dd/mm/yy)
  * Time: 6:38 PM (CET)
  */
-package core
+package org.remotefutures.core
 
 import com.hazelcast.core.IExecutorService
 import scala.concurrent.Future

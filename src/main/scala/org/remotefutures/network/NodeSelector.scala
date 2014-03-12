@@ -6,9 +6,10 @@
  * User: Marvin Hansen
  * Web: www.marvin-hansen.tel
  * Date: 3/12/14 (/dd/mm/yy)
- * Time: 1:22 PM (CET)
+ * Time: 2:03 PM (CET)
  */
-package net
+package org.remotefutures.network
 
-/* Dummy class for API draft  */
-sealed case class Node(name: String)
+/**
+  */
+class NodeSelector {}

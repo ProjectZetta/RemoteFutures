@@ -8,12 +8,12 @@
  * Date: 3/11/14 (/dd/mm/yy)
  * Time: 6:42 PM (CET)
  */
-package examples
+package org.remotefutures.examples
 
 import scala.annotation.tailrec
 import scala.util.{Failure, Success}
-import core.Remote
-import util.LocalExecutor
+import org.remotefutures.core.Remote
+import org.remotefutures.util.LocalExecutor
 import scala.concurrent.ExecutionContext.Implicits.global
 import LocalExecutor.Implicits.LocalConfig
 import LocalExecutor.Implicits.LocalExecution

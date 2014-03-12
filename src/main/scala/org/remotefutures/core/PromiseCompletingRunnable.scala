@@ -8,7 +8,7 @@
  * Date: 3/12/14 (/dd/mm/yy)
  * Time: 12:44 PM (CET)
  */
-package core
+package org.remotefutures.core
 
 import scala.util.{Failure, Success}
 import scala.util.control.NonFatal

@@ -8,9 +8,9 @@
  * Date: 3/11/14 (/dd/mm/yy)
  * Time: 6:32 PM (CET)
  */
-package core
+package org.remotefutures.core
 
-import net.Node
+import org.remotefutures.network.Node
 
 /**
  *

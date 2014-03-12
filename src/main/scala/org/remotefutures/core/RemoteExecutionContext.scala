@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014 Martin Senne, Marvin Hansen.
 */
-package core
+package org.remotefutures.core
 
 //** Interface */
 trait RemoteExecutionContext {

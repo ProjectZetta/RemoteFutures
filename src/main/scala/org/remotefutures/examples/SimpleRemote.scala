@@ -8,7 +8,7 @@
  * Date: 3/11/14 (/dd/mm/yy)
  * Time: 6:43 PM (CET)
  */
-package examples
+package org.remotefutures.examples
 
 
 import scala.util.{Failure, Success}
@@ -16,8 +16,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
-import core.Remote
-import util.LocalExecutor
+import org.remotefutures.core.Remote
+import org.remotefutures.util.LocalExecutor
 import LocalExecutor.Implicits.LocalConfig
 import LocalExecutor.Implicits.LocalExecution
 

@@ -8,12 +8,12 @@
  * Date: 3/12/14 (/dd/mm/yy)
  * Time: 1:02 PM (CET)
  */
-package util
+package org.remotefutures.util
 
 import java.net.InetAddress
 import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
-import core.{DistributionStrategy, RemoteConfig}
+import org.remotefutures.core.{DistributionStrategy, RemoteConfig}
 import com.hazelcast.core.{Hazelcast, HazelcastInstance, IExecutorService}
 import com.hazelcast.config.{Config, ExecutorConfig}
 

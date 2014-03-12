@@ -8,10 +8,10 @@
  * Date: 3/12/14 (/dd/mm/yy)
  * Time: 1:28 PM (CET)
  */
-package core
+package org.remotefutures.core
 
-import core.DistributionStrategy._
-import net.{NodeSelector, Node}
+import org.remotefutures.core.DistributionStrategy._
+import org.remotefutures.network.{NodeSelector, Node}
 
 /**
  * A distributed remote executor executes a task
