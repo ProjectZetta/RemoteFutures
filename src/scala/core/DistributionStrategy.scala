@@ -8,7 +8,7 @@
  * Date: 3/11/14 (/dd/mm/yy)
  * Time: 6:26 PM (CET)
  */
-package main.core
+package core
 
 /**
  * ENUM for configuring remote execution.
@@ -24,8 +24,8 @@ package main.core
  * time-out happens, the same task will be re-send to another node
  * so that eventually a result will be result.
  */
-object Distribution extends Enumeration {
-  type Distribution = Value
+object DistributionStrategy extends Enumeration {
+  type DistributionStrategy = Value
   val FIRST_WIN = Value(1)
   val LOAD_BALANCING = Value(2)
   val FAIL_OVER = Value(3)

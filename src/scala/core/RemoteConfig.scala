@@ -8,9 +8,9 @@
 * Date: 3 / 11 / 14(/ dd / mm / yy)
 * Time: 6: 27 PM (CET)
 */
-package main.core
+package core
 
-import main.core.Distribution._
+import core.DistributionStrategy._
 import java.net.InetAddress
 import scala.concurrent.duration.Duration
 
@@ -24,14 +24,14 @@ object RemoteConfig {
    * @param host  INet host for execution.
    * @param dur    Max duration for timeout. For instance 5 seconds
    * @param poolSize size of the remote thread pool. This should actually disappear in the future and replaced with a useful default parameter
-   * @param dist Distribution strategy. See @main.core.Distribution for details.
+   * @param dist Distribution strategy. See @core.Distribution for details.
    * @return a configuration for a Remote Future
    */
-  def apply(host: InetAddress, dur: Duration, poolSize: Int, dist: Distribution) = {
+  def apply(host: InetAddress, dur: Duration, poolSize: Int, dist: DistributionStrategy) = {
     new RemoteConfig {
       override def duration: Duration = dur
 
-      override def distribution: Distribution = dist
+      override def distribution: DistributionStrategy = dist
 
       override def remoteHost: InetAddress = host
 
@@ -47,7 +47,7 @@ trait RemoteConfig {
 
   def duration: Duration
 
-  def distribution: Distribution
+  def distribution: DistributionStrategy
 
   def threadPoolSize: Int
 }

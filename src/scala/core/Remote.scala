@@ -8,10 +8,8 @@
  * Date: 3/11/14 (/dd/mm/yy)
  * Time: 6:38 PM (CET)
  */
-package main.core
+package core
 
-import scala.util.{Failure, Success}
-import scala.util.control.NonFatal
 import com.hazelcast.core.IExecutorService
 import scala.concurrent.Future
 
@@ -24,29 +22,8 @@ import scala.concurrent.Future
 object Remote {
 
   /**
-   * Wraps arbitrary code in a Future
-   *
-   * @param body code to execute
-   * @tparam T return type of the code
-   */
-  private class PromiseCompletingRunnable[T](body: => T) extends Runnable with Serializable {
-    final val promise = concurrent.Promise[T]()
-
-    override def run() = {
-      promise complete {
-        try Success(body) catch {
-          case NonFatal(e) => Failure(e)
-        }
-      }
-    }
-  }
-
-  /**
    * "Modification is undesirable, but modifiability is paramount"
    * --Paul Phillips
-   *
-   *
-   *
    *
    *
    * @param body Code to execute
@@ -60,9 +37,9 @@ object Remote {
     val runnable: PromiseCompletingRunnable[T] = new PromiseCompletingRunnable(body)
 
     config.distribution match {
-      case Distribution.FIRST_WIN => executor.executeOnAllMembers(runnable)
-      case Distribution.LOAD_BALANCING => executor.execute(runnable)
-      case Distribution.FAIL_OVER => None // @TODO
+      case DistributionStrategy.FIRST_WIN => executor.executeOnAllMembers(runnable)
+      case DistributionStrategy.LOAD_BALANCING => executor.execute(runnable)
+      case DistributionStrategy.FAIL_OVER => None // @TODO
     }
     runnable.promise.future
   }

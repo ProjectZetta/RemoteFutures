@@ -23,6 +23,9 @@ scalaSource in Test <<= baseDirectory(_ / "test/scala")
 
 libraryDependencies += "org.scala-lang" % "scala-dist" % scalaVersion.value
 
+// scala pickling for serialization
+libraryDependencies += "org.scala-lang.macro-paradise" % "scala-pickling_2.11" % "0.8.0-SNAPSHOT" withSources() withJavadoc()
+
 libraryDependencies += "org.scalacheck" %% "scalacheck" % scalaCheckVersion.value withSources() withJavadoc()
 
 libraryDependencies += "org.scalatest" % "scalatest_2.10" % scalaTestVersion.value % "test" withSources() withJavadoc()

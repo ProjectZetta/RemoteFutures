@@ -1,7 +1,6 @@
 import akka.actor.{ ActorRef, ActorSystem, Props, Actor, Inbox }
 import scala.concurrent.duration._
 
-import akka.cluster.Cluster
 
 case object Greet
 case class WhoToGreet(who: String)
@@ -10,10 +9,33 @@ case class Greeting(message: String)
 class Greeter extends Actor {
   var greeting = ""
 
-  def receive = {
+  // The new String interpolation is neat
+  override def receive: PartialFunction[Any, Unit] = {
     case WhoToGreet(who) => greeting = s"hello, $who"
     case Greet           => sender ! Greeting(greeting) // Send the current greeting back to the sender
   }
+}
+
+/**
+ * sample code copied from project page at:
+ * https://github.com/scala/pickling
+ *
+ */
+object HelloPickler extends App {
+
+  import scala.pickling._
+  import json._
+
+  println("Pickling test array")
+  val pckl: Pickle = List(1, 2, 3, 4).pickle
+
+
+  println("Unpickling test array again")
+  // Actually, this should be of type List[Int] not Any....
+  val lst: Any = pckl.unpickle[List[Int]]
+
+  println("Content is, after all: " + lst.toString)
+
 }
 
 /**
@@ -58,7 +80,7 @@ object HelloAkkaScala extends App {
 
 // prints a greeting
 class GreetPrinter extends Actor {
-  def receive = {
+  override def receive: PartialFunction[Any, Unit] = {
     case Greeting(message) => println(message)
   }
 }
