@@ -3,7 +3,7 @@
  */
 package org.remotefutures.core
 
-import org.remotefutures.core.RemoteExecutor
+import scala.concurrent.{ExecutionContextExecutor}
 
 /**
  * A Remote
