@@ -6,6 +6,19 @@ package org.remotefutures.core
 import org.remotefutures.core.DistributionStrategy._
 import org.remotefutures.network.{NodeSelector, Node}
 
+
+object RemoteExecutor {
+  def apply(config : Config) : RemoteExecutor = {
+    def createInstance[T](fqn: String) : T = {
+      Class.forName( fqn ).newInstance().asInstanceOf[T]
+    }
+
+    createInstance[RemoteExecutor]( config.remoteExecutorClassname )
+  }
+}
+
+
+
 /**
  * A (distributed) remote executor executes a task
  * remotely according to a certain distribution strategy
@@ -13,14 +26,17 @@ import org.remotefutures.network.{NodeSelector, Node}
  * of nodes determined by certain properties through a node-selector.
  *
  */
-object RemoteExecutor {
-  def fromConfig( config : RemoteConfig) : RemoteExecutor = {
-    new RemoteExecutor
-  }
+trait RemoteExecutor {
+  def execute[C, T](body: () => T, bodyContext: C): Unit
 }
 
 /**
- *
+ * A dummy remote executor implementation
  */
-class RemoteExecutor
+class DummyRemoteExecutor extends RemoteExecutor {
+
+  override def execute[C, T](body: () => T, bodyContext: C): Unit = {
+    println("This is execute")
+  }
+}
 

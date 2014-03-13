@@ -1,34 +1,28 @@
-/* Copyright (c) 2014 Marvin Hansen.
-* www.marvin - hansen.tel.
-* ALl RIGHTS RESERVED
-***************************
-* Project: DistributedRemoteFutures
-* User: Marvin Hansen
-  * Web: www.marvin - hansen.tel
-* Date: 3 / 11 / 14(/ dd / mm / yy)
-* Time: 6: 27 PM (CET)
-*/
 package org.remotefutures.core
 
 import org.remotefutures.core.DistributionStrategy._
 import java.net.InetAddress
 import scala.concurrent.duration.Duration
 
-
-/*  http://keramida.wordpress.com/2013/06/19/factory-objects-in-scala-code/  */
-object RemoteConfig {
+/**
+ * Configuration wraps all relevant parameters in one Singelton object.
+ */
+object Config {
   /**
-   * Remote configuration wraps all relevant parameters in one Singelton object.
+   * Create configuration.
    *
-   *
+   * @param _remoteExecutorClassname specifies the fully qualified classname to create instances of.
    * @param host  INet host for execution.
    * @param dur    Max duration for timeout. For instance 5 seconds
    * @param poolSize size of the remote thread pool. This should actually disappear in the future and replaced with a useful default parameter
    * @param dist Distribution strategy. See @org.remotefutures.core.Distribution for details.
    * @return a configuration for a Remote Future
    */
-  def apply(host: InetAddress, dur: Duration, poolSize: Int, dist: DistributionStrategy) = {
-    new RemoteConfig {
+  def apply(host: InetAddress, dur: Duration, poolSize: Int, dist: DistributionStrategy, _remoteExecutorClassname : String) = {
+    new Config {
+
+      override def remoteExecutorClassname: String = _remoteExecutorClassname
+
       override def duration: Duration = dur
 
       override def distribution: DistributionStrategy = dist
@@ -41,8 +35,12 @@ object RemoteConfig {
 }
 
 
-//* Interface */
-trait RemoteConfig {
+/**
+ * Reflects all
+ */
+trait Config {
+  def remoteExecutorClassname: String
+
   def remoteHost: InetAddress
 
   def duration: Duration

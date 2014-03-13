@@ -4,7 +4,6 @@
 package org.remotefutures.core
 
 import scala.concurrent.{ExecutionContextExecutor}
-import java.util.concurrent.Executor
 
 /**
  * A Remote
