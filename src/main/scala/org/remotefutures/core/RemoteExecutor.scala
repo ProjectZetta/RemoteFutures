@@ -15,6 +15,10 @@ object RemoteExecutor {
 }
 
 
+trait ConfigLoader[C <: Config] {
+  def fromConfig(config: C)
+}
+
 /**
  * A (distributed) remote executor executes a task
  * remotely according to a certain distribution strategy
@@ -29,7 +33,12 @@ trait RemoteExecutor {
 /**
  * A dummy remote executor implementation
  */
-class DummyRemoteExecutor extends RemoteExecutor {
+class DummyRemoteExecutor extends RemoteExecutor with ConfigLoader[DummyConfig] {
+
+  // creates a dummy executor with a dummy config
+  // this just showcases how to create
+  // an akkaRemote Executor with an AkkaConfig....
+  override def fromConfig(config: DummyConfig) = ???
 
   override def execute[C, T](body: () => T, bodyContext: C): Unit = {
     println("This is execute")
