@@ -32,7 +32,7 @@ object Remote {
    * @return  Result of the remote computation.
    *
    */
-  def apply[T](body: => T)(implicit config: RemoteConfig, executor: IExecutorService): Future[T] = {
+  def apply[T](body: => T)(implicit config: Config, executor: IExecutorService): Future[T] = {
 
     val runnable: PromiseCompletingRunnable[T] = new PromiseCompletingRunnable(body)
 
