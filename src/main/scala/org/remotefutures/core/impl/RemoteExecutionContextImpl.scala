@@ -14,6 +14,8 @@ private[core] class RemoteExecutionContextImpl private[impl] (res: RemoteExecuto
 
 private[core] object RemoteExecutionContextImpl {
   def fromRemoteExecutor(e: RemoteExecutor, reporter: Throwable => Unit = RemoteExecutionContext.defaultReporter): RemoteExecutionContextImpl = {
+
+
     new RemoteExecutionContextImpl(e, reporter)
   }
 }
