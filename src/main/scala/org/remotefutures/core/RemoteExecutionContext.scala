@@ -1,9 +1,14 @@
 /*
  * Copyright (c) 2014 Martin Senne, Marvin Hansen.
-*/
+ */
 package org.remotefutures.core
 
-//** Interface */
+import scala.concurrent.{ExecutionContextExecutor}
+import java.util.concurrent.Executor
+
+/**
+ * A Remote
+ */
 trait RemoteExecutionContext {
 
   /**
@@ -15,8 +20,6 @@ trait RemoteExecutionContext {
    * @tparam T specifies the return tyoe
    */
   def execute[C, T](body: () => T, bodyContext: C): Unit
-
-  def execute(runnable: Runnable): Unit
 
   /**
    * Reports that an asynchronous computation failed.
@@ -35,24 +38,31 @@ trait RemoteExecutionContext {
 object RemoteExecutionContext {
 
   /**
+   * This is the explicit global RemoteExecutionContext,
+   * call this when you want to provide the global ExecutionContext explicitly
+   */
+  def global: RemoteExecutionContext = Implicits.global
+
+  object Implicits {
+    /**
+     * This is the implicit global RemoteExecutionContext,
+     * import this when you want to provide the global ExecutionContext implicitly
+     */
+    implicit lazy val global: RemoteExecutionContext = impl.RemoteExecutionContextImpl.fromRemoteExecutor(null: RemoteExecutor)
+  }
+
+  /**
    * Creates an `ExecutionContext` from the given `Executor`.
    */
-  def fromRemoteExecutor(e: DistributedRemoteExecutor, reporter: Throwable => Unit): RemoteExecutionContext = ???
+  def fromRemoteExecutor(e: RemoteExecutor, reporter: Throwable => Unit): RemoteExecutionContext = {
+    impl.RemoteExecutionContextImpl.fromRemoteExecutor(e, reporter)
+  }
 
   /** Creates an `ExecutionContext` from the given `Executor` with the default Reporter. */
-  def fromRemoteExecutor(e: DistributedRemoteExecutor): RemoteExecutionContext = fromRemoteExecutor(e, defaultReporter)
+  def fromRemoteExecutor(e: RemoteExecutor): RemoteExecutionContext = fromRemoteExecutor(e, defaultReporter)
 
   /** The default reporter simply prints the stack trace of the `Throwable` to System.err. */
   def defaultReporter: Throwable => Unit = _.printStackTrace()
 }
 
-private class RemoteExecutionContextImpl(es: DistributedRemoteExecutor, reporter: Throwable => Unit) extends RemoteExecutionContext {
-
-  override def execute[C, T](body: () => T, bodyContext: C): Unit = ???
-
-  override def execute(runnable: Runnable): Unit = ???
-
-  override def reportFailure(t: Throwable) = reporter(t)
-
-}
 
