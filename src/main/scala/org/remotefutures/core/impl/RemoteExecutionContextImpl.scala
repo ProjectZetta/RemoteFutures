@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2014 Martin Senne, Marvin Hansen.
+ */
 package org.remotefutures.core.impl
 
 import org.remotefutures.core.{RemoteExecutionContext, RemoteExecutor}

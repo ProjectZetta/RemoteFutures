@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2014 Martin Senne, Marvin Hansen.
+ */
 package org.remotefutures.core
 
 import org.remotefutures.core.DistributionStrategy._
@@ -34,7 +37,7 @@ object Config {
    * @param dist Distribution strategy. See @org.remotefutures.core.Distribution for details.
    * @return a configuration for a Remote Future
    */
-  def apply(host: InetAddress, dur: Duration, poolSize: Int, dist: DistributionStrategy, _remoteExecutorClassname : String) = {
+  def apply(host: InetAddress, dur: Duration, poolSize: Int, dist: DistributionStrategy, _remoteExecutorClassname: String) = {
     new Config {
 
       override def remoteExecutorClassname: String = _remoteExecutorClassname

@@ -1,12 +1,5 @@
-/* Copyright (c) 2014 Marvin Hansen.
- * www.marvin-hansen.tel.
- * ALl RIGHTS RESERVED
- ***************************
- * Project: DistributedRemoteFutures
- * User: Marvin Hansen
- * Web: www.marvin-hansen.tel
- * Date: 3/12/14 (/dd/mm/yy)
- * Time: 1:02 PM (CET)
+/*
+ * Copyright (c) 2014 Martin Senne, Marvin Hansen.
  */
 package org.remotefutures.util
 
@@ -15,7 +8,7 @@ import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
 import org.remotefutures.core.{DistributionStrategy, Config}
 import com.hazelcast.core.{Hazelcast, HazelcastInstance, IExecutorService}
-import com.hazelcast.config.{Config=>HazelConfig, ExecutorConfig=>HazelExecutorConfig}
+import com.hazelcast.config.{Config => HazelConfig, ExecutorConfig => HazelExecutorConfig}
 
 /**
   */
