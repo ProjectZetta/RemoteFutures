@@ -17,6 +17,19 @@ package org.remotefutures.core
 //according to whatever criterion.
 
 
+
+object RemoteExecutor {
+  def apply(config : Config) : RemoteExecutor = {
+    def createInstance[T](fqn: String) : T = {
+      Class.forName( fqn ).newInstance().asInstanceOf[T]
+    }
+
+    createInstance[RemoteExecutor]( config.remoteExecutorClassname )
+  }
+}
+
+
+
 /**
  * A (distributed) remote executor executes a task
  * remotely according to a certain distribution strategy
@@ -24,14 +37,24 @@ package org.remotefutures.core
  * of nodes determined by certain properties through a node-selector.
  *
  */
+<<<<<<< HEAD
 object RemoteExecutor {
   def fromConfig(config: RemoteConfig): RemoteExecutor = {
     new RemoteExecutor
   }
+=======
+trait RemoteExecutor {
+  def execute[C, T](body: () => T, bodyContext: C): Unit
+>>>>>>> 9044e427f902483f38cb126dc8304f935794172f
 }
 
 /**
- *
+ * A dummy remote executor implementation
  */
-class RemoteExecutor
+class DummyRemoteExecutor extends RemoteExecutor {
+
+  override def execute[C, T](body: () => T, bodyContext: C): Unit = {
+    println("This is execute")
+  }
+}
 
