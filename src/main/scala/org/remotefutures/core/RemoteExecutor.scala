@@ -3,9 +3,6 @@
  */
 package org.remotefutures.core
 
-import org.remotefutures.core.DistributionStrategy._
-import org.remotefutures.network.{NodeSelector, Node}
-
 /**
  * A (distributed) remote executor executes a task
  * remotely according to a certain distribution strategy
@@ -14,7 +11,7 @@ import org.remotefutures.network.{NodeSelector, Node}
  *
  */
 object RemoteExecutor {
-  def fromConfig( config : RemoteConfig) : RemoteExecutor = {
+  def fromConfig(config: RemoteConfig): RemoteExecutor = {
     new RemoteExecutor
   }
 }
