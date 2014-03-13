@@ -8,9 +8,9 @@
  * Date: 3/12/14 (/dd/mm/yy)
  * Time: 12:39 PM (CET)
  */
-package core
+package org.remotefutures.core
 
-import core.DistributionStrategy._
+import org.remotefutures.core.DistributionStrategy._
 
 /**
  * Draft for more sophisticated task distribution.

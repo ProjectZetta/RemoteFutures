@@ -19,9 +19,9 @@ addCompilerPlugin("org.scalamacros" % "paradise" % "2.0.0-M3" cross CrossVersion
 
 scalacOptions in(Compile, compile) ++= Seq("-optimize", "-feature", "-deprecation", "-unchecked", "-Xlint")
 
-scalaSource in Compile <<= baseDirectory(_ / "src/scala")
+// scalaSource in Compile <<= baseDirectory(_ / "src/scala")
 
-scalaSource in Test <<= baseDirectory(_ / "test/scala")
+// scalaSource in Test <<= baseDirectory(_ / "test/scala")
 
 libraryDependencies += "org.scala-lang" % "scala-dist" % scalaVersion.value
 
@@ -59,7 +59,7 @@ resolvers += "Compass Repository" at "http://repo.compass-project.org"
 
 resolvers += "Twitter Repository" at "http://maven.twttr.com"
 
-resolvers += "Java.net Maven2 Repository" at "http://download.java.net/maven/2/"
+resolvers += "Java.org.remotefutures.network Maven2 Repository" at "http://download.java.org.remotefutures.network/maven/2/"
 
 resolvers += "Maven central" at "http://repo1.maven.org/maven2/"
 

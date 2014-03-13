@@ -8,7 +8,7 @@
  * Date: 3/11/14 (/dd/mm/yy)
  * Time: 6:26 PM (CET)
  */
-package core
+package org.remotefutures.core
 
 /**
  * ENUM for configuring remote execution.
