@@ -10,10 +10,10 @@ import scala.language.postfixOps
 
 
 object TestRemoteExecutorCreation {
-  def main(args: Array[String]) : Unit = {
+  def main(args: Array[String]): Unit = {
     val config = Config(InetAddress.getLocalHost, (2 seconds), 3, DistributionStrategy.FAIL_OVER, "org.remotefutures.core.DummyRemoteExecutor")
-    val executor = RemoteExecutor( config )
-    executor.execute( () => { }, Unit)
+    val executor = RemoteExecutor(config)
+    executor.execute(() => {}, Unit)
 
   }
 }

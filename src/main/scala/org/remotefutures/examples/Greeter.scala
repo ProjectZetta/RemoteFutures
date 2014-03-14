@@ -1,11 +1,15 @@
+/*
+ * Copyright (c) 2014 Martin Senne, Marvin Hansen.
+ */
 package org.remotefutures.examples
 
 import akka.actor._
 import scala.concurrent.duration._
-import akka.util.Timeout
 
 case object Greet
+
 case class Greeting(message: String)
+
 case class WhoToGreet(who: String)
 
 class GreetPrinter extends Actor {
