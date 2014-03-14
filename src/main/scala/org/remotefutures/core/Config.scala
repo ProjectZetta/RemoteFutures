@@ -4,6 +4,22 @@ import org.remotefutures.core.DistributionStrategy._
 import java.net.InetAddress
 import scala.concurrent.duration.Duration
 
+
+//Suggesting more precise handling of sub-configs.
+
+abstract class AbstractConfig
+
+trait ConfigA extends AbstractConfig
+
+trait ConfigB extends AbstractConfig
+
+trait AkkaConfig extends AbstractConfig
+
+trait DummyConfig extends AbstractConfig
+
+//etc
+
+
 /**
  * Configuration wraps all relevant parameters in one Singelton object.
  */
