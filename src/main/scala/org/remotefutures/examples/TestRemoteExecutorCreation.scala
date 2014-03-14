@@ -3,7 +3,7 @@
  */
 package org.remotefutures.examples
 
-import org.remotefutures.core.{RemoteExecutor, DistributionStrategy, Config}
+import org.remotefutures.core.DistributionStrategy
 import java.net.InetAddress
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -12,11 +12,9 @@ import com.typesafe.config.ConfigFactory
 
 object TestRemoteExecutorCreation {
   def main(args: Array[String]): Unit = {
-
-
-    val config = Config(InetAddress.getLocalHost, (2 seconds), 3, DistributionStrategy.FAIL_OVER, "org.remotefutures.core.DummyRemoteExecutor")
-    val executor = RemoteExecutor(config)
-    executor.execute(() => {}, Unit)
+//    val config = Config(InetAddress.getLocalHost, (2 seconds), 3, DistributionStrategy.FAIL_OVER, "org.remotefutures.core.impl.executor.DummyRemoteExecutor")
+//    val executor = RemoteExecutor(config)
+//    executor.execute(() => {}, Unit)
 
   }
 }

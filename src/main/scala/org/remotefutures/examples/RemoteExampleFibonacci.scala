@@ -5,16 +5,14 @@ package org.remotefutures.examples
 
 import scala.annotation.tailrec
 import scala.util.{Failure, Success}
-import org.remotefutures.core.Remote
-import org.remotefutures.util.LocalExecutor
 import scala.concurrent.ExecutionContext.Implicits.global
-import LocalExecutor.Implicits.LocalConfig
-import LocalExecutor.Implicits.LocalExecution
+import org.remotefutures.core.RemoteFuture.rfuture
+import org.remotefutures.core.EnvironmentImplicits.ConfigFileBaseRemoteExecutionContext
 
 
 /**
   */
-object RemoteFibonacci extends App {
+object RemoteExampleFibonacci extends App {
 
   val n = 1000000000 // fib is 546875
   remFib(n)
@@ -33,7 +31,7 @@ object RemoteFibonacci extends App {
 
 
   def remFib(m: Int) = {
-    val rmt = Remote {
+    val rmt = rfuture {
       fib(m)
     }
 

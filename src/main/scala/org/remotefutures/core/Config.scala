@@ -3,27 +3,10 @@
  */
 package org.remotefutures.core
 
-import org.remotefutures.core.DistributionStrategy._
-import java.net.InetAddress
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration.{Duration, FiniteDuration}
 import com.typesafe.config.{ConfigFactory, Config, ConfigObject}
 import akka.util.Helpers.Requiring
-import akka.util.Helpers.ConfigOps
-import scala.concurrent.duration.FiniteDuration
-
-
-// abstract class AbstractSettings
-
-trait AkkaOnlySettings
-
-trait HazelcastOnlySettings {
-  val x = 5
-}
-
-class HazelcastSettings(config: Config) extends Settings(config) with HazelcastOnlySettings {
-
-}
-
+import org.remotefutures.util.Helpers.ConfigOps
 
 
 class Settings(val config: Config) {
@@ -37,19 +20,37 @@ class Settings(val config: Config) {
     }
   }
 
-  val RemoteExecutorClassname : String = {
-    cc.getString("remote-executor-classname")
+  val RemoteExecutionContextClassname : String = {
+    cc.getString("remote-execution-context-classname")
   }
 }
 
-object Fun {
-  def main(args:Array[String]) : Unit = {
-    val c = ConfigFactory.load("blub")
-    val r:HazelcastSettings = new HazelcastSettings(c)
-
+object Settings {
+  def apply(c:Config) : Settings = {
+    new Settings(c)
   }
 }
 
+
+//trait AkkaOnlySettings
+//
+//trait HazelcastOnlySettings {
+//  val x = 5
+//}
+//
+//class HazelcastSettings(config: Config) extends Settings(config) with HazelcastOnlySettings {
+//
+//}
+//
+//
+//object Fun {
+//  def main(args:Array[String]) : Unit = {
+//    val c = ConfigFactory.load("blub")
+//    val r:HazelcastSettings = new HazelcastSettings(c)
+//
+//  }
+//}
+//
 //
 ///**
 // * Configuration wraps all relevant parameters in one Singelton object.

@@ -9,17 +9,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
-import org.remotefutures.core.Remote
-import org.remotefutures.util.LocalExecutor
-import LocalExecutor.Implicits.LocalConfig
-import LocalExecutor.Implicits.LocalExecution
+import org.remotefutures.core.EnvironmentImplicits.ConfigFileBaseRemoteExecutionContext
+import org.remotefutures.core.RemoteFuture.rfuture
 
-object SimpleRemote extends App {
+
+
+object RemoteExampleSimple extends App {
 
   final val T = Duration(2, TimeUnit.SECONDS)
 
 
-  val rmt = Remote {
+  val rmt = rfuture {
     println(Thread.currentThread.getName)
     42 * 23
   }
