@@ -37,11 +37,7 @@ class DummyRemoteExecutionContext(settings : Settings, reporter: Throwable => Un
 private[core] object RemoteExecutionContextImpl {
   def fromConfig( c: Config, reporter: Throwable => Unit = RemoteExecutionContext.defaultReporter): RemoteExecutionContext = {
 
-//    def createInstance[T](fqn: String): T = {
-//      Class.forName(fqn).newInstance().asInstanceOf[T]
-//    }
-
-    def instantiateByClass[T](clazz: java.lang.Class[T])(args:AnyRef*): T = {
+    def instantiateByClass[T](clazz: java.lang.Class[T], args:AnyRef*): T = {
       val constructor = clazz.getConstructors()(0)
       println("Constructor is " + constructor)
       println(args)
@@ -49,12 +45,15 @@ private[core] object RemoteExecutionContextImpl {
     }
 
     def instantiateByClassname[T](fqn: String)(args:AnyRef*): T = {
-      instantiateByClass[T]( Class.forName(fqn).asInstanceOf[Class[T]] )(args)
+      val clazz = Class.forName(fqn)
+      val constructor = clazz.getConstructors()(0)
+      println("Constructor is " + constructor)
+      println(args)
+      constructor.newInstance(args:_*).asInstanceOf[T]
     }
 
     val settings = Settings(c)
-    // instantiateByClassname[RemoteExecutionContext]( settings.RemoteExecutionContextClassname )( settings, reporter )
-    new DummyRemoteExecutionContext( settings, reporter )
 
+    instantiateByClassname("org.remotefutures.core.impl.DummyRemoteExecutionContext")(settings, reporter)
   }
 }
