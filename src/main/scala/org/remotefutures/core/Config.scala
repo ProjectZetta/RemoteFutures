@@ -6,65 +6,93 @@ package org.remotefutures.core
 import org.remotefutures.core.DistributionStrategy._
 import java.net.InetAddress
 import scala.concurrent.duration.Duration
+import com.typesafe.config.{ConfigFactory, Config, ConfigObject}
+import akka.util.Helpers.Requiring
+import akka.util.Helpers.ConfigOps
+import scala.concurrent.duration.FiniteDuration
 
 
-//Suggesting more precise handling of sub-configs.
+// abstract class AbstractSettings
 
-abstract class AbstractConfig
+trait AkkaOnlySettings
 
-trait ConfigA extends AbstractConfig
+trait HazelcastOnlySettings {
+  val x = 5
+}
 
-trait ConfigB extends AbstractConfig
+class HazelcastSettings(config: Config) extends Settings(config) with HazelcastOnlySettings {
 
-trait AkkaConfig extends AbstractConfig
-
-trait DummyConfig extends AbstractConfig
-
-//etc
+}
 
 
-/**
- * Configuration wraps all relevant parameters in one Singelton object.
- */
-object Config {
-  /**
-   * Create configuration.
-   *
-   * @param _remoteExecutorClassname specifies the fully qualified classname to create instances of.
-   * @param host  INet host for execution.
-   * @param dur    Max duration for timeout. For instance 5 seconds
-   * @param poolSize size of the remote thread pool. This should actually disappear in the future and replaced with a useful default parameter
-   * @param dist Distribution strategy. See @org.remotefutures.core.Distribution for details.
-   * @return a configuration for a Remote Future
-   */
-  def apply(host: InetAddress, dur: Duration, poolSize: Int, dist: DistributionStrategy, _remoteExecutorClassname: String) = {
-    new Config {
 
-      override def remoteExecutorClassname: String = _remoteExecutorClassname
+class Settings(val config: Config) {
+  private val cc = config.getConfig("general")
 
-      override def duration: Duration = dur
-
-      override def distribution: DistributionStrategy = dist
-
-      override def remoteHost: InetAddress = host
-
-      override def threadPoolSize = poolSize
+  val FutureTimeout: Duration = {
+    val key = "future-timeout-in-ms"
+    cc.getString(key).toLowerCase match {
+      case "off" ⇒ Duration.Undefined
+      case _ ⇒ cc.getMillisDuration(key) requiring (_ > Duration.Zero, key + " > 0 ms, or off")
     }
+  }
+
+  val RemoteExecutorClassname : String = {
+    cc.getString("remote-executor-classname")
   }
 }
 
+object Fun {
+  def main(args:Array[String]) : Unit = {
+    val c = ConfigFactory.load("blub")
+    val r:HazelcastSettings = new HazelcastSettings(c)
 
-/**
- * Reflects all
- */
-trait Config {
-  def remoteExecutorClassname: String
-
-  def remoteHost: InetAddress
-
-  def duration: Duration
-
-  def distribution: DistributionStrategy
-
-  def threadPoolSize: Int
+  }
 }
+
+//
+///**
+// * Configuration wraps all relevant parameters in one Singelton object.
+// */
+//object Config {
+//  /**
+//   * Create configuration.
+//   *
+//   * @param _remoteExecutorClassname specifies the fully qualified classname to create instances of.
+//   * @param host  INet host for execution.
+//   * @param dur    Max duration for timeout. For instance 5 seconds
+//   * @param poolSize size of the remote thread pool. This should actually disappear in the future and replaced with a useful default parameter
+//   * @param dist Distribution strategy. See @org.remotefutures.core.Distribution for details.
+//   * @return a configuration for a Remote Future
+//   */
+//  def apply(host: InetAddress, dur: Duration, poolSize: Int, dist: DistributionStrategy, _remoteExecutorClassname: String) = {
+//    new Config {
+//
+//      override def remoteExecutorClassname: String = _remoteExecutorClassname
+//
+//      override def duration: Duration = dur
+//
+//      override def distribution: DistributionStrategy = dist
+//
+//      override def remoteHost: InetAddress = host
+//
+//      override def threadPoolSize = poolSize
+//    }
+//  }
+//}
+//
+//
+///**
+// * Reflects all
+// */
+//trait Config {
+//  def remoteExecutorClassname: String
+//
+//  def remoteHost: InetAddress
+//
+//  def duration: Duration
+//
+//  def distribution: DistributionStrategy
+//
+//  def threadPoolSize: Int
+//}

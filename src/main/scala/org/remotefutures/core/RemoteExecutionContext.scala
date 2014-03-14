@@ -40,25 +40,25 @@ object RemoteExecutionContext {
    * This is the explicit global RemoteExecutionContext,
    * call this when you want to provide the global ExecutionContext explicitly
    */
-  def global: RemoteExecutionContext = Implicits.global
+  def global: RemoteExecutionContext = Implicits.default
 
   object Implicits {
     /**
      * This is the implicit global RemoteExecutionContext,
      * import this when you want to provide the global ExecutionContext implicitly
      */
-    implicit lazy val global: RemoteExecutionContext = impl.RemoteExecutionContextImpl.fromRemoteExecutor(null: RemoteExecutor)
+    implicit lazy val default: RemoteExecutionContext = impl.RemoteExecutionContextImpl.fromRemoteExecutor(null: RemoteExecutor)
   }
 
   /**
    * Creates an `ExecutionContext` from the given `Executor`.
    */
-  def fromRemoteExecutor(e: RemoteExecutor, reporter: Throwable => Unit): RemoteExecutionContext = {
-    impl.RemoteExecutionContextImpl.fromRemoteExecutor(e, reporter)
-  }
+//  def fromRemoteExecutor(e: RemoteExecutor, reporter: Throwable => Unit): RemoteExecutionContext = {
+//    impl.RemoteExecutionContextImpl.fromRemoteExecutor(e, reporter)
+//  }
 
   /** Creates an `ExecutionContext` from the given `Executor` with the default Reporter. */
-  def fromRemoteExecutor(e: RemoteExecutor): RemoteExecutionContext = fromRemoteExecutor(e, defaultReporter)
+  // def fromRemoteExecutor(e: RemoteExecutor): RemoteExecutionContext = fromRemoteExecutor(e, defaultReporter)
 
   /** The default reporter simply prints the stack trace of the `Throwable` to System.err. */
   def defaultReporter: Throwable => Unit = _.printStackTrace()

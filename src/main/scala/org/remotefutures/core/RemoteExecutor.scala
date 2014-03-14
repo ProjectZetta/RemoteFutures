@@ -5,19 +5,20 @@ package org.remotefutures.core
 
 
 object RemoteExecutor {
-  def apply(config: Config): RemoteExecutor = {
+  def apply(settings: Settings): RemoteExecutor = {
     def createInstance[T](fqn: String): T = {
       Class.forName(fqn).newInstance().asInstanceOf[T]
     }
 
-    createInstance[RemoteExecutor](config.remoteExecutorClassname)
+    createInstance[RemoteExecutor](settings.RemoteExecutorClassname)
   }
 }
 
 
-trait ConfigLoader[C <: Config] {
+trait ConfigLoader[C <: AbstractSettings] {
   def fromConfig(config: C)
 }
+
 
 /**
  * A (distributed) remote executor executes a task
@@ -33,12 +34,12 @@ trait RemoteExecutor {
 /**
  * A dummy remote executor implementation
  */
-class DummyRemoteExecutor extends RemoteExecutor with ConfigLoader[DummyConfig] {
+class DummyRemoteExecutor extends RemoteExecutor with ConfigLoader[HazelcastSettings] {
 
   // creates a dummy executor with a dummy config
   // this just showcases how to create
   // an akkaRemote Executor with an AkkaConfig....
-  override def fromConfig(config: DummyConfig) = ???
+  override def fromConfig(config: HazelcastSettings) = ???
 
   override def execute[C, T](body: () => T, bodyContext: C): Unit = {
     println("This is execute")
