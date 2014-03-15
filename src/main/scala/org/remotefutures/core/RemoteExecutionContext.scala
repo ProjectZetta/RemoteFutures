@@ -3,7 +3,7 @@
  */
 package org.remotefutures.core
 
-import scala.concurrent.{Promise, ExecutionContextExecutor}
+import scala.concurrent.Promise
 import com.typesafe.config.{ConfigFactory, Config}
 
 /**
@@ -25,13 +25,6 @@ trait RemoteExecutionContext {
    * Reports that an asynchronous computation failed.
    */
   def reportFailure(cause: Throwable): Unit
-
-//  /**
-//   * Prepares for the execution of a task. Returns the prepared
-//   * execution context. A valid implementation of `prepare` is one
-//   * that simply returns `this`.
-//   */
-//  def prepare(): RemoteExecutionContext = this
 
   def startup(): Unit
 
@@ -55,9 +48,9 @@ object RemoteExecutionContext {
     implicit lazy val default: RemoteExecutionContext = RemoteExecutionContext.fromDefaultConfig
   }
 
-  def fromConfig( c: Config ) : RemoteExecutionContext = impl.RemoteExecutionContextImpl.fromConfig( c )
+  def fromConfig(c: Config): RemoteExecutionContext = impl.RemoteExecutionContextImpl.fromConfig(c)
 
-  def fromDefaultConfig : RemoteExecutionContext = {
+  def fromDefaultConfig: RemoteExecutionContext = {
     val c = ConfigFactory.load("remotefutures")
     fromConfig(c)
   }

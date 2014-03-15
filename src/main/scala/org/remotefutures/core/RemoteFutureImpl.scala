@@ -28,22 +28,9 @@ object RemoteFutureImpl {
    *
    */
   def apply[T](body: => T)(implicit res: RemoteExecutionContext): Future[T] = {
-    val p = Promise[T]
+    val p = Promise()[T]
     res.execute( () => body, null, p)
     p.future
-
-    // import com.hazelcast.core.IExecutorService
-
-    // val runnable: PromiseCompletingRunnable[T] = new PromiseCompletingRunnable(fnc)
-
-    // config: Config, executor: IExecutorService
-
-    // config.distribution match {
-      // case DistributionStrategy.FIRST_WIN => executor.executeOnAllMembers(runnable)
-      // case DistributionStrategy.LOAD_BALANCING => executor.execute(runnable)
-      // case DistributionStrategy.FAIL_OVER => None // @TODO
-    // }
-    // runnable.promise.future
   }
 
   override def finalize(): Unit = {
