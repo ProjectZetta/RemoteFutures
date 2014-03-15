@@ -21,7 +21,6 @@ object RemoteFutureImpl {
    * "Modification is undesirable, but modifiability is paramount"
    * --Paul Phillips
    *
-   *
    * @param body Code to execute
    * @param res: RemoteExecutionContext
    * @tparam T type oif the code to execute
@@ -35,7 +34,7 @@ object RemoteFutureImpl {
 
     // import com.hazelcast.core.IExecutorService
 
-    // val runnable: PromiseCompletingRunnable[T] = new PromiseCompletingRunnable(body)
+    // val runnable: PromiseCompletingRunnable[T] = new PromiseCompletingRunnable(fnc)
 
     // config: Config, executor: IExecutorService
 

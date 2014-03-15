@@ -15,7 +15,7 @@ trait RemoteExecutionContext {
    * Execute a function in its given context on a distant place.
    *
    * @param body is the code to execute and return T eventually
-   * @param bodyContext is the context/closure of of function body: () => T
+   * @param bodyContext is the context/closure of of function fnc: () => T
    * @tparam C specifies the Context type
    * @tparam T specifies the return tyoe
    */

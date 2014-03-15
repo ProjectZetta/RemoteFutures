@@ -31,6 +31,9 @@ object Settings {
   }
 }
 
+// ==============================================================================
+// Unsure, HOW to do it reasonable. Inheritence is a very limited solution ....
+// ==============================================================================
 
 //trait AkkaOnlySettings
 //
