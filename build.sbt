@@ -34,6 +34,8 @@ libraryDependencies += "org.scalacheck" %% "scalacheck" % scalaCheckVersion.valu
 
 libraryDependencies += "org.scalatest" % "scalatest_2.10" % scalaTestVersion.value % "test" withSources() withJavadoc()
 
+libraryDependencies += "com.typesafe" % "config" % "1.2.0" withSources() withJavadoc()
+
 libraryDependencies += "com.hazelcast" % "hazelcast" % hazelVersion.value withSources() withJavadoc()
 
 // ========= Akka dependencies

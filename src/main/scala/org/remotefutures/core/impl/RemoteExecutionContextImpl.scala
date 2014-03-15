@@ -3,40 +3,32 @@
  */
 package org.remotefutures.core.impl
 
-import org.remotefutures.core.{RemoteExecutionContext, RemoteExecutor}
-
-private[core] class RemoteExecutionContextImpl private[impl] (res: RemoteExecutor, reporter: Throwable => Unit) extends RemoteExecutionContext {
-
-
-  val executor: RemoteExecutor = res match {
-    case null => createRemoteExecutorService
-    case some => some
-  }
-
-  /**
-   * Facility to create a RemoteExecutor used in the context
-   * in case none is given. The actual point is providing
-   * some kind of near-zero overhead default RemoteExecutor
-   *
-   * @return RemoteExecutor
-   */
-  def createRemoteExecutorService: RemoteExecutor = ???
-
-
-  override def execute[C, T](body: () => T, bodyContext: C): Unit = {
-    // call should be something like executor.execute(body,bodyContext)
-    // This goes hand in hand with the interface definition of RemoteExecutor
-    // already suggested.
-  }
-
-  override def reportFailure(t: Throwable) = reporter(t)
-
-}
+import org.remotefutures.core.{RemoteExecutor, Settings, RemoteExecutionContext}
+import com.typesafe.config.Config
+import org.remotefutures.core.impl.executor.LocalRunningRemoteExecutor
+import scala.concurrent.Promise
 
 private[core] object RemoteExecutionContextImpl {
-  def fromRemoteExecutor(e: RemoteExecutor, reporter: Throwable => Unit = RemoteExecutionContext.defaultReporter): RemoteExecutionContextImpl = {
+  def fromConfig( c: Config, reporter: Throwable => Unit = RemoteExecutionContext.defaultReporter): RemoteExecutionContext = {
 
+    def instantiateByClass[T](clazz: java.lang.Class[T], args:AnyRef*): T = {
+      val constructor = clazz.getConstructors()(0)
+      println("Constructor is " + constructor)
+      println(args)
+      constructor.newInstance(args:_*).asInstanceOf[T]
+    }
 
-    new RemoteExecutionContextImpl(e, reporter)
+    def instantiateByClassname[T](fqn: String)(args:AnyRef*): T = {
+      val clazz = Class.forName(fqn)
+      val constructor = clazz.getConstructors()(0)
+      println("Constructor is " + constructor)
+      println(args)
+      constructor.newInstance(args:_*).asInstanceOf[T]
+    }
+
+    val settings = Settings(c)
+
+    // construction of the remote exeuction context by reflection
+    instantiateByClassname( settings.RemoteExecutionContextClassname )(settings, reporter)
   }
 }
