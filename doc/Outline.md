@@ -37,7 +37,6 @@ Second, through the usage a concise syntax extensions, which is minimally invasi
 
 Summary:
 
-
 Distributed programming still requires a high level of expertise,
 skills and specialized knowledge that hinders productivity. This problem
 is faced by software engineers that build scalable systems accessed not
@@ -47,8 +46,9 @@ Remote.Futures solves this problem in three ways. First, remote functions
 are written in the same way as local ones. Second, deployment, task distribution
 and execution is done automatically by a RemoteExecutionContext. Third,
 Fail-over and load balancing is already built-in by design so a developer
-chose a suitable distribution strategy. Additionally, custom strategies
-can be add for specific requirements.
+chose a suitable distribution strategy. Additionally, deployment is
+minimized by switching from local to remote execution by just providing
+a list of available nodes.
 
 
 
@@ -81,11 +81,19 @@ However, if no default strategies matches a particular use case, custom once can
 
 * Why this is a better solution
 
-Remote.Futures have three unique advantages:
+Remote.Futures have five unique advantages:
 
 1) Simple yet powerful to code
+
 2) Straight forward debugging
+
 3) Extremely fast turn-around time.
+
+4) Local testing build-in.
+
+5) No-time deployment, just switch execution context and provide a list of Node IP addresses
+
+Apart from that, Remote Futures "just works" out of the box.
 
 
 
