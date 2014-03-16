@@ -1,19 +1,13 @@
 Clarifying the exact goal
 ==========================
 
-This is crucial for the actual contribution and, usually, helps preparing
-the paper. So please take a minute to think about
+This is crucial for the actual contribution and gives answers to the questions
 
 * What is the exact problem you want to solve
 * Who experiences that problem
 * How you want to solve that problem
 * Why this is a better solution
 
-
-I would like to use the answers to formulate one paragraph,
-similar to an abstract, that really hits the nail of why RemoteFutures are relevant.
-You may know that, I may know that but whoever comes across this
-project or even reads the paper doesn't know anything.
 
 
 @Martin
@@ -33,7 +27,7 @@ the ease of the Scala programming model? What if these programmers
 could increase execution speed, just by adding additional nodes to their configuration file
 and without any change of their code?
 
-With the approach presented in this paper, the remote execution of futures
+With the approach presented, the remote execution of futures
 on remote machines will become feasible and is not any longer restricted
 to only local machines. Futures are functions from zero input arguments to a return value,
 which will eventually become available. Nevertheless, the future is executed
