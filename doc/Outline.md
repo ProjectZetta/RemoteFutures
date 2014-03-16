@@ -1,6 +1,5 @@
 Clarifying the exact goal
--------------------------
--------------------------
+==========================
 
 This is crucial for the actual contribution and, usually, helps preparing
 the paper. So please take a minute to think about
@@ -17,7 +16,8 @@ You may know that, I may know that but whoever comes across this
 project or even reads the paper doesn't know anything.
 
 
-@Martin answers
+@Martin
+--------
 
 Futures allow for the execution of asynchronous computation.
 Unfortunately, futures in Java suffer from an API that enforces blocking of threads,
@@ -32,17 +32,39 @@ The suggested approach allows scalability by additional remote machines doing th
 Second, through the usage a concise syntax extensions, which is minimally invasive compared to the usage of regular Scala futures, execution of futures can be leveraged to be executed remotely.
 
 
-@ Marvin
+@Marvin
+-------
+
+Summary:
+
+
+Distributed programming still requires a high level of expertise,
+skills and specialized knowledge that hinders productivity. This problem
+is faced by software engineers that build scalable systems accessed not
+only used by ordinary pc systems but also by fast growing number of mobile devices.
+
+Remote.Futures solves this problem in three ways. First, remote functions
+are written in the same way as local ones. Second, deployment, task distribution
+and execution is done automatically by a RemoteExecutionContext. Third,
+Fail-over and load balancing is already built-in by design so a developer
+chose a suitable distribution strategy. Additionally, custom strategies
+can be add for specific requirements.
+
+
+
+
 
 * What is the exact problem you want to solve:
 
 Distributed programming still requires a high level of expertise,
-skills and knowledge which is not widely available. The exact problem
-is that distributed is simply too complex in order to be done very fast.
+skills and specialized knowledge that makes it difficult to
+accomplish in a reasonable time.
 
 * Who experiences that problem
 
-Each and every software engineer who needs to build scalable systems.
+Each and every software engineer who needs to build systems that scales
+with the number of users. The problem becomes more prevalent by
+the ever growing number of mobile devices accessing internet services.
 
 * How you want to solve that problem
 
@@ -52,19 +74,21 @@ Introducing Remote.Futures solves this problem in three ways:
 
 2) Remote deployment, task distribution and execution is managed automatically by a RemoteExecutionContext
 
-3) Fail-over and load balancing is defined by specified by default strategies. However, if no default strategies matches
-a particular use case, custom once can be added.
+3) Fail-over and load balancing is defined by specified by default strategies.
+However, if no default strategies matches a particular use case, custom once can be added.
 
 * Why this is a better solution
 
 Remote.Futures have three unique advantages:
 
-1) Simple yet poweruful to code
+1) Simple yet powerful to code
 2) Straight forward debugging
-3) Extremelyfast turn-around time.
+3) Extremely fast turn-around time.
 
 
-Summary:
+
+
+
 
 
 
