@@ -6,7 +6,7 @@ package org.remotefutures.examples
 import scala.annotation.tailrec
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
-import org.remotefutures.core.RemoteFuture.remotefuture
+import org.remotefutures.core.RemoteFuture
 import org.remotefutures.core.EnvironmentImplicits.ConfigFileBaseRemoteExecutionContext
 
 
@@ -31,7 +31,7 @@ object RemoteExampleFibonacci extends App {
 
 
   def remFib(m: Int) = {
-    val rmt = remotefuture {
+    val rmt = RemoteFuture {
       fib(m)
     }
 

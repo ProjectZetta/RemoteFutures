@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 //
 
 import org.remotefutures.core.EnvironmentImplicits.ConfigFileBaseRemoteExecutionContext
-import org.remotefutures.core.RemoteFuture.remotefuture
+import org.remotefutures.core.RemoteFuture
 
 
 object RemoteExampleSimple extends App {
@@ -21,7 +21,7 @@ object RemoteExampleSimple extends App {
   final val T = Duration(2, TimeUnit.SECONDS)
 
 
-  val rmt = remotefuture {
+  val rmt = RemoteFuture {
     println(Thread.currentThread.getName)
     42 * 23
   }
