@@ -18,16 +18,26 @@ private[core] class LocalRunningRemoteExecutionContext  private[impl] (settings 
    */
   val executor: RemoteExecutor = new LocalRunningRemoteExecutor
 
+  /**
+   * Execute a function in its given context on a distant place.
+   *
+   * @param body is the code to execute and return T eventually
+   * @param bodyContext is the context/closure of of function fnc: () => T
+   * @tparam C specifies the Context type
+   * @tparam T specifies the return tyoe
+   */
   override def execute[C, T](body: () => T, bodyContext: C, promise: Promise[T]): Unit = {
-    // call should be something like executor.execute(fnc,fncContext)
-    // This goes hand in hand with the interface definition of RemoteExecutor
-    // already suggested.
     executor.execute(body, bodyContext, promise)
   }
 
   override def reportFailure(t: Throwable) = reporter(t)
 
-  override def shutdown(): Unit = ???
+  override def startup(): Unit = {
+    // nothing to do
+  }
 
-  override def startup(): Unit = ???
+  override def shutdown(): Unit = {
+    // nothing to do
+  }
 }
+

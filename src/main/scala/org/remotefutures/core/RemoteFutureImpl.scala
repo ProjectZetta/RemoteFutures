@@ -6,7 +6,7 @@ package org.remotefutures.core
 import scala.concurrent.{Promise, Future}
 
 object RemoteFuture {
-  def rfuture[T](body: =>T)(implicit res: RemoteExecutionContext): Future[T] = RemoteFutureImpl[T](body)
+  def remotefuture[T](body: =>T)(implicit res: RemoteExecutionContext): Future[T] = RemoteFutureImpl[T](body)
 }
 
 /**
@@ -28,7 +28,7 @@ object RemoteFutureImpl {
    *
    */
   def apply[T](body: => T)(implicit res: RemoteExecutionContext): Future[T] = {
-    val p = Promise()[T]
+    val p = Promise[T]
     res.execute( () => body, null, p)
     p.future
   }
