@@ -2,7 +2,7 @@ package org.remotefutures.playground
 
 import scala.concurrent.{Promise, Future, ExecutionContext}
 import org.remotefutures.core.{RemoteFuture, RemoteExecutionContext}
-import org.remotefutures.examples.RemoteExampleFibonacci
+import org.remotefutures.examples.{Computations, RemoteExampleFibonacci}
 import scala.util.{Random, Success, Failure}
 
 
@@ -38,18 +38,23 @@ object TestWithFuture {
   def main(args:Array[String]): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    val xs1: List[Int] = List.fill(500)(1000000000 + (Random.nextInt(1000)))
+    // val xs1: List[Long] = List.fill(500)(1000000000 + (Random.nextInt(1000)))
 
-    val xs2 : List[Int] = List(15, 25, 17, 12, 28, 81, 324, 812, 12, 15)
+    // val xs2 : List[Long] = List(15, 25, 17, 12, 28, 81, 324, 812, 12, 15)
 
-    val xs3 : List[Int] = (1 to 5000).toList
+    val from = 1000000000L
+    val size = 100L;
 
-    val fs: List[Future[Int]] = xs3.map( x => Future {
+    val xs3 : List[Long] = (from to from+size).toList
+
+    println("Future: " + xs3)
+
+    val fs: List[Future[Long]] = xs3.map( x => Future {
       // println(Thread.currentThread.getName)
-      RemoteExampleFibonacci.fib(x)
+      Computations.fibLong(x)
     } )
 
-    val r: Future[List[Int]] = Future sequence( fs )
+    val r: Future[List[Long]] = Future sequence( fs )
 
     r onComplete {
       case Success(x) => {
@@ -64,21 +69,26 @@ object TestWithFuture {
 
 object TestWithRemote {
   def main(args:Array[String]): Unit = {
-    import org.remotefutures.core.EnvironmentImplicits.ConfigFileBaseRemoteExecutionContext
+    import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    val xs1: List[Int] = List.fill(500)(1000000000 + (Random.nextInt(1000)))
+    // val xs1: List[Long] = List.fill(500)(1000000000 + (Random.nextInt(1000)))
 
-    val xs2 : List[Int] = List(15, 25, 17, 12, 28, 81, 324, 812, 12, 15)
+    // val xs2 : List[Long] = List(15, 25, 17, 12, 28, 81, 324, 812, 12, 15)
 
-    val xs3 : List[Int] = (1 to 20).toList
+    val from = 1000000000L
+    val size = 100L;
 
-    val fs: List[Future[Int]] = xs3.map( x => RemoteFuture {
+    val xs3 : List[Long] = (from to from+size).toList
+
+    println("Remote: " + xs3)
+
+    val fs: List[Future[Long]] = xs3.map( x => RemoteFuture {
       // println(Thread.currentThread.getName)
-      RemoteExampleFibonacci.fib(x)
+      Computations.fibLong(x)
     } )
 
-    val r: Future[List[Int]] = Future sequence( fs )
+    val r: Future[List[Long]] = Future sequence( fs )
 
     r onComplete {
       case Success(x) => {
@@ -90,3 +100,5 @@ object TestWithRemote {
     }
   }
 }
+
+//

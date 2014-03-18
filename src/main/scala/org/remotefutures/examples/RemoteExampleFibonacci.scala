@@ -7,15 +7,13 @@ import scala.annotation.tailrec
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.remotefutures.core.RemoteFuture
-import org.remotefutures.core.EnvironmentImplicits.ConfigFileBaseRemoteExecutionContext
+import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
 
 
 /**
-  */
-object RemoteExampleFibonacci extends App {
-
-  val n = 1000000000 // fib is 546875
-  remFib(n)
+ *
+ */
+object Computations {
 
   /* Fibonacci code from
    * http://peter-braun.org/2012/06/fibonacci-numbers-in-scala/
@@ -29,10 +27,29 @@ object RemoteExampleFibonacci extends App {
     fib_tail(n % 1500000, 0, 1)
   }
 
+  def fibLong(n: Long): Long = {
+    @tailrec
+    def fib_tail(n: Long, a: Long, b: Long): Long = n match {
+      case 0 => a
+      case _ => fib_tail(n - 1, b, (a + b))
+    }
+    fib_tail(n, 0, 1)
+  }
+}
+
+
+/**
+ *
+ */
+object RemoteExampleFibonacci extends App {
+
+  val n = 1000000000 // fib is 546875
+  remFib(n)
+
 
   def remFib(m: Int) = {
     val rmt = RemoteFuture {
-      fib(m)
+      Computations.fib(m)
     }
 
     rmt onComplete {
