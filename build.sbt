@@ -34,8 +34,8 @@ scalacOptions in(Compile, compile) ++= Seq("-optimize", "-feature", "-deprecatio
 //libraryDependencies += "org.scala-lang" % "scala-dist" % scalaVersion.value
 //
 //libraryDependencies += "org.scala-lang.macro-paradise" % "scala-reflect" % "2.11.0-SNAPSHOT"
-
-
+//
+//
 libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _)
 
 libraryDependencies ++= (
