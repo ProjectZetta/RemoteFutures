@@ -5,7 +5,8 @@ name := " Distributed Remote Futures"
 
 version := "0.1"
 
-scalaVersion := "2.11.0-RC1"
+// scalaVersion := "2.11.0-RC1"
+scalaVersion := "2.10.4"
 
 val scalaCheckVersion = sbt.settingKey[String]("Version to use for the scalacheck dependency.")
 val scalaTestVersion = sbt.settingKey[String]("Version to use for ScalaTest.")
@@ -17,31 +18,38 @@ scalaCheckVersion := "1.11.3"
 
 hazelVersion := "3.2-RC1"
 
-val akkaVersion = "2.3.0-RC4"
+// val akkaVersion = "2.3.0-RC4"
+val akkaVersion = "2.3.0"
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.0.0-M3" cross CrossVersion.full)
 
 scalacOptions in(Compile, compile) ++= Seq("-optimize", "-feature", "-deprecation", "-unchecked", "-Xlint")
-
-// scalaSource in Compile <<= baseDirectory(_ / "src/scala")
-
-// scalaSource in Test <<= baseDirectory(_ / "test/scala")
 
 /*
  * =====================================================================================================================
  * Dependencies
  * =====================================================================================================================
  */
-libraryDependencies += "org.scala-lang" % "scala-dist" % scalaVersion.value
+// For Scala 2.11.0-RC1
+//libraryDependencies += "org.scala-lang" % "scala-dist" % scalaVersion.value
+//
+//libraryDependencies += "org.scala-lang.macro-paradise" % "scala-reflect" % "2.11.0-SNAPSHOT"
 
-libraryDependencies += "org.scala-lang.macro-paradise" % "scala-reflect" % "2.11.0-SNAPSHOT"
 
+libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _)
+
+libraryDependencies ++= (
+  if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" % "quasiquotes" % "2.0.0-M3" cross CrossVersion.full)
+  else Nil
+)
+
+//
 // scala pickling for serialization
 //libraryDependencies += "org.scala-lang.macro-paradise" % "scala-pickling_2.11" % "0.8.0-SNAPSHOT" withSources() withJavadoc()
-
+//
 libraryDependencies += "org.scalacheck" %% "scalacheck" % scalaCheckVersion.value withSources() withJavadoc()
 
-libraryDependencies += "org.scalatest" % "scalatest_2.10" % scalaTestVersion.value % "test" withSources() withJavadoc()
+libraryDependencies += "org.scalatest" %% "scalatest" % scalaTestVersion.value % "test" withSources() withJavadoc()
 
 libraryDependencies += "com.typesafe" % "config" % "1.2.0" withSources() withJavadoc()
 
@@ -53,15 +61,15 @@ libraryDependencies += "com.hazelcast" % "hazelcast" % hazelVersion.value withSo
 // thus we need to include akka-cluster 2.3.0-RC, instead of the already released version Akka 2.3.0
 
 // for ScalaVersion >= 2.10.x
-//libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.0"
-//
-//libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % "2.3.0"
-//
-//libraryDependencies += "com.typesafe.akka" %% "akka-cluster" % "2.3.0"
-//
+libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.0"
+
+libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % "2.3.0"
+
+libraryDependencies += "com.typesafe.akka" %% "akka-cluster" % "2.3.0"
+
 
 // for ScalaVersion >= 2.11.0-RC1
-libraryDependencies += "com.typesafe.akka" %% "akka-cluster" % "2.3.0-RC4"
+// libraryDependencies += "com.typesafe.akka" %% "akka-cluster" % "2.3.0-RC4"
 
 // for ScalaVersion == 2.11.0 (final)
 //
@@ -83,7 +91,7 @@ resolvers += "Compass Repository" at "http://repo.compass-project.org"
 
 resolvers += "Twitter Repository" at "http://maven.twttr.com"
 
-resolvers += "Java.org.remotefutures.network Maven2 Repository" at "http://download.java.org.remotefutures.network/maven/2/"
+resolvers += "Java.net Maven2 Repository" at "http://download.java.net/maven/2/"
 
 resolvers += "Maven central" at "http://repo1.maven.org/maven2/"
 
@@ -97,10 +105,11 @@ val project = Project(
   settings = Project.defaultSettings ++ SbtMultiJvm.multiJvmSettings ++ Seq(
     name := "akka-sample-multi-node-scala",
     version := "1.0",
-    scalaVersion := "2.10.3",
+    //scalaVersion := "2.10.3",
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-remote" % akkaVersion,
-      "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaVersion ),
+      "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaVersion
+    ),
       // "org.scalatest" %% "scalatest" % "2.0" % "test"),
     // make sure that MultiJvm test are compiled by the default test compilation
     compile in MultiJvm <<= (compile in MultiJvm) triggeredBy (compile in Test),
