@@ -7,7 +7,6 @@ import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
 
 object BuildSettings {
   val buildSettings = Defaults.defaultSettings ++ Seq(
-    name := " Distributed Remote Futures",
     organization := "org.remotefutures",
     version := "0.0.1",
     scalaVersion := "2.10.4",
@@ -50,26 +49,33 @@ object Dependencies {
 }
 
 object MyBuild extends Build {
+
   import BuildSettings._
   import Dependencies._
   import Resolvers._
 
+
+  /**
+   * =================================================
+   * Root project
+   * =================================================
+   */
   lazy val root: Project = Project(
     "root",
     file("."),
     settings = buildSettings ++ SbtMultiJvm.multiJvmSettings
-      ++ Seq (resolvers := allResolvers)
+      ++ Seq(resolvers := allResolvers)
       ++ Seq(
-        libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _),
-        libraryDependencies ++= (
-          if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" % "quasiquotes" % "2.0.0-M3" cross CrossVersion.full)
-          else Nil
+      libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _),
+      libraryDependencies ++= (
+        if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" % "quasiquotes" % "2.0.0-M3" cross CrossVersion.full)
+        else Nil
         ))
-      ++ Seq (libraryDependencies ++= allDeps )
-      ++ Seq (libraryDependencies ++= Seq(
-        "com.typesafe.akka" %% "akka-remote" % akkaVersion,
-        "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaVersion
-      ))
+      ++ Seq(libraryDependencies ++= allDeps)
+      ++ Seq(libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-remote" % akkaVersion,
+      "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaVersion
+    ))
       ++ Seq(
       // make sure that MultiJvm test are compiled by the default test compilation
       compile in MultiJvm <<= (compile in MultiJvm) triggeredBy (compile in Test),
@@ -88,63 +94,26 @@ object MyBuild extends Build {
             testResults.events ++ multiNodeResults.events,
             testResults.summaries ++ multiNodeResults.summaries)
       })
-  ) configs (MultiJvm)
+  ) dependsOn (macros) configs (MultiJvm)
 
 
   // ++ Seq( run <<= run in Compile in core )
   // aggregate(macros, core)
 
 
-
-//  lazy val macros: Project = Project(
-//    "macros",
-//    file("macros"),
-//    settings = buildSettings ++ Seq(
-//      libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _),
-//      libraryDependencies ++= (
-//        if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" % "quasiquotes" % "2.0.0-M3" cross CrossVersion.full)
-//        else Nil
-//      ))
-//  )
-//
-//  lazy val core: Project = Project(
-//    "core",
-//    file("core"),
-//    settings = buildSettings
-//  ) dependsOn(macros)
-
-
-
-
-//  val project = Project(
-//    id = "multi-node-scala",
-//    base = file("multinode."),
-//    settings = Project.defaultSettings ++ SbtMultiJvm.multiJvmSettings ++ Seq(
-//      name := "multi-node-scala",
-//      version := "1.0",
-//      //scalaVersion := "2.10.3",
-//      libraryDependencies ++= Seq(
-//        "com.typesafe.akka" %% "akka-remote" % akkaVersion,
-//        "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaVersion
-//      ),
-//        // "org.scalatest" %% "scalatest" % "2.0" % "test"),
-//      // make sure that MultiJvm test are compiled by the default test compilation
-//      compile in MultiJvm <<= (compile in MultiJvm) triggeredBy (compile in Test),
-//      // disable parallel tests
-//      parallelExecution in Test := false,
-//      // make sure that MultiJvm tests are executed by the default test target,
-//      // and combine the results from ordinary test and multi-jvm tests
-//      executeTests in Test <<= (executeTests in Test, executeTests in MultiJvm) map {
-//        case (testResults, multiNodeResults) =>
-//          val overall =
-//            if (testResults.overall.id < multiNodeResults.overall.id)
-//              multiNodeResults.overall
-//            else
-//              testResults.overall
-//          Tests.Output(overall,
-//            testResults.events ++ multiNodeResults.events,
-//            testResults.summaries ++ multiNodeResults.summaries)
-//      }
-//    )
-//  ) configs (MultiJvm)
+  /**
+   * =================================================
+   * Macros project
+   * =================================================
+   */
+  lazy val macros: Project = Project(
+    "macros",
+    file("macros"),
+    settings = buildSettings ++ Seq(
+      libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _),
+      libraryDependencies ++= (
+        if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" % "quasiquotes" % "2.0.0-M3" cross CrossVersion.full)
+        else Nil
+        ))
+  )
 }
