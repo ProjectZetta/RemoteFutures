@@ -25,7 +25,7 @@ object Resolvers {
   val maven2Resolver = "Java.net Maven2 Repository" at "http://download.java.net/maven/2/"
   val mavenCentralResolver = "Maven central" at "http://repo1.maven.org/maven2/"
 
-  val allResolvers = Seq (sonatypeReleases, typesafeResolver, compassResolver,twitterResolver, maven2Resolver, mavenCentralResolver)
+  val allResolvers = Seq(sonatypeReleases, typesafeResolver, compassResolver, twitterResolver, maven2Resolver, mavenCentralResolver)
 }
 
 object Dependencies {
@@ -41,11 +41,13 @@ object Dependencies {
 
   val hazelcast = "com.hazelcast" % "hazelcast" % hazelVersion withSources() withJavadoc()
 
-  val akkaActor = "com.typesafe.akka" %% "akka-actor" % "2.3.0" withSources() withJavadoc()
-  val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % "2.3.0" withSources() withJavadoc()
-  val akkaCluster = "com.typesafe.akka" %% "akka-cluster" % "2.3.0" withSources() withJavadoc()
+  val akkaActor = "com.typesafe.akka" %% "akka-actor" % akkaVersion withSources() withJavadoc()
+  val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % akkaVersion withSources() withJavadoc()
+  val akkaCluster = "com.typesafe.akka" %% "akka-cluster" % akkaVersion withSources() withJavadoc()
+  val akkaRemote = "com.typesafe.akka" %% "akka-remote" % akkaVersion withSources() withJavadoc()
+  val akkaMultiNode = "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaVersion withSources() withJavadoc()
 
-  val allDeps = Seq( scalaCheck, scalaTest, config, hazelcast, akkaActor, akkaTestkit, akkaCluster )
+  val allDeps = Seq(scalaCheck, scalaTest, config, hazelcast, akkaActor, akkaTestkit, akkaCluster, akkaRemote, akkaMultiNode)
 }
 
 object MyBuild extends Build {
@@ -53,7 +55,6 @@ object MyBuild extends Build {
   import BuildSettings._
   import Dependencies._
   import Resolvers._
-
 
   /**
    * =================================================
@@ -63,40 +64,32 @@ object MyBuild extends Build {
   lazy val root: Project = Project(
     "root",
     file("."),
-    settings = buildSettings ++ SbtMultiJvm.multiJvmSettings
-      ++ Seq(resolvers := allResolvers)
-      ++ Seq(
-      libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _),
-      libraryDependencies ++= (
-        if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" % "quasiquotes" % "2.0.0-M3" cross CrossVersion.full)
-        else Nil
-        ))
-      ++ Seq(libraryDependencies ++= allDeps)
-      ++ Seq(libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-remote" % akkaVersion,
-      "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaVersion
-    ))
-      ++ Seq(
-      // make sure that MultiJvm test are compiled by the default test compilation
-      compile in MultiJvm <<= (compile in MultiJvm) triggeredBy (compile in Test),
-      // disable parallel tests
-      parallelExecution in Test := false,
-      // make sure that MultiJvm tests are executed by the default test target,
-      // and combine the results from ordinary test and multi-jvm tests
-      executeTests in Test <<= (executeTests in Test, executeTests in MultiJvm) map {
-        case (testResults, multiNodeResults) =>
-          val overall =
-            if (testResults.overall.id < multiNodeResults.overall.id)
-              multiNodeResults.overall
-            else
-              testResults.overall
-          Tests.Output(overall,
-            testResults.events ++ multiNodeResults.events,
-            testResults.summaries ++ multiNodeResults.summaries)
-      })
+    settings = buildSettings ++ SbtMultiJvm.multiJvmSettings ++
+      Seq(resolvers := allResolvers) ++
+      Seq(libraryDependencies ++= allDeps) ++
+      Seq(
+        // make sure that MultiJvm test are compiled by the default test compilation
+        compile in MultiJvm <<= (compile in MultiJvm) triggeredBy (compile in Test),
+        // disable parallel tests
+        parallelExecution in Test := false,
+        // make sure that MultiJvm tests are executed by the default test target,
+        // and combine the results from ordinary test and multi-jvm tests
+        executeTests in Test <<= (executeTests in Test, executeTests in MultiJvm) map {
+          case (testResults, multiNodeResults) =>
+            val overall =
+              if (testResults.overall.id < multiNodeResults.overall.id)
+                multiNodeResults.overall
+              else
+                testResults.overall
+            Tests.Output(overall,
+              testResults.events ++ multiNodeResults.events,
+              testResults.summaries ++ multiNodeResults.summaries)
+        })
   ) dependsOn (macros) configs (MultiJvm)
 
 
+  // left as a remainder .....
+  //
   // ++ Seq( run <<= run in Compile in core )
   // aggregate(macros, core)
 
