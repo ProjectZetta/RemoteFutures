@@ -12,6 +12,7 @@ object BuildSettings {
     version := "0.0.1",
     scalaVersion := "2.10.4",
 
+    // scalacOptions in(Compile, compile) ++= Seq("-optimize", "-feature", "-deprecation", "-unchecked", "-Xlint")
     scalacOptions ++= Seq()
   )
 }
