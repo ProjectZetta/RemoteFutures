@@ -28,7 +28,7 @@ private[core] object RemoteExecutionContextImpl {
 
     val settings = Settings(c)
 
-    // construction of the remote exeuction context by reflection
+    // construction of the remote execution context by reflection
     instantiateByClassname( settings.RemoteExecutionContextClassname )(settings, reporter)
   }
 }

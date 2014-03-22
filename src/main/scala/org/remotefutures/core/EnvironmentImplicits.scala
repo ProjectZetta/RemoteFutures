@@ -12,7 +12,7 @@ object EnvironmentImplicits {
   /**
    * An remote execution context which uses the configuration given in remotefutures.conf to setup the context.
    */
-  implicit val ConfigFileBaseRemoteExecutionContext: RemoteExecutionContext = {
+  implicit val DefaultConfigBasedRemoteExecutionContext: RemoteExecutionContext = {
     RemoteExecutionContext.fromDefaultConfig
   }
 }
