@@ -7,7 +7,7 @@ import org.remotefutures.core.{RemoteExecutor, RemoteExecutionContext, Settings}
 import org.remotefutures.core.impl.executor.LocalRunningRemoteExecutor
 import scala.concurrent.Promise
 
-private[core] class LocalRunningRemoteExecutionContext  private[impl] (settings : Settings, reporter: Throwable => Unit) extends RemoteExecutionContext {
+private[core] class LocalRunningRemoteExecutionContext private[impl] (settings : Settings, reporter: Throwable => Unit) extends RemoteExecutionContext {
 
   /**
    * Facility to create a RemoteExecutor used in the context
