@@ -1,26 +1,32 @@
 package org.remotefutures.core.impl
 
+import org.remotefutures.core.{RemoteExecutionContext, Settings}
+import scala.concurrent.Promise
 
-// import com.hazelcast.config.{Config => HazelConfig, ExecutorConfig => HazelExecutorConfig}
 
+private[core] class HazelcastRemoteExecutionContext private[impl](settings: Settings, reporter: Throwable => Unit) extends RemoteExecutionContext {
+  /**
+   * Shutdown the node system
+   */
+  override def shutdown(): Unit = ???
 
+  /**
+   * Startup the node system
+   */
+  override def startup(): Unit = ???
 
-//    implicit val LocalConfig: Config = {
-//      val host = InetAddress.getLocalHost
-//      val poolSize = 4
-//      //  Thread Pool size on Remote host
-//      val dist = DistributionStrategy.LOAD_BALANCING
-//      val T = Duration(2, TimeUnit.SECONDS)
-//      val config: Config = Config(host, T, poolSize, dist, "Need an Hazelcast RemoteExecutor Instance here")
-//      config
-//    }
-//
-//    implicit val LocalExecution: IExecutorService = {
-//      //http://www.hazelcast.org/docs/latest/manual/html-single/hazelcast-documentation.html#distributed-executor-service
-//      val execConf = new HazelExecutorConfig().setName("RemoteExecutor").setPoolSize(LocalConfig.threadPoolSize)
-//      val conf: HazelConfig = new HazelConfig().addExecutorConfig(execConf)
-//      val h: HazelcastInstance = Hazelcast.newHazelcastInstance(conf)
-//      //create & return remote executor
-//      val executor = h.getExecutorService("my-distributed-executor")
-//      executor
-//    }
+  /**
+   * Reports that an asynchronous computation failed.
+   */
+  override def reportFailure(cause: Throwable): Unit = ???
+
+  /**
+   * Execute a function in its given context on a distant place.
+   *
+   * @param body is the code to execute and return T eventually
+   * @param bodyContext is the context/closure of of function fnc: () => T
+   * @tparam C specifies the Context type
+   * @tparam T specifies the return tyoe
+   */
+  override def execute[C, T](body: () => T, bodyContext: C, promise: Promise[T]): Unit = ???
+}

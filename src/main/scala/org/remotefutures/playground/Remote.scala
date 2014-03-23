@@ -1,11 +1,9 @@
 package org.remotefutures.playground
 
-import scala.concurrent.{Promise, Future, ExecutionContext}
-import org.remotefutures.core.{RemoteFuture, RemoteExecutionContext}
-import org.remotefutures.examples.{Computations, RemoteExampleFibonacci}
-import scala.util.{Random, Success, Failure}
-import org.remotefutures.spores
-import org.remotefutures.spores._
+import scala.concurrent.Future
+import org.remotefutures.core.RemoteFuture
+import org.remotefutures.examples.Computations
+import scala.util.{Success, Failure}
 
 
 //trait Remote[+T, C] {
@@ -115,7 +113,7 @@ object TestWithRemoteAndSpores {
     // val xs2 : List[Long] = List(15, 25, 17, 12, 28, 81, 324, 812, 12, 15)
 
     val from = 1000000000L
-    val size = 100L;
+    val size = 100L
 
     val xs3 : List[Long] = (from to from+size).toList
 
