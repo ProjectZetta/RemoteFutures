@@ -18,5 +18,4 @@ protected[core] class LocalRunningRemoteExecutor extends RemoteExecutor {
     val runnable = new PromiseCompletingRunnable(fnc, promise)
     executor.prepare().execute(runnable)
   }
-
 }

@@ -31,6 +31,7 @@ protected[core] class HazelcastRemoteExecutor extends RemoteExecutor {
 
     printDbg("Create new PromiseCompleting ")
     val runnable = new PromiseCompletingRunnable(fnc, promise)
+    printDbg("Sending tasks to hazelcast grid")
     executor.execute(runnable)
   }
 
