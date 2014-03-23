@@ -4,6 +4,7 @@ import scala.concurrent.Future
 import org.remotefutures.core.RemoteFuture
 import org.remotefutures.examples.Computations
 import scala.util.{Success, Failure}
+import org.remotefutures.spores._
 
 object TestWithFuture {
   def main(args: Array[String]): Unit = {
