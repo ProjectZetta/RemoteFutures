@@ -13,7 +13,7 @@ import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecu
 /**
  *
  */
-object Computations {
+object Computations extends Serializable {
 
   /* Fibonacci code from
    * http://peter-braun.org/2012/06/fibonacci-numbers-in-scala/
