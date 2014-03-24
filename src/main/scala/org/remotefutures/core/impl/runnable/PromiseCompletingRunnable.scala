@@ -1,9 +1,10 @@
-package org.remotefutures.core.impl.executor
+package org.remotefutures.core.impl.runnable
 
 import org.remotefutures.util.Debug._
 import scala.concurrent.Promise
 import scala.util.{Failure, Success}
 import scala.util.control.NonFatal
+
 
 /**
  * A runnable wrapping the execution of fnc, whose result is put the a promise.
@@ -32,3 +33,6 @@ private[impl] class PromiseCompletingRunnable[T](body: () => T, promise: Promise
     }
   }
 }
+
+
+
