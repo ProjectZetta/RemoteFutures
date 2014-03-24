@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 
 //
 
-import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
+import org.remotefutures.core.RemoteExecutionContextImplicits.DefaultConfigBasedRemoteExecutionContext
 import org.remotefutures.core.RemoteFuture
 
 

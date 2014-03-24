@@ -1,19 +1,17 @@
 /*
  * Copyright (c) 2014 Martin Senne, Marvin Hansen.
  */
-package org.remotefutures.core.impl
+package org.remotefutures.core.akkabased.remote
 
 import _root_.akka.actor.ActorRef
-import _root_.akka.util.Timeout
 import org.remotefutures.core.{RemoteExecutionContext, Settings}
 import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success, Try}
-import akka.cluster.{Cluster, Member, MemberStatus}
 import akka.pattern.ask
 import scala.concurrent.duration._
 import akka.util.Timeout
 
-private[core] class AkkaRemoteExecutionContext private[impl] (settings : Settings, reporter: Throwable => Unit) extends RemoteExecutionContext {
+class AkkaRemoteExecutionContext(settings : Settings, reporter: Throwable => Unit) extends RemoteExecutionContext {
 
   /**
    * Execute case class. Used by CallerActor and CalleeActor.

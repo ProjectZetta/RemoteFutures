@@ -1,11 +1,10 @@
-package org.remotefutures.core.impl
+package org.remotefutures.core.hazelcast.remote
 
 import org.remotefutures.core.{RemoteExecutor, RemoteExecutionContext, Settings}
 import scala.concurrent.Promise
-import org.remotefutures.core.impl.executor.HazelcastRemoteExecutor
 
 
-private[core] class HazelcastRemoteExecutionContext private[impl](settings: Settings, reporter: Throwable => Unit) extends RemoteExecutionContext {
+class HazelcastRemoteExecutionContext(settings: Settings, reporter: Throwable => Unit) extends RemoteExecutionContext {
 
 
   val executor: RemoteExecutor = new HazelcastRemoteExecutor

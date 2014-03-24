@@ -41,11 +41,11 @@ object Dependencies {
 
   val hazelcast = "com.hazelcast" % "hazelcast" % hazelVersion withSources() withJavadoc()
 
-  val akkaActor = "com.typesafe.akka" %% "akka-actor" % akkaVersion withSources() withJavadoc()
-  val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % akkaVersion withSources() withJavadoc()
-  val akkaCluster = "com.typesafe.akka" %% "akka-cluster" % akkaVersion withSources() withJavadoc()
-  val akkaRemote = "com.typesafe.akka" %% "akka-remote" % akkaVersion withSources() withJavadoc()
-  val akkaMultiNode = "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaVersion withSources() withJavadoc()
+  val akkaActor = "com.typesafe.akkabased" %% "akkabased-actor" % akkaVersion withSources() withJavadoc()
+  val akkaTestkit = "com.typesafe.akkabased" %% "akkabased-testkit" % akkaVersion withSources() withJavadoc()
+  val akkaCluster = "com.typesafe.akkabased" %% "akkabased-cluster" % akkaVersion withSources() withJavadoc()
+  val akkaRemote = "com.typesafe.akkabased" %% "akkabased-remote" % akkaVersion withSources() withJavadoc()
+  val akkaMultiNode = "com.typesafe.akkabased" %% "akkabased-multi-node-testkit" % akkaVersion withSources() withJavadoc()
 
   val allDeps = Seq(scalaCheck, scalaTest, config, hazelcast, akkaActor, akkaTestkit, akkaCluster, akkaRemote, akkaMultiNode)
 }
