@@ -15,7 +15,7 @@ import scala.util.control.NonFatal
  * @param promise is the promise to put the result of type T into
  * @tparam T return type of this distributed future.
  */
-private[impl] class PromiseCompletingRunnable[T](body: () => T, promise: Promise[T]) extends Runnable {
+private[impl] class PromiseCompletingRunnable[T](body: () => T, promise: Promise[T]) extends FutureBackedRunnable {
 
   implicit final val DBG = true
 

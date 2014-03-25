@@ -8,21 +8,15 @@ import akka.util.Timeout
 
 
 /**
- * A runnable which performs an ask (not tell) an the given actor {@code callee], which in detail
- * - sends the body of execution (via an {@link Execute} message) to the actor,
- * - expects an answer from that actor which can be either
- * -- Success with the result from the execution of body
- * -- Failure with a Throwable, if the execution of body resulted in an error.
+ * A runnable wrapping the execution of fnc, whose result is put the a promise.
  *
- * The given promise {@code promise} is completed on reception of either Success or Failure from the actor.
+ * Shamelessly copied from concurrent.impl.Future and modified.
  *
  * @param body the fnc to execute
  * @param promise is the promise to put the result of type T into
- * @param callee is the actor, which is "asked".
- * @param ec defines the executioncontext of future completion
  * @tparam T return type of this distributed future.
  */
-private[impl] class ActorAskingPromiseCompletingRunnable[T](body: () => T, promise: Promise[T], callee: ActorRef, ec: ExecutionContext) extends Runnable {
+private[impl] class ActorAskingPromiseCompletingRunnable[T](body: () => T, promise: Promise[T], callee: ActorRef, ec: ExecutionContext) extends FutureBackedRunnable {
 
   implicit final val DBG = true
 
