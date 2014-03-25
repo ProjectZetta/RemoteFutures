@@ -9,11 +9,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
+import org.remotefutures.core.RemoteFuture
 
 //
 
-import org.remotefutures.core.RemoteExecutionContextImplicits.DefaultConfigBasedRemoteExecutionContext
-import org.remotefutures.core.RemoteFuture
+import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
 
 
 object RemoteExampleSimple extends App {

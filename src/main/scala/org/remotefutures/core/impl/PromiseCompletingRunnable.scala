@@ -1,9 +1,13 @@
-package org.remotefutures.core.local.simple
+/*
+ * Copyright (c) 2014 Martin Senne, Marvin Hansen.
+ */
+package org.remotefutures.core.impl
 
 import org.remotefutures.util.Debug._
 import scala.concurrent.Promise
 import scala.util.{Failure, Success}
 import scala.util.control.NonFatal
+import org.remotefutures.core.PromiseBackedRunnable
 
 
 /**
@@ -15,7 +19,7 @@ import scala.util.control.NonFatal
  * @param promise is the promise to put the result of type T into
  * @tparam T return type of this distributed future.
  */
-class PromiseCompletingRunnable[T](body: () => T, promise: Promise[T]) extends Runnable {
+class PromiseCompletingRunnable[T](body: () => T, val promise: Promise[T]) extends PromiseBackedRunnable[T] {
 
   implicit final val DBG = true
 
@@ -32,6 +36,7 @@ class PromiseCompletingRunnable[T](body: () => T, promise: Promise[T]) extends R
       }
     }
   }
+
 }
 
 

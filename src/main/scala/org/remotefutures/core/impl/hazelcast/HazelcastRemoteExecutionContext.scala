@@ -1,4 +1,4 @@
-package org.remotefutures.core.hazelcast.remote
+package org.remotefutures.core.impl.hazelcast
 
 import org.remotefutures.core.{RemoteExecutor, RemoteExecutionContext, Settings}
 import scala.concurrent.Promise

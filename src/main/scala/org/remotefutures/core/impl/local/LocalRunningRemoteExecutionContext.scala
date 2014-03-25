@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014 Martin Senne, Marvin Hansen.
  */
-package org.remotefutures.core.local.remote
+package org.remotefutures.core.impl.local
 
 import org.remotefutures.core.{RemoteExecutor, RemoteExecutionContext, Settings}
 import scala.concurrent.Promise

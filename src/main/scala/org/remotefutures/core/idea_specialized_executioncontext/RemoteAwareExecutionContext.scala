@@ -1,4 +1,4 @@
-package org.remotefutures.core
+package org.remotefutures.core.idea_specialized_executioncontext
 
 import scala.concurrent.ExecutionContext
 
