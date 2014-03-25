@@ -6,7 +6,7 @@ import akka.actor._
 import akka.pattern.ask
 import scala.concurrent.duration._
 import akka.util.Timeout
-import org.remotefutures.core.impl.runnable.PromiseBackedRunnable
+import org.remotefutures.core.PromiseBackedRunnable
 
 
 /**
@@ -18,7 +18,7 @@ import org.remotefutures.core.impl.runnable.PromiseBackedRunnable
  * @param promise is the promise to put the result of type T into
  * @tparam T return type of this distributed future.
  */
-private[impl] class ActorAskingPromiseCompletingRunnable[T](body: () => T, val promise: Promise[T], callee: ActorRef, ec: ExecutionContext) extends PromiseBackedRunnable[T] {
+class ActorAskingPromiseCompletingRunnable[T](body: () => T, val promise: Promise[T], callee: ActorRef, ec: ExecutionContext) extends PromiseBackedRunnable[T] {
 
   implicit final val DBG = true
 

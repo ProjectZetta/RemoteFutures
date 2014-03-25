@@ -1,8 +1,7 @@
 package org.remotefutures.core.impl.local
 
-import org.remotefutures.core.RemoteExecutor
 import scala.concurrent.{ExecutionContext, Promise}
-import org.remotefutures.core.impl.runnable.PromiseCompletingRunnable
+import org.remotefutures.core.impl.{PromiseCompletingRunnable, RemoteExecutor}
 
 /**
  * An remote executor which runs the function fnc in a Runnable on the local ExecutionContext

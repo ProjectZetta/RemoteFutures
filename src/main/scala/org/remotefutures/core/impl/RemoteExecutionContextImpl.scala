@@ -3,10 +3,10 @@
  */
 package org.remotefutures.core.impl
 
-import org.remotefutures.core.{RemoteExecutor, Settings, RemoteExecutionContext}
+import org.remotefutures.core.{Settings, RemoteExecutionContext}
 import com.typesafe.config.Config
 import scala.concurrent.Promise
-import org.remotefutures.core.local.remote.LocalRunningRemoteExecutor
+import org.remotefutures.core.impl.local.LocalRunningRemoteExecutor
 
 private[core] object RemoteExecutionContextImpl {
   def fromConfig( c: Config, reporter: Throwable => Unit = RemoteExecutionContext.defaultReporter): RemoteExecutionContext = {

@@ -3,8 +3,8 @@
  */
 package org.remotefutures.core.idea_runnable
 import scala.concurrent.{ExecutionContext, Promise, Future}
-import org.remotefutures.core.impl.runnable.PromiseBackedRunnable
-import org.remotefutures.core.{impl, RemoteExecutionContext}
+import org.remotefutures.core.{PromiseBackedRunnable, impl, RemoteExecutionContext}
+import org.remotefutures.core.impl.PromiseCompletingRunnable
 
 object RemoteFuture_Suggestion {
 

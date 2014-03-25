@@ -1,10 +1,10 @@
 
 package org.remotefutures.core.impl.hazelcast
 
-import org.remotefutures.core.RemoteExecutor
 import org.remotefutures.util.Debug._
 import scala.concurrent.Promise
 import com.hazelcast.core.Hazelcast
+import org.remotefutures.core.impl.{PromiseCompletingRunnable, RemoteExecutor}
 
 
 class HazelcastRemoteExecutor extends RemoteExecutor {
