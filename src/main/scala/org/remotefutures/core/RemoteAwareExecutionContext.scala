@@ -17,7 +17,7 @@ class SimpleAkkaRemoteAwareExecutionContext extends ExecutionContext {
   // setup the akkabased system
 
   override def execute(runnable: Runnable): Unit = {
-
+    println("Execute in SimpleAkkaRemoteAwareExecutionContext.")
   }
 
   override def reportFailure(cause: Throwable): Unit = ???

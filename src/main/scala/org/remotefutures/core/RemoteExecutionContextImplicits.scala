@@ -20,7 +20,7 @@ object RemoteExecutionContextImplicits {
 
 
 /**
- * Implicits for the setup of the environment (execution context that is remotable) of regular futures.
+ * Implicits for the setup of the environment (execution context that is remotable, but NOT derived from RemotExeuctionContext) of regular futures.
  */
 object RemoteAwareExecutionContextImplicits {
   implicit val SimpleAkkaRemoteAwareExecutionContext : ExecutionContext = {
