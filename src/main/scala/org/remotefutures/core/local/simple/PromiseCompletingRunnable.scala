@@ -1,4 +1,4 @@
-package org.remotefutures.core
+package org.remotefutures.core.local.simple
 
 import org.remotefutures.util.Debug._
 import scala.concurrent.Promise
