@@ -16,7 +16,7 @@ import akka.util.Timeout
  * @param promise is the promise to put the result of type T into
  * @tparam T return type of this distributed future.
  */
-private[impl] class ActorAskingPromiseCompletingRunnable[T](body: () => T, promise: Promise[T], callee: ActorRef, ec: ExecutionContext) extends FutureBackedRunnable {
+private[impl] class ActorAskingPromiseCompletingRunnable[T](body: () => T, val promise: Promise[T], callee: ActorRef, ec: ExecutionContext) extends PromiseBackedRunnable[T] {
 
   implicit final val DBG = true
 

@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2014 Martin Senne, Marvin Hansen.
+ */
 package org.remotefutures.core.impl.runnable
 
 import org.remotefutures.util.Debug._
@@ -15,7 +18,7 @@ import scala.util.control.NonFatal
  * @param promise is the promise to put the result of type T into
  * @tparam T return type of this distributed future.
  */
-private[impl] class PromiseCompletingRunnable[T](body: () => T, promise: Promise[T]) extends FutureBackedRunnable {
+class PromiseCompletingRunnable[T](body: () => T, val promise: Promise[T]) extends PromiseBackedRunnable[T] {
 
   implicit final val DBG = true
 
@@ -32,6 +35,7 @@ private[impl] class PromiseCompletingRunnable[T](body: () => T, promise: Promise
       }
     }
   }
+
 }
 
 
