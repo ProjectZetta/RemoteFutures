@@ -1,6 +1,5 @@
 
-Related work
-========
+# Related work
 
 Traditional low level distributed programming based on C/C++ and FORTRAN
 through Message Passing Interface1 (MPI) is complex and difficult to accomplish in
@@ -65,8 +64,7 @@ such as distributed data-flow or aA-hoc peer to peer computing.
 The gap between all three categories is a general purpose distributed programming model
 that is very fast and simple to program while efficiently utilising modern multi-core systems.
 
-Bibliography
---------------
+# Bibliography
 
 (0) J. Aspnes, C. Busch, S. Dolev, P. Fatourou, C. Georgiou, A. Shvartsman,
 P. Spirakis, and R. Wattenhofer, “Eight open problems in distributed comput-
@@ -129,7 +127,6 @@ DOI=10.1145/1596550.1596596
 http://doi.acm.org/10.1145/1596550.1596596
 [PDF](http://lampwww.epfl.ch/~rompf/continuations-icfp09.pdf)
 
-[11]
-https://groups.google.com/forum/#!msg/scala-internals/9Ts3GLsXuOg/36-Z6jhANMUJ
-[12]
-https://github.com/sanity/Swarm/issues/16
+(11) https://groups.google.com/forum/#!msg/scala-internals/9Ts3GLsXuOg/36-Z6jhANMUJ
+
+(12) https://github.com/sanity/Swarm/issues/16

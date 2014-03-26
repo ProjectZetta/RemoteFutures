@@ -1,16 +1,13 @@
 
-package org.remotefutures.core.impl.executor
+package org.remotefutures.core.impl.hazelcast
 
-import org.remotefutures.core.RemoteExecutor
 import org.remotefutures.util.Debug._
 import scala.concurrent.Promise
 import com.hazelcast.core.Hazelcast
-import org.remotefutures.core.impl.runnable.PromiseCompletingRunnable
+import org.remotefutures.core.impl.{PromiseCompletingRunnable, RemoteExecutor}
 
 
-/**
-  */
-protected[core] class HazelcastRemoteExecutor extends RemoteExecutor {
+class HazelcastRemoteExecutor extends RemoteExecutor {
 
   // switches debugging on and off
   implicit final val DBG = true

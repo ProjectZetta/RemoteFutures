@@ -1,12 +1,12 @@
 package org.remotefutures.playground
 
 import scala.concurrent.Future
-import org.remotefutures.core.RemoteFuture
 import org.remotefutures.examples.Computations
 import scala.util.{Success, Failure}
 import org.remotefutures.spores._
+import org.remotefutures.core.RemoteFuture
 
-object TestWithFuture {
+object TestFuture {
   def main(args: Array[String]): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -15,7 +15,7 @@ object TestWithFuture {
     // val xs2 : List[Long] = List(15, 25, 17, 12, 28, 81, 324, 812, 12, 15)
 
     val from = 1000000000L
-    val size = 100L;
+    val size = 100L
 
     val xs3: List[Long] = (from to from + size).toList
 
@@ -39,7 +39,7 @@ object TestWithFuture {
   }
 }
 
-object TestWithRemote {
+object TestRemoteFuture {
   def main(args: Array[String]): Unit = {
     import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
     import scala.concurrent.ExecutionContext.Implicits.global
@@ -49,7 +49,7 @@ object TestWithRemote {
     // val xs2 : List[Long] = List(15, 25, 17, 12, 28, 81, 324, 812, 12, 15)
 
     val from = 1000000000L
-    val size = 100L;
+    val size = 100L
 
     val xs3: List[Long] = (from to from + size).toList
 
@@ -73,7 +73,7 @@ object TestWithRemote {
   }
 }
 
-object TestWithRemoteAndSpores {
+object TestRemoteFutureWithSpores {
   def main(args: Array[String]): Unit = {
     import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
     import scala.concurrent.ExecutionContext.Implicits.global

@@ -32,7 +32,7 @@ object Dependencies {
   val scalaTestVersion = "2.1.0"
   val scalaCheckVersion = "1.11.3"
   val hazelVersion = "3.2-RC1"
-  val akkaVersion = "2.3.0"
+  val akkaVersion = "2.3.1"
 
   val scalaCheck = "org.scalacheck" %% "scalacheck" % scalaCheckVersion withSources() withJavadoc()
   val scalaTest = "org.scalatest" %% "scalatest" % scalaTestVersion % "test" withSources() withJavadoc()

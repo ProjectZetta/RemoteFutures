@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2014 Martin Senne, Marvin Hansen.
  */
-package org.remotefutures.core.impl
+package org.remotefutures.core.impl.local
 
-import org.remotefutures.core.{RemoteExecutor, RemoteExecutionContext, Settings}
-import org.remotefutures.core.impl.executor.LocalRunningRemoteExecutor
+import org.remotefutures.core.{RemoteExecutionContext, Settings}
 import scala.concurrent.Promise
+import org.remotefutures.core.impl.RemoteExecutor
 
 
-private[core] class LocalRunningRemoteExecutionContext private[impl] (settings : Settings, reporter: Throwable => Unit) extends RemoteExecutionContext {
+private[core] class LocalRunningRemoteExecutionContext(settings : Settings, reporter: Throwable => Unit) extends RemoteExecutionContext {
 
   /**
    * Facility to create a RemoteExecutor used in the context

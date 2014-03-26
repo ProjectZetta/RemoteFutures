@@ -1,14 +1,16 @@
-package org.remotefutures.core.impl.runnable
+package org.remotefutures.core.idea_runnable
+
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.{Try, Failure, Success}
 import akka.actor._
 import akka.pattern.ask
 import scala.concurrent.duration._
 import akka.util.Timeout
+import org.remotefutures.core.PromiseBackedRunnable
 
 
 /**
- * A runnable wrapping the execution of fnc, whose result is put the a promise.
+ * A idea_runnable wrapping the execution of fnc, whose result is put the a promise.
  *
  * Shamelessly copied from concurrent.impl.Future and modified.
  *
@@ -16,7 +18,7 @@ import akka.util.Timeout
  * @param promise is the promise to put the result of type T into
  * @tparam T return type of this distributed future.
  */
-private[impl] class ActorAskingPromiseCompletingRunnable[T](body: () => T, promise: Promise[T], callee: ActorRef, ec: ExecutionContext) extends FutureBackedRunnable {
+class ActorAskingPromiseCompletingRunnable[T](body: () => T, val promise: Promise[T], callee: ActorRef, ec: ExecutionContext) extends PromiseBackedRunnable[T] {
 
   implicit final val DBG = true
 

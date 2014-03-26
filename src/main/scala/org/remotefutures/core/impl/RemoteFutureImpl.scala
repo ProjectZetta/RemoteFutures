@@ -1,13 +1,7 @@
-/*
- * Copyright (c) 2014 Martin Senne, Marvin Hansen.
- */
-package org.remotefutures.core
+package org.remotefutures.core.impl
 
+import org.remotefutures.core.RemoteExecutionContext
 import scala.concurrent.{Promise, Future}
-
-object RemoteFuture {
-  def apply[T](body: => T)(implicit res: RemoteExecutionContext): Future[T] = RemoteFutureImpl[T](body)
-}
 
 /**
  * A remote provides a simple facility to execute arbitrary code
@@ -37,4 +31,3 @@ object RemoteFutureImpl {
     super.finalize()
   }
 }
-

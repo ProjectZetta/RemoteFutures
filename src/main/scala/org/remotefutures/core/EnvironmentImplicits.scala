@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2014 Martin Senne, Marvin Hansen.
- */
+* Copyright (c) 2014 Martin Senne, Marvin Hansen.
+*/
 package org.remotefutures.core
-
-
 
 /**
  * Implicits for the setup of the environment of remote futures.
@@ -16,4 +14,3 @@ object EnvironmentImplicits {
     RemoteExecutionContext.fromDefaultConfig
   }
 }
-

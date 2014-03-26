@@ -5,8 +5,8 @@ package org.remotefutures.core
 
 import scala.concurrent.duration.Duration
 import com.typesafe.config.Config
-import akka.util.Helpers.Requiring
 import org.remotefutures.util.Helpers.ConfigOps
+import akka.util.Helpers.Requiring
 
 
 class Settings(val config: Config) {
