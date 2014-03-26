@@ -6,8 +6,13 @@ package org.remotefutures.core
 import scala.concurrent.Promise
 
 /**
- * A idea_runnable which allows access to the promise, which is completed / written to from within run().
+ * A runnable which holds a promise, which is completed / written to from within run().
+ * @tparam T is the type of the promise.
  */
 abstract class PromiseBackedRunnable[T] extends Runnable {
+
+  /**
+   * The promise that is written to in order to return back a value
+   */
   val promise : Promise[T]
 }

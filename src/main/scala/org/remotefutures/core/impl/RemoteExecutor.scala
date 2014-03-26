@@ -9,6 +9,7 @@ import scala.concurrent.Promise
  * of nodes determined by certain properties through a node-selector.
  */
 trait RemoteExecutor {
+
   /**
    * Execute function {@code fnc} with its context / closure given as {@code fncContext} remotely and
    * write the result of this execution to the given promise {@promise}.

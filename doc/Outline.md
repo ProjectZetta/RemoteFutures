@@ -1,5 +1,4 @@
-Clarifying the exact goal
-==========================
+# The exact goal
 
 This is crucial for the actual contribution and gives answers to the questions
 
@@ -9,9 +8,7 @@ This is crucial for the actual contribution and gives answers to the questions
 * Why this is a better solution
 
 
-
-@Martin
---------
+## Martin
 
 Futures allow for the execution of asynchronous computation.
 Unfortunately, futures in Java suffer from an API that enforces blocking of threads,
@@ -43,11 +40,9 @@ doing the execution of futures. Second, through the usage a concise syntax exten
 which is minimally invasive and similar to the usage of regular Scala futures,
 execution of futures can be leveraged to be executed remotely.
 
+## Marvin
 
-@Marvin
--------
-
-Summary:
+### Summary
 
 Distributed programming still requires a high level of expertise,
 skills and specialized knowledge that hinders productivity. This problem
@@ -62,48 +57,38 @@ chose a suitable distribution strategy. Additionally, deployment is
 minimized by switching from local to remote execution by just providing
 a list of available nodes.
 
+### Answers
 
-
-
-
-Answers:
-
-* What is the exact problem you want to solve:
+#### What is the exact problem you want to solve:
 
 Distributed programming still requires a high level of expertise,
 skills and specialized knowledge that makes it difficult to
 accomplish in a reasonable time.
 
-* Who experiences that problem
+#### Who experiences that problem
 
 Each and every software engineer who needs to build systems that scales
 with the number of users. The problem becomes more prevalent by
 the ever growing number of mobile devices accessing internet services.
 
-* How you want to solve that problem
+#### How you want to solve that problem
 
 Introducing Remote.Futures solves this problem in three ways:
 
-1) Writing remote functions is done the same way as local functions
-
-2) Remote deployment, task distribution and execution is managed automatically by a RemoteExecutionContext
-
-3) Fail-over and load balancing is defined by specified by default strategies.
+1. Writing remote functions is done the same way as local functions
+2. Remote deployment, task distribution and execution is managed automatically by a RemoteExecutionContext
+3. Fail-over and load balancing is defined by specified by default strategies.
 However, if no default strategies matches a particular use case, custom once can be added.
 
-* Why this is a better solution
+#### Why this is a better solution
 
 Remote.Futures have five unique advantages:
 
-1) Simple yet powerful to code
-
-2) Straight forward debugging
-
-3) Extremely fast turn-around time.
-
-4) Local testing build-in.
-
-5) No-time deployment, just switch execution context and provide a list of Node IP addresses
+1. Simple yet powerful to code
+2. Straight forward debugging
+3. Extremely fast turn-around time.
+4. Local testing build-in.
+5. No-time deployment, just switch execution context and provide a list of Node IP addresses
 
 Apart from that, Remote Futures "just works" out of the box.
 
