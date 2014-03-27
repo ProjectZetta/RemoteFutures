@@ -22,7 +22,7 @@ object RemoteFutureImpl {
    *
    */
   def apply[T](body: => T)(implicit res: RemoteExecutionContext): Future[T] = {
-    val p = Promise[T]
+    val p = Promise[T]()
     res.execute(() => body, null, p)
     p.future
   }

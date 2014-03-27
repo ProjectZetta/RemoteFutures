@@ -71,7 +71,11 @@ So what should this _map_ method do? Well, it should again execute the mapping o
 
     trait RemoteFuture[+T] {
 
-      def map[S]( f: T => S ) : RemoteFuture[S]
+      def map[S]( f: T => S ) : RemoteFuture[S] = {
+        val p = Promise[S]()
+        onComplete { v => p complete (v map f) }
+        p.future
+      }
 
       def flatMap[S](f: T => RemoteFuture[S]): RemoteFuture[S]
 
@@ -87,6 +91,12 @@ So what should this _map_ method do? Well, it should again execute the mapping o
          */
       def onRemoteComplete[U]( f: Try[T] => U)(executor: RemoteExecutionContext): Unit
 
+    }
+
+
+
+    val x : RemoteFuture[Int] = RemoteFuture {
+      computeSomething
     }
 
 
