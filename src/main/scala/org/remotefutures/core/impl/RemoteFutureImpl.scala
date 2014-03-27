@@ -1,6 +1,6 @@
 package org.remotefutures.core.impl
 
-import org.remotefutures.core.RemoteExecutionContext
+import org.remotefutures.core.{PromiseBackedRunnable, RemoteExecutionContext}
 import scala.concurrent.{Promise, Future}
 
 /**
@@ -26,6 +26,13 @@ object RemoteFutureImpl {
     res.execute(() => body, null, p)
     p.future
   }
+
+
+  private def createRunnable[T](body: => T): PromiseBackedRunnable[T] = {
+    val promise = Promise[T]
+    new PromiseCompletingRunnable(() => body, promise)
+  }
+
 
   override def finalize(): Unit = {
     super.finalize()
