@@ -2,9 +2,8 @@
  * Copyright (c) 2014 Martin Senne, Marvin Hansen.
  */
 package org.remotefutures.core.idea_runnable
-
-import scala.concurrent.{ExecutionContext, Promise}
-import org.remotefutures.core.PromiseBackedRunnable
+import scala.concurrent.{ExecutionContext, Promise, Future}
+import org.remotefutures.core.{PromiseBackedRunnable, impl, RemoteExecutionContext}
 import org.remotefutures.core.impl.PromiseCompletingRunnable
 
 object RemoteFuture_Suggestion {
@@ -21,8 +20,7 @@ object RemoteFuture_Suggestion {
     // why do we need to pass a promise to PromiseCompletingRunnable ?
     // I thought it should create one???
     // Martin: Because, we need to return a Future on apply ..... where else should we get it?
-    // Marvin: Thanks for the clarification.
-    val promise = Promise[T]
+    val promise = Promise[T]()
     new PromiseCompletingRunnable( () => body, promise )
   }
 }
