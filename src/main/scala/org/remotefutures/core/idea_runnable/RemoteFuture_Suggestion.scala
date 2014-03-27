@@ -20,7 +20,7 @@ object RemoteFuture_Suggestion {
     // why do we need to pass a promise to PromiseCompletingRunnable ?
     // I thought it should create one???
     // Martin: Because, we need to return a Future on apply ..... where else should we get it?
-    val promise = Promise[T]
+    val promise = Promise[T]()
     new PromiseCompletingRunnable( () => body, promise )
   }
 }
