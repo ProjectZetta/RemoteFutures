@@ -3,7 +3,7 @@
 */
 package org.remotefutures.controller.reasoner
 
-import org.remotefutures.model.{FeatureWeights, Case}
+import org.remotefutures.model.{CaseMap, FeatureWeights, Case}
 import org.remotefutures.controller.manager.CaseManager
 
 /**
