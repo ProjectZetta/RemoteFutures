@@ -1,6 +1,9 @@
 Distributed Remote Futures
 ==========================
 
+<!-- [![Build Status](https://secure.travis-ci.org/scala/async.png)](http://travis-ci.org/scala/async) -->
+[![Build Status](https://travis-ci.org/DistributedRemoteFutures/DistributedRemoteFutures.svg?branch=master)](https://travis-ci.org/DistributedRemoteFutures/DistributedRemoteFutures)
+
 Futures are the abstraction of asynchronous execution of code, whose result will be eventually available. 
 
 The main purpose of this project is to extend the execution context of futures to gain advantage from the computational power of remote nodes.
