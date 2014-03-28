@@ -17,6 +17,44 @@ exploits task and data parallelism.
 The benefit of exploring task and data parallelism on the same case study is a
 quantification of the exact benefit for each kind of parallelism for a specific implementation.
 
+## Measurements Correctness
+
+Software execution on the JVM is affected by a number of external factors, such as additional running
+programs, x-windows system (Desktop on Windows), task scheduling of the operating system kernel
+and a number of JVM optimizations. From JDK 5 onwards, the JVM applies a broad variety of
+performance enhancements such as Just-in-time compilation, efficient inlining etc. In order produce
+reliable and reproducible results that are statistically valid, a few considerations are required:
+
+Correct benchmark preparation:
+* Always run a benchmark as a stand-alone JAR outside an IDE
+* Shutdown x-window systems
+* Termination of all non-required applications (top / htop will tell what's running)
+
+These steps already improve noticeably the reproducibility of performance measurements.
+
+Correct benchmark execution:
+* Chose at least 60 pre-runs
+* Chose an appropriate number of runs, i.e. 100
+* Disable println (verbose = off)
+
+The first step is approaching JVM optimization by initiating branch optimization and hot-spot compilation
+without measuring it. However, if the first 60 runs are measured, the execution time actually decreases until
+with each iteration but eventually stabilizes after around 50 runs. However, this is only true for the Client JVM.
+A JVM configured as Server requires a much higher number, approximately 2000 runs, before all JVM optimazation is
+completed.
+
+An appropriate number number of runs is everything above 50. because it allows the correct calculation of statistical values
+such as mean, median or variance.
+
+
+
+
+
+
+
+
+
+
 
 ## Data and methodology
 
