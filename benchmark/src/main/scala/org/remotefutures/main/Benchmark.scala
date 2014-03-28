@@ -21,6 +21,8 @@ class Benchmark(t: TimeUnit) {
   private final val MIN = 1
   private final val MAX = 1024
 
+  private final val EXCL_STATS = false
+
 
   /** verify a new case reasoner against a reference (CRef) */
   def verifyReasoner(cRef: CaseReasonerI, cTest: CaseReasonerI, dataFile: File) {
@@ -118,7 +120,9 @@ class Benchmark(t: TimeUnit) {
     val throughput = calcThroughput(durTime, totalOps)
     if (verbose) {
       // stats.printCpuTime
-      stats.safeAll(statsFile)
+      if (EXCL_STATS) {
+        stats.safeAll(statsFile)
+      }
       stats.printExecutionTime()
       println("Done! Benchmarking execution time " + name + " took: " + durTime + " " + ST.toString)
       println("Throughput is: " + throughput + " OPS/" + ST.toString)
@@ -174,7 +178,10 @@ class Benchmark(t: TimeUnit) {
     stopper.stop()
     if (verbose) {
       // stats.printCpuTime
-      stats.safeAll(file)
+      if (EXCL_STATS) {
+        stats.safeAll(file)
+      }
+
       stats.printExecutionTime()
       println("Done! Benchmarking execution time " + name + " took: " + stopper.getElapsedTime(ElapsedTime.EXEC_TIME, ST) + " " + ST.toString)
       println()
@@ -224,7 +231,9 @@ class Benchmark(t: TimeUnit) {
 
     if (verbose) {
       // stats.printCpuTime
-      stats.safeAll(statsFile)
+      if (EXCL_STATS) {
+        stats.safeAll(statsFile)
+      }
       stats.printExecutionTime()
       println("Done! Benchmarking execution time " + name + " took: " + stopper.getElapsedTime(ElapsedTime.EXEC_TIME, ST) + " " + ST.toString)
       println()
