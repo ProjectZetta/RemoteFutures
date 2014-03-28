@@ -1,9 +1,6 @@
 import sbt._
 import sbt.Keys._
 
-import com.typesafe.sbt.SbtMultiJvm
-import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
-
 
 object BuildSettings {
   val buildSettings = Defaults.defaultSettings ++ Seq(
@@ -47,7 +44,15 @@ object Dependencies {
   val akkaRemote = "com.typesafe.akka" %% "akka-remote" % akkaVersion withSources() withJavadoc()
   val akkaMultiNode = "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaVersion withSources() withJavadoc()
 
-  val allDeps = Seq(scalaCheck, scalaTest, config, hazelcast, akkaActor, akkaTestkit, akkaCluster, akkaRemote, akkaMultiNode)
+  // benchmark dependencies
+  val jxl = "net.sourceforge.jexcelapi" % "jxl" % "2.6.12" withSources() withJavadoc()
+  val xstream = "com.thoughtworks.xstream" % "xstream" % "1.4.4" withSources() withJavadoc()
+  val commons = "commons-lang" % "commons-lang" % "2.6" withSources() withJavadoc()
+  val comCol = "org.apache.commons" % "commons-collections4" % "4.0" withSources() withJavadoc()
+  val json = "net.minidev" % "json-smart" % "1.0.9" withSources() withJavadoc()
+
+  lazy val allDeps = Seq(scalaCheck, scalaTest, config, hazelcast, akkaActor, akkaTestkit, akkaCluster, akkaRemote, akkaMultiNode)
+  lazy val benchDeps = Seq(jxl, xstream, commons, comCol, json)
 }
 
 object MyBuild extends Build {
@@ -55,6 +60,10 @@ object MyBuild extends Build {
   import BuildSettings._
   import Dependencies._
   import Resolvers._
+
+  import com.typesafe.sbt.SbtMultiJvm
+  import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
+
 
   /**
    * =================================================
@@ -108,5 +117,16 @@ object MyBuild extends Build {
         if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" % "quasiquotes" % "2.0.0-M3" cross CrossVersion.full)
         else Nil
         ))
+  )
+  /**
+   * =================================================
+   * Benchmark project
+   * =================================================
+   */
+  lazy val benchmark: Project = Project(
+    "benchmark",
+    file("benchmark"),
+    settings = buildSettings ++ Seq(resolvers := allResolvers) ++
+      Seq(libraryDependencies ++= benchDeps)
   )
 }
