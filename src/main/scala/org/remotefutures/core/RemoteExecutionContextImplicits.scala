@@ -4,7 +4,7 @@
 package org.remotefutures.core
 
 import scala.concurrent.ExecutionContext
-import org.remotefutures.core.idea_specialized_executioncontext.RemoteAwareExecutionContext
+import org.remotefutures.proposals.idea_specialized_executioncontext.RemoteAwareExecutionContext
 
 
 /**

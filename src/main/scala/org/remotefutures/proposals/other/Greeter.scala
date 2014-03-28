@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014 Martin Senne, Marvin Hansen.
  */
-package org.remotefutures.examples
+package org.remotefutures.proposals.other
 
 import akka.actor._
 import scala.concurrent.duration._
