@@ -1,7 +1,6 @@
-package org.remotefutures.playground
+package org.remotefutures.examples
 
 import scala.concurrent.Future
-import org.remotefutures.examples.Computations
 import scala.util.{Success, Failure}
 import org.remotefutures.spores._
 import org.remotefutures.core.RemoteFuture
@@ -41,8 +40,8 @@ object TestFuture {
 
 object TestRemoteFuture {
   def main(args: Array[String]): Unit = {
-    import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
     import scala.concurrent.ExecutionContext.Implicits.global
+    import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
 
     // val xs1: List[Long] = List.fill(500)(1000000000 + (Random.nextInt(1000)))
 
@@ -75,8 +74,8 @@ object TestRemoteFuture {
 
 object TestRemoteFutureWithSpores {
   def main(args: Array[String]): Unit = {
-    import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
     import scala.concurrent.ExecutionContext.Implicits.global
+    import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
 
     // val xs1: List[Long] = List.fill(500)(1000000000 + (Random.nextInt(1000)))
 
