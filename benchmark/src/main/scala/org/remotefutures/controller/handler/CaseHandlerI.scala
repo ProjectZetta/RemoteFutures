@@ -9,7 +9,6 @@ import org.remotefutures.controller.manager.CaseManager
 /**
  * @author Marvin Hansen
  */
-
 object CaseHandler extends CaseHandler
 
 abstract class CaseHandler
