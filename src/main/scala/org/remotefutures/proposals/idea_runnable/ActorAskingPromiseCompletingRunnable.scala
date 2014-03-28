@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2014 Martin Senne, Marvin Hansen.
+ */
 package org.remotefutures.proposals.idea_runnable
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
