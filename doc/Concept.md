@@ -25,9 +25,9 @@ Given the code
 
 this will return a regular future _x_, but the computation ( lengthyComputation1 to calculate an Int) is performed on some remote node.
 
-# Case studies
+## Case studies
 
-## Case 1: Concatenation of asynchronous results
+### Case 1: Concatenation of asynchronous results
 
 If we now want to combine remote computations (f.e. via the Monad _map()_ operation), we can simply do
 
@@ -60,7 +60,7 @@ already have a new type RemoteFuture and we can write down the desired behavior 
 
 Here, we have used a method called makeLocal, which turns a RemoteFuture[T] into a Future[T]
 
-## Case 2: Combination of future results
+### Case 2: Combination of future results
 
 Let us regard a different case: The combination of two results from asynchronous remote computations. In the first step, just focus on the regular local case.
 This is shown in the following excerpt
@@ -96,7 +96,13 @@ Ok. Now we try to *simply* translate this to monad RemoteFuture
       } yield v1*v2
     }
 
-## Consequences of the use-cases above
+**But** this is really **not** what we had in mind.
+
+=> We need locations to specify **what** is running **where**.
+
+_Editiorial node: Extend, why this is really not the desired behavior  ...._
+
+## Consequences of the use-cases above: Locations awareness
 
 ### Solution 1:
 
@@ -105,16 +111,21 @@ Ok. Now we try to *simply* translate this to monad RemoteFuture
 
 ### Solution 2:
 
-- Operation RemoteFuture.apply( => body ) and all function like map, flatMap and a like are "equipped" with an (location: ExecutionLocalion) argument.
-  Thus, it can be spefied, where the remote future is executed. The localtion of execution can be
+- Operation RemoteFuture.apply( => body ) and all function like map, flatMap and a like are "equipped" with an (location: ExecutionLocation) argument.
+  Thus, it can be specified, where the remote future is executed. The location of execution can be
     - retrieved from another remote future via _def sameLocationAs: ExecutionLocation
     - specified by ExecutionLocation.ByStrategy
     - specified with ExecutionLocation.Local
 
 
-# Proposal
+### Solution 3:
 
-## RemoteFuture Monad
+Having Solution 1 by default (that is location "sameLocation") and include 2 by extra specification. In other words, passing the (location: ExecutionLocation) argument implicitly as "local" wherever that
+is and explicity in case a re-location is required..
+
+
+
+## Proposal: RemoteFuture Monad
 
 Now, we assume a monad RemoteFuture, such that we can write
 
@@ -143,7 +154,7 @@ So what should this _map_ method do? Well, it should again execute the mapping o
 
 
 
-### Idea of monad RemoteFuture
+### Possible trait
 
     trait RemoteFuture[+T] {
 
@@ -164,3 +175,60 @@ So what should this _map_ method do? Well, it should again execute the mapping o
         */
       def makeLocal : Future[T]
     }
+
+### Execution scheme of a RemoteFuture
+
+In order to execute a remote future the following steps are essential
+
+On the source node:
+
+- Select the function f of type ( () => T ) to be executed. The more general form of f is A => T, where input A can be _Unit_. Type _T_ denotes the return type.
+  The block of code, f, is just an anonymous function (which is present on all nodes).
+  That means, the fully qualified class name of the function is enough information, for the selection.
+- Gather the function context, that is the closure of the function.
+    - Spores (SIP-21) or
+    - Enrichment a function f by a context C as additional input argument f => g with g of type ( (A, C) => T )
+- Transfer that information to the appropriate location of execution represented by a node.
+
+On the target node:
+
+- Transform function g => h, such that locations are adapted properly.
+  RemoteFuture( LOCAL ) is executed as a regular future.
+
+
+    =====================================================================================================================================
+    Source Node code               executed on   Target Node as                  under condition                    Comment
+    =====================================================================================================================================
+
+    Future.apply                   ==>           Future.apply                    always                             only for completeness
+
+    -------------------------------------------------------------------------------------------------------------------------------------
+
+    RemoteFuture.apply( STRATEGY ) ==>           RemoteFuture.apply( LOCAL )     if outermost apply of g
+                                                 RemoteFuture.apply( STRATEGY )  otherwise
+
+    -------------------------------------------------------------------------------------------------------------------------------------
+
+    RemoteFuture.apply( SAME_AS )  ==>           RemoteFuture.apply( LOCAL )     always
+
+    -------------------------------------------------------------------------------------------------------------------------------------
+
+    RemoteFuture.apply( LOCAL )    ==>           RemoteFuture.apply( LOCAL )     always
+
+    =====================================================================================================================================
+
+
+
+
+
+Run function g . But plain
+
+
+## Comments
+
+Marvin:
+While reading through combination of future results I couldn't help
+but thinking about the Scala Compiler de-sugaring of for-comprehension.
+Maybe a tiny macro would do something similar for Remote-comprehension.
+
+Maybe the implementation of the async / await mechanims ( SIP-22 ) provides further inspiration.
