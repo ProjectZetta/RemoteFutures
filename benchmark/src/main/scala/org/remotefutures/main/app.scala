@@ -14,10 +14,10 @@ import org.remotefutures.controller.handler._
  */
 object app extends App {
 
-  private[this] final val p = "benchmark/Results"
+  private[this] final val p = "benchmark/Results/"
   //path
   private[this] final val data: File = new File("benchmark/" + "data.xml")
-  println("Path is:")
+  println("Data file is:")
   println(data.toString)
   assert(data != null)
   private[this] final val t = TimeUnit.SECONDS
