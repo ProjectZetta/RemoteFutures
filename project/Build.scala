@@ -49,9 +49,10 @@ object Dependencies {
   val xstream = "com.thoughtworks.xstream" % "xstream" % "1.4.4" withSources() withJavadoc()
   val commons = "commons-lang" % "commons-lang" % "2.6" withSources() withJavadoc()
   val comCol = "org.apache.commons" % "commons-collections4" % "4.0" withSources() withJavadoc()
+  val json = "net.minidev" % "json-smart" % "1.0.9" withSources() withJavadoc()
 
   lazy val allDeps = Seq(scalaCheck, scalaTest, config, hazelcast, akkaActor, akkaTestkit, akkaCluster, akkaRemote, akkaMultiNode)
-  lazy val benchDeps = Seq(jxl, xstream, commons, comCol)
+  lazy val benchDeps = Seq(jxl, xstream, commons, comCol, json)
 }
 
 object MyBuild extends Build {
@@ -59,6 +60,7 @@ object MyBuild extends Build {
   import BuildSettings._
   import Dependencies._
   import Resolvers._
+
 
   /**
    * =================================================
