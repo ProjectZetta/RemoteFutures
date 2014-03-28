@@ -232,3 +232,5 @@ but thinking about the Scala Compiler de-sugaring of for-comprehension.
 Maybe a tiny macro would do something similar for Remote-comprehension.
 
 Maybe the implementation of the async / await mechanims ( SIP-22 ) provides further inspiration.
+
+This here added just to trigger build on travis.
