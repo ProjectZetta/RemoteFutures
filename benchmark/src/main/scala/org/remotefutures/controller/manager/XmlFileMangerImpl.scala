@@ -8,12 +8,12 @@ import com.thoughtworks.xstream._
 import com.thoughtworks.xstream.io.xml.DomDriver
 import com.thoughtworks.xstream.io.StreamException
 import com.thoughtworks.xstream.mapper.CannotResolveClassException
-import org.remotefutures.model.{Hotel, Country, Case, CaseMap}
+import org.remotefutures.model.CaseMap
 import org.remotefutures.utils.XStreamConversions
-import org.remotefutures.model.enums.HolidayType.HolidayType
-import org.remotefutures.model.enums.Transportation.Transportation
-import org.remotefutures.model.Accommodation.Accommodation
-import org.remotefutures.model.enums.Month.Month
+import org.remotefutures.model.enums.HolidayType._
+import org.remotefutures.model.enums.Transportation._
+import org.remotefutures.model.Accommodation._
+import org.remotefutures.model.enums.Month._
 
 /**
  * @author Marvin Hansen
@@ -61,14 +61,14 @@ trait XmlFileMangerImpl extends FileManagerI {
     new XStreamException("Test")
     val xstream = XStreamConversions(new XStream(new DomDriver()))
 
-    xstream.alias("CaseMap", classOf[CaseMap])
-    xstream.alias("Case", classOf[Case])
+    xstream.alias("CaseMap", classOf[org.remotefutures.model.CaseMap])
+    xstream.alias("Case", classOf[org.remotefutures.model.Case])
     xstream.alias("HolidayType", classOf[HolidayType])
-    xstream.alias("Country", classOf[Country])
+    xstream.alias("Country", classOf[org.remotefutures.model.Country])
     xstream.alias("Transportation", classOf[Transportation])
     xstream.alias("Month", classOf[Month])
     xstream.alias("Accommodation", classOf[Accommodation])
-    xstream.alias("Hotel", classOf[Hotel])
+    xstream.alias("Hotel", classOf[org.remotefutures.model.Hotel])
 
     xstream
   }

@@ -6,7 +6,7 @@ package org.remotefutures.main
 import java.io.File
 import org.remotefutures.controller.manager.CaseManager
 import java.util.concurrent.TimeUnit
-import org.remotefutures.controller.reasoner.{CaseReasoner_lin, CaseReasonerI, CaseReasoner_lin_arr, CaseReasoner_Par_ARR}
+import org.remotefutures.controller.reasoner.{CaseReasoner_lin, CaseReasonerI, CaseReasoner_Par_ARR}
 import org.remotefutures.controller.handler._
 
 /**
@@ -14,23 +14,25 @@ import org.remotefutures.controller.handler._
  */
 object app extends App {
 
-  private[this] final val p = ""
+  private[this] final val p = "benchmark/Results"
   //path
-  private[this] final val data: File = new File(p + "data.xml")
+  private[this] final val data: File = new File("benchmark/" + "data.xml")
+  println("Path is:")
+  println(data.toString)
   assert(data != null)
   private[this] final val t = TimeUnit.SECONDS
   private[this] final val bm = new Benchmark(t)
   private[this] final val cm = new CaseManager(data)
 
 
-  private[this] final val OFF_Set: Int = 100
+  private[this] final val OFF_Set: Int = 10
   private[this] final val iterations: Int = 10
 
-  private[this] val runReasonerVerifier: Boolean = true
+  private[this] val runReasonerVerifier: Boolean = false
 
   private[this] val runALL: Boolean = false
-  private[this] final val runLin: Boolean = true
-  private[this] final val runLinArr: Boolean = true
+  private[this] final val runLin: Boolean = false
+  private[this] final val runLinArr: Boolean = false
   private[this] final val runParArr: Boolean = false
   private[this] final val runFutureArr: Boolean = false
   private[this] final val runFutureParArr: Boolean = true
@@ -40,7 +42,7 @@ object app extends App {
   lazy val cr = new CaseReasoner_lin
 
   if (runReasonerVerifier) {
-    val cRef = new CaseReasoner_lin_arr
+    val cRef = cr
     val cTest = new CaseReasoner_Par_ARR
     runReasonerVerification(cRef, cTest, "Lin_ARR")
   }
