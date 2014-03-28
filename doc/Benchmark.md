@@ -6,7 +6,6 @@ This document contains further details about the benchmarking approach.
 
 ## Overview
 
-
 In order to estimate the overall run-time performance of remote futures compared to
 ordinary futures, a cased based reasoning benchmark on travel data is used.
 In cased based reasoning (CBR), ”a new problem is solved by finding a similar past case, and reusing
@@ -44,15 +43,7 @@ A JVM configured as Server requires a much higher number, approximately 2000 run
 completed.
 
 An appropriate number number of runs is everything above 50. because it allows the correct calculation of statistical values
-such as mean, median or variance.
-
-
-
-
-
-
-
-
+such as mean, median or variance. Disabling println avoids a certain overhead by printing to system console.
 
 
 
@@ -83,6 +74,33 @@ function used calculating the distance between two values of the same attribute.
 ## Measurements
 
 @TODO
+
+## Architecture
+
+The CBR benchmark consists of three core components:
+
+1. Handler
+2. Reasoner
+3. Calculator
+
+Beginning with the Calculator, the SimilarityCalculator trait (located in controller.calculator)
+performs the actual CBR computation, that is calculating a similarity score for a case compared
+to another case. A  reasoner is an abstraction layer above the calculator that provides two main methods:
+
+* getMostSimilarCase
+* getMostSimilarCases(nrCases)
+
+Currently, there are four major implementations of the reasoner interface:
+
+1. lin = linear execution
+2. linArr = linear execution with data parallelism
+3. ParArr = Parallel Collections with data parallelism
+4. FuturesArr = Futures with data parallelism
+
+
+
+
+
 
 ## CBR Implementation
 

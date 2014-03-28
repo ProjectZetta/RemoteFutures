@@ -12,8 +12,8 @@ import org.remotefutures.controller.manager.CaseManager
  *
  * @author Marvin Hansen
  */
-class linearCaseHandler(cr: CaseReasonerI) extends CaseHandlerI {
-  def calcMostSimilarCases(refCases: CaseMap, cm: CaseManager, w: FeatureWeights) {
+class linearCaseHandler extends CaseHandlerI {
+  def calcMostSimilarCases(cr: CaseReasonerI, refCases: CaseMap, cm: CaseManager, w: FeatureWeights) {
 
     val resList = cm.createNewCaseMap(2 * refCases.size())
     for (j <- 1 to refCases.size()) {

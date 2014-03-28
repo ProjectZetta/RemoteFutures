@@ -12,15 +12,15 @@ import java.util.concurrent.Executors
  * @author Marvin Hansen
  */
 
-class MapReduceCaselHandler(cr: CaseReasonerI) extends CaseHandlerI {
+class MapReduceCaselHandler extends CaseHandlerI {
 
   private final val splitFactor = 32 * Runtime.getRuntime.availableProcessors()
   private final val EXEC = Executors.newFixedThreadPool(splitFactor)
 
-  override def calcMostSimilarCases(refCases: CaseMap, cm: CaseManager, w: FeatureWeights): Unit = {
+  override def calcMostSimilarCases(cr: CaseReasonerI, refCases: CaseMap, cm: CaseManager, w: FeatureWeights): Unit = {
     val res = cm.createNewCaseMap(2 * refCases.size())
     // scatter
-    val arr = scatter(refCases, cm, w)
+    val arr = scatter(cr, refCases, cm, w)
     // gather
     val ret = gather(arr, res)
     // return result, if required
@@ -35,7 +35,7 @@ class MapReduceCaselHandler(cr: CaseReasonerI) extends CaseHandlerI {
     res
   }
 
-  private def scatter(refCases: CaseMap, cm: CaseManager, w: FeatureWeights): Array[CaseMap] = {
+  private def scatter(cr: CaseReasonerI, refCases: CaseMap, cm: CaseManager, w: FeatureWeights): Array[CaseMap] = {
     val splitSize = refCases.size() / splitFactor
     val arr: Array[CaseMap] = new Array[CaseMap](splitFactor + 1)
 

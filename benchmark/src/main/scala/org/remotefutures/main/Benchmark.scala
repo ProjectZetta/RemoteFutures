@@ -78,7 +78,7 @@ class Benchmark(t: TimeUnit) {
   }
 
 
-  def execute(verbose: Boolean, name: String, cm: CaseManager, handler: CaseHandlerI, statsFile: File, outfile: File, iterations: Int, OFF_SET: Int): StatsData = {
+  def execute(verbose: Boolean, name: String, cm: CaseManager, cr: CaseReasonerI, handler: CaseHandlerI, statsFile: File, outfile: File, iterations: Int, OFF_SET: Int): StatsData = {
 
     require(iterations >= OFF_SET, "OFF_SET must be less then iterations to prevent division by zero exception")
 
@@ -106,7 +106,7 @@ class Benchmark(t: TimeUnit) {
       if (k >= OFF_SET) {
         stats.start()
 
-        handler.calcMostSimilarCases(cmap, cm, w)
+        handler.calcMostSimilarCases(cr, cmap, cm, w)
 
         stats.stop(k - OFF_SET)
       }
