@@ -10,6 +10,9 @@ import java.util.concurrent.ConcurrentHashMap
  * @author Marvin Hansen
  */
 
+
+object GithubJsonCache extends GithubJsonCache
+
 class GithubJsonCache {
 
   // developer.github.com/v3/#authentication
