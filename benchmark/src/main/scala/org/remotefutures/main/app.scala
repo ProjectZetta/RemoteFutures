@@ -24,48 +24,46 @@ object app extends App {
   private[this] final val bm = new Benchmark(t)
   private[this] final val cm = new CaseManager(data)
 
-
-  private[this] final val OFF_Set: Int = 60
-  private[this] final val iterations: Int = 100
-  ////
-  private[this] val runALL: Boolean = true
-  ////
+  /*
+  * Correct benchmark execution:
+  * Chose at least 60 pre-runs
+  * Chose an appropriate number of runs, i.e. 100
+  * Disable println (verbose = off)
+  *
+  * See doc/Benchmark.md for details
+  * Note, off-set has to be smaller compared to iterations.
+  */
+  private[this] final val OFF_Set: Int = 10
+  private[this] final val iterations: Int = 10
+  //// Flags to switch on / off the benchmarks to run
+  private[this] val runALL: Boolean = false
   private[this] final val runLin: Boolean = false
-  private[this] final val runLinArr: Boolean = false
   private[this] final val runParArr: Boolean = false
   private[this] final val runFutureParArr: Boolean = true
-  ////
+  //// set the handler to use for all measurements except linear.
+  //// Currently, ParColCaseHandler is the fastest one.
   private[this] final val handler = new ParColCaseHandler
+  // switched console output on or off. Should be false for any real measurement
+  private[this] final val verbose = true
 
 
   if (runALL || runLin) {
-    //Linear case
+    //Linear base case for measuring no concurrency / parallism at all.
+    // bear in mind, this takes ages to complete so better switch it off
+    // unless required.
     lazy val lin_name = "Linear"
     lazy val lin_data_out: File = new File(p + "lin_data.xml")
     lazy val lin_scala_stats: File = new File(p + "lin.xls")
+    lazy val lin_handler = new linearCaseHandler
     lazy val cr = new CaseReasoner_lin
 
     /* linear run */
-    runBenchmark(lin_name, cr, handler, lin_scala_stats, lin_data_out)
+    runBenchmark(lin_name, cr, lin_handler, lin_scala_stats, lin_data_out)
     //cleanup
     handler.finalize()
     cleanUp()
   }
 
-
-  if (runALL || runLinArr) {
-    //Linear case
-    lazy val lin_arr_name = "Linear arr"
-    lazy val lin_arr_data_out: File = new File(p + "lin_arr_data.xml")
-    lazy val lin_arr_stats: File = new File(p + "lin_arr.xls")
-    //
-    lazy val cr = new CaseReasoner_lin_arr
-    /* linear run */
-    runBenchmark(lin_arr_name, cr, handler, lin_arr_stats, lin_arr_data_out)
-    //cleanup
-    handler.finalize()
-    cleanUp()
-  }
 
   if (runALL || runParArr) {
     //parallel case
@@ -113,7 +111,7 @@ object app extends App {
 
   private[this] def runBenchmark(name: String, cr: CaseReasonerI, ch: CaseHandlerI, statsFile: File, outfile: File) {
 
-    bm.execute(verbose = true, name, cm, cr, ch, statsFile, outfile, iterations, OFF_Set)
+    bm.execute(verbose, name, cm, cr, ch, statsFile, outfile, iterations, OFF_Set)
 
   }
 

@@ -70,11 +70,6 @@ record has twelve attributes and each attribute has corresponding local similari
 function used calculating the distance between two values of the same attribute.
 
 
-
-## Measurements
-
-@TODO
-
 ## Architecture
 
 The CBR benchmark consists of three core components:
@@ -83,12 +78,10 @@ The CBR benchmark consists of three core components:
 2. Reasoner
 3. Calculator
 
-Beginning with the Calculator, the SimilarityCalculator trait (located in controller.calculator)
-performs the actual CBR computation, that is calculating a similarity score for a case compared
-to another case. A  reasoner is an abstraction layer above the calculator that provides two main methods:
+Handler
 
-* getMostSimilarCase
-* getMostSimilarCases(nrCases)
+@TODO
+
 
 Currently, there are four major implementations of the reasoner interface:
 
@@ -98,6 +91,12 @@ Currently, there are four major implementations of the reasoner interface:
 4. FuturesArr = Futures with data parallelism
 
 
+The SimilarityCalculator trait (located in controller.calculator)
+performs the actual CBR computation, that is calculating a similarity score for a case compared
+to another case. A  reasoner is an abstraction layer above the calculator that provides two main methods:
+
+* getMostSimilarCase
+* getMostSimilarCases(nrCases)
 
 
 

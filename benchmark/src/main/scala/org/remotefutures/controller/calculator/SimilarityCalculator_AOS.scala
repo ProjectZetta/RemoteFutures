@@ -21,11 +21,6 @@ with RegionSimilarityCalculator with SeasonSimilarityCalculator
 with TransportationSimilarityCalculator with DurationSimilarityCalculator
 with CountrySimilarityCalculator {
 
-  def calcSimilarityArrayFut(refCase: Case, c2: CaseArrays, w: FeatureWeights): Future[Array[Double]] = {
-
-    Promise.successful(calcSimilarity(refCase, c2, w)).future
-  }
-
   def calcSimilarity(refCase: Case, c2: CaseArrays, w: FeatureWeights): Array[Double] = {
     calcSimilarityArray(refCase, c2, w)
   }

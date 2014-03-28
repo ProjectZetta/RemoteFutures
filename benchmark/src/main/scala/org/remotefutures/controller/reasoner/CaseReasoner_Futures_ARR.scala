@@ -5,7 +5,7 @@ package org.remotefutures.controller.reasoner
 
 import org.remotefutures.model.{CaseMap, Case, FeatureWeights, CaseArrays}
 import org.remotefutures.utils.SortableValueMap
-import scala.concurrent.{ExecutionContext, Await, Future}
+import scala.concurrent.{Promise, ExecutionContext, Await, Future}
 import org.remotefutures.controller.manager.CaseManager
 import java.util.concurrent.{TimeUnit, Executors}
 import org.remotefutures.controller.calculator.SimilarityCalculation_AOS
@@ -61,11 +61,8 @@ trait CaseReasoner_Futures_ARRImpl extends CaseReasonerI with SimilarityCalculat
   }
 
   private def getSimilarCases(refCase: Case, ca: CaseArrays, weights: FeatureWeights): SortableValueMap[Int, Double] = {
-    // max ~ 0.8144 Sec
-    // val scm: SortableValueMap[Int, Double] = getSimilarCases(refCase, ca, weights)
-    // max ~ 0.0136 Sec CACHED
+
     getSimilarCasesArr(refCase, ca, weights)
-    // getSimilarCasesCached(refCase, ca, weights)
   }
 
 
@@ -84,4 +81,11 @@ trait CaseReasoner_Futures_ARRImpl extends CaseReasonerI with SimilarityCalculat
     scm.remove(refCase.journeyCode)
     scm
   }
+
+  def calcSimilarityArrayFut(refCase: Case, c2: CaseArrays, w: FeatureWeights): Future[Array[Double]] = {
+
+    Promise.successful(calcSimilarity(refCase, c2, w)).future
+  }
+
+
 }

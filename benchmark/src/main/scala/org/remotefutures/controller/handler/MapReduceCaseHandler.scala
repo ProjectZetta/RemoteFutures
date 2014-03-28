@@ -12,7 +12,7 @@ import java.util.concurrent.Executors
  * @author Marvin Hansen
  */
 
-class MapReduceCaselHandler extends CaseHandlerI {
+class MapReduceCaseHandler extends CaseHandlerI {
 
   private final val splitFactor = 32 * Runtime.getRuntime.availableProcessors()
   private final val EXEC = Executors.newFixedThreadPool(splitFactor)
