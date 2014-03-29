@@ -1,4 +1,7 @@
-package org.remotefutures.core.idea_specialized_executioncontext
+/*
+ * Copyright (c) 2014 Martin Senne, Marvin Hansen.
+ */
+package org.remotefutures.proposals.idea_specialized_executioncontext
 
 import scala.concurrent.ExecutionContext
 

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014 Martin Senne, Marvin Hansen.
  */
-package org.remotefutures.core.idea_runnable
+package org.remotefutures.proposals.idea_runnable
 import scala.concurrent.{ExecutionContext, Promise, Future}
 import org.remotefutures.core.{PromiseBackedRunnable, impl, RemoteExecutionContext}
 import org.remotefutures.core.impl.PromiseCompletingRunnable

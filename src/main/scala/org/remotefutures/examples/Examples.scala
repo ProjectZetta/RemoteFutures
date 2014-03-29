@@ -5,7 +5,7 @@ import scala.util.{Success, Failure}
 import org.remotefutures.spores._
 import org.remotefutures.core.RemoteFuture
 
-object TestFuture {
+object FutureExample {
   def main(args: Array[String]): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -38,7 +38,7 @@ object TestFuture {
   }
 }
 
-object TestRemoteFuture {
+object RemoteFutureExample {
   def main(args: Array[String]): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
     import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
@@ -72,7 +72,7 @@ object TestRemoteFuture {
   }
 }
 
-object TestRemoteFutureWithSpores {
+object RemoteFutureWithSporesExample {
   def main(args: Array[String]): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
     import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
