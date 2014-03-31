@@ -15,17 +15,18 @@ exploits task and data parallelism.
 
 A benchmark is used for executing a standard test case that compares each travel
 case to the remaining 1023 cases and selects the most similar one. This task is performed
-for all 1024 cases in the dataset. The benchmark application used for measuring performance is a
+for all 1024 cases in the data-set. The benchmark application used for measuring performance is a
 custom framework I’ve written following the best practice from Boyer et al. (4).
-For statistical accuracy, a pre-run is executing the task 80 times before measuring 10
-runs of the task. The long pre-run is motivated by excluding JVM optimization, such
+For statistical accuracy, a pre-run is executing the task 60 times
+before measuring 100 runs of the task.
+The long pre-run is motivated by excluding JVM optimization, such
 as JIT compiling. Each of the 100 runs is measured independently to determine the
 minimum, maximum and mean execution time. Furthermore, variance and standard
 derivation are calculated in order to estimate the level of confidence in the results.
 Execution time is measured in nanoseconds to circumvent an accuracy bug in Sys-
 tem.currentTimeMillis(). Execution time is then converted to seconds by using a
-precise custom conversion to prevent loss of accuracy. All measurements are ex-
-ported to an excel sheet for further evaluation.
+precise custom conversion to preserve accuracy. All measurements are
+exported to an excel sheet for further evaluation.
 
 
 ## Measurements Correctness
@@ -67,8 +68,7 @@ solute, relative and metric similarity (3). I’ve chose a metric model that cal
 a global similarity score, based on the k nearest neighbour (K-NN) algorithm.
 The applied formula is:
 
-
-![Formular](http://example.com/images/logo.png?raw=true)
+![Formular](https://github.com/DistributedRemoteFutures/DistributedRemoteFutures/tree/master/doc/img/SimilarityFormular.png?raw=true)
 
 In the formula, T is the target case, S is the source case, n is the number of attributes
 in each case and index i refers to an individual attribute from 1 to n. Function f
@@ -90,12 +90,21 @@ The CBR benchmark consists of three core components:
 2. Reasoner
 3. Calculator
 
-Handler
 
-@TODO
+The handler is responsible for global task execution. There are 1024 tasks to be executed
+and each of those tasks triggers off another 1048576 sub-tasks to perform. Point is, all tasks
+are independent from each other thus parallelism of the top 1024 tasks is mandatory in
+order to accomplish an even work-load. There are only three implementations of the CaseHandler interface:
+
+1. Linear => No parallelism at all
+2) MapReduce => Scatter / Gather parallelism
+3) ParCol. => Parallel collections
+
+Throughput wise, parallel collections are the fastest one in terms of task distributions.
 
 
-Currently, there are four major implementations of the reasoner interface:
+The reasoner performs all sub-tasks for each of the top 1024 tasks. Currently, there are four major
+implementations of the reasoner interface:
 
 1. lin = linear execution
 2. linArr = linear execution with data parallelism
@@ -109,7 +118,6 @@ to another case. A  reasoner is an abstraction layer above the calculator that p
 
 * getMostSimilarCase
 * getMostSimilarCases(nrCases)
-
 
 
 
