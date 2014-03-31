@@ -14,15 +14,13 @@ import org.remotefutures.controller.handler._
  */
 object app extends App {
 
+  // path to store excel files in case data export is switched on
   private[this] final val p = "benchmark/Results/"
-  //path
-  private[this] final val data: File = new File("benchmark/" + "data.xml")
+  //path to data file
+  private[this] final val data: File = new File("benchmark/data.xml")
   println("Data file is:")
   println(data.toString)
   assert(data != null)
-  private[this] final val t = TimeUnit.SECONDS
-  private[this] final val bm = new Benchmark(t)
-  private[this] final val cm = new CaseManager(data)
 
   /*
   * Correct benchmark execution:
@@ -45,16 +43,24 @@ object app extends App {
   private[this] final val handler = new ParColCaseHandler
   // switched console output on or off. Should be false for any real measurement
   private[this] final val verbose = true
+  // TimeUnit for measurements
+  private[this] final val t = TimeUnit.SECONDS
+  // switches export to excel on or off
+  private[this] final val EXCL_STATS = false
+  private[this] final val bm = new Benchmark(t, EXCL_STATS)
+  private[this] final val cm = new CaseManager(data)
 
 
   if (runALL || runLin) {
-    //Linear base case for measuring no concurrency / parallism at all.
-    // bear in mind, this takes ages to complete so better switch it off
-    // unless required.
+    //Linear base case for measuring no concurrency / parallelism at all.
+    // Bear in mind, this takes ages to complete so better switch it off
+    // unless required. Having said, this one reflects the "base" version
+    // all other implementations are compared to.
     lazy val lin_name = "Linear"
     lazy val lin_data_out: File = new File(p + "lin_data.xml")
     lazy val lin_scala_stats: File = new File(p + "lin.xls")
     lazy val lin_handler = new linearCaseHandler
+    //
     lazy val cr = new CaseReasoner_lin
 
     /* linear run */
@@ -66,11 +72,11 @@ object app extends App {
 
 
   if (runALL || runParArr) {
-    //parallel case
+    //parallel collections
     lazy val aos_name = "Par Arr"
     lazy val aos_data_out: File = new File(p + "Par_Arr.xml")
     lazy val aos_scala_stats: File = new File(p + "Par_Arr.xls")
-
+    //
     lazy val cr = new CaseReasoner_Par_ARR
 
     /* parallel collection run */
@@ -94,13 +100,24 @@ object app extends App {
     cleanUp()
   }
 
-
+  /**
+   * Triggers garbage collection and finalizes handler
+   */
   private[this] def cleanUp() {
     Runtime.getRuntime.gc()
     Thread.sleep(500)
     handler.finalize()
   }
 
+  /**
+   * @deprecated
+   *
+   * Might be removed in the near future
+   *
+   * @param cRef
+   * @param cTest
+   * @param cTestName
+   */
   private[this] def runReasonerVerification(cRef: CaseReasonerI, cTest: CaseReasonerI, cTestName: String) {
     println("verifying case reasoner: " + cTestName)
     bm.verifyReasoner(cRef, cTest, data)

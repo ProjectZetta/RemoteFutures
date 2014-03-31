@@ -13,15 +13,16 @@ import org.remotefutures.controller.handler.CaseHandlerI
 
 /**
  * @author Marvin Hansen
+ *
+ * @param t Time unit for the output
+ * @param Excel Enables or disabled export to Excel file
  */
-class Benchmark(t: TimeUnit) {
+class Benchmark(t: TimeUnit, Excel: Boolean) {
 
   private final val ST = TimeUnit.SECONDS
 
-  private final val MIN = 1
-  private final val MAX = 1024
-
-  private final val EXCL_STATS = false
+  private final val MIN: Int = 1
+  private final val MAX: Int = 1024
 
 
   /** verify a new case reasoner against a reference (CRef) */
@@ -50,8 +51,6 @@ class Benchmark(t: TimeUnit) {
         System.exit(-32)
 
       }
-
-      //println(i + ") Case has most similar case: " +refSim.journeyCode )
     }
     stopper.stop()
     println("Stop verification! ")
@@ -120,7 +119,7 @@ class Benchmark(t: TimeUnit) {
     val throughput = calcThroughput(durTime, totalOps)
     if (verbose) {
       // stats.printCpuTime
-      if (EXCL_STATS) {
+      if (Excel) {
         stats.safeAll(statsFile)
       }
       stats.printExecutionTime()
@@ -178,7 +177,7 @@ class Benchmark(t: TimeUnit) {
     stopper.stop()
     if (verbose) {
       // stats.printCpuTime
-      if (EXCL_STATS) {
+      if (Excel) {
         stats.safeAll(file)
       }
 
@@ -231,7 +230,7 @@ class Benchmark(t: TimeUnit) {
 
     if (verbose) {
       // stats.printCpuTime
-      if (EXCL_STATS) {
+      if (Excel) {
         stats.safeAll(statsFile)
       }
       stats.printExecutionTime()

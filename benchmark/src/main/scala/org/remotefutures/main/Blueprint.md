@@ -7,7 +7,25 @@ the CBR benchmark with a custom implementation.
 
 ##Overview:
 
-In total, three main steps are required:
+There are two strategies in terms of benchmarking:
+
+A) Global task distribution
+B) Sub-Task execution
+
+A) Global task execution means, a handler is distributing each of the
+1024 root cases by using a particular strategy regardless of the actual
+task execution. For instance, a handler might off-load certain tasks to
+a GPU, to a different execution context or even to a cluster.
+Implementing a new way of distribution only requires writing a new Handler
+and plug-it into the benchmark. Reading the code of existing handlers should
+be sufficient to write a custom one.
+
+B) Sub-Task execution refers to the actual execution of all sub-tasks
+regardless of the global distribution strategy. More precisely, the global task
+distribution only requires that a root-case gets compared to all other 1024 cases
+but how to do that is up to the actual execution. A trivial execution would just compare
+one by one. Another execution might use an Array of structs to exploit parallelism further.
+For defining a new task execution approach, in total, three steps are required:
 
 1. Implementing CaseReasonerI interface with a custom class
 2. Creating a task in app

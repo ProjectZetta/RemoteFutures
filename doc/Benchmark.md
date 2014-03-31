@@ -8,13 +8,26 @@ This document contains further details about the benchmarking approach.
 
 In order to estimate the overall run-time performance of remote futures compared to
 ordinary futures, a cased based reasoning benchmark on travel data is used.
-In cased based reasoning (CBR), ”a new problem is solved by finding a similar past case, and reusing
-it in the new problem situation” [125] I have chosen CBR as foundation for my
+In cased based reasoning (CBR), ”a new problem is solved by finding a similar past case,
+and reusing it in the new problem situation” (1) I have chosen CBR as foundation for my
 concurrency case study, because a case reasoning algorithm, correctly implemented,
 exploits task and data parallelism.
 
-The benefit of exploring task and data parallelism on the same case study is a
-quantification of the exact benefit for each kind of parallelism for a specific implementation.
+A benchmark is used for executing a standard test case that compares each travel
+case to the remaining 1023 cases and selects the most similar one. This task is performed
+for all 1024 cases in the data-set. The benchmark application used for measuring performance is a
+custom framework I’ve written following the best practice from Boyer et al. (4).
+For statistical accuracy, a pre-run is executing the task 60 times
+before measuring 100 runs of the task.
+The long pre-run is motivated by excluding JVM optimization, such
+as JIT compiling. Each of the 100 runs is measured independently to determine the
+minimum, maximum and mean execution time. Furthermore, variance and standard
+derivation are calculated in order to estimate the level of confidence in the results.
+Execution time is measured in nanoseconds to circumvent an accuracy bug in Sys-
+tem.currentTimeMillis(). Execution time is then converted to seconds by using a
+precise custom conversion to preserve accuracy. All measurements are
+exported to an excel sheet for further evaluation.
+
 
 ## Measurements Correctness
 
@@ -27,7 +40,7 @@ reliable and reproducible results that are statistically valid, a few considerat
 Correct benchmark preparation:
 * Always run a benchmark as a stand-alone JAR outside an IDE
 * Shutdown x-window systems
-* Termination of all non-required applications (top / htop will tell what's running)
+* Shutdown all non-required applications (top / htop will tell what's running)
 
 These steps already improve noticeably the reproducibility of performance measurements.
 
@@ -50,13 +63,12 @@ such as mean, median or variance. Disabling println avoids a certain overhead by
 ## Data and methodology
 
 At the heart of any CBR system there is a similarity function that quantifies the
-similarity of cases [126]. In CBR, there are three categories of similarity models: ab-
-solute, relative and metric similarity [127]. I’ve chose a metric model that calculates
+similarity of cases (2). In CBR, there are three categories of similarity models: ab-
+solute, relative and metric similarity (3). I’ve chose a metric model that calculates
 a global similarity score, based on the k nearest neighbour (K-NN) algorithm.
 The applied formula is:
 
-
-![Formular](http://example.com/images/logo.png?raw=true)
+![Formular](https://github.com/DistributedRemoteFutures/DistributedRemoteFutures/tree/master/doc/img/SimilarityFormular.png?raw=true)
 
 In the formula, T is the target case, S is the source case, n is the number of attributes
 in each case and index i refers to an individual attribute from 1 to n. Function f
@@ -78,12 +90,21 @@ The CBR benchmark consists of three core components:
 2. Reasoner
 3. Calculator
 
-Handler
 
-@TODO
+The handler is responsible for global task execution. There are 1024 tasks to be executed
+and each of those tasks triggers off another 1048576 sub-tasks to perform. Point is, all tasks
+are independent from each other thus parallelism of the top 1024 tasks is mandatory in
+order to accomplish an even work-load. There are only three implementations of the CaseHandler interface:
+
+1. Linear => No parallelism at all
+2) MapReduce => Scatter / Gather parallelism
+3) ParCol. => Parallel collections
+
+Throughput wise, parallel collections are the fastest one in terms of task distributions.
 
 
-Currently, there are four major implementations of the reasoner interface:
+The reasoner performs all sub-tasks for each of the top 1024 tasks. Currently, there are four major
+implementations of the reasoner interface:
 
 1. lin = linear execution
 2. linArr = linear execution with data parallelism
@@ -97,7 +118,6 @@ to another case. A  reasoner is an abstraction layer above the calculator that p
 
 * getMostSimilarCase
 * getMostSimilarCases(nrCases)
-
 
 
 
@@ -197,7 +217,7 @@ the following generic performance optimization have been applied:
 * Closures are avoided.
 * Lists are replaced with arrays.
 * Lookup tables are used whenever possible
-* SIMD data parallelism widely used
+* SIMD data parallelism is used whenever possible
 
 Apart from these rather generic performance tweaks,
 no optimization specifically to CBR has been used.
@@ -243,6 +263,24 @@ This was not the intention of the cross-validation, but having at least min, max
 mean values verified increases the confidence in the presented results. Also, all raw-
 data and spreadsheets are on the thesis website and can be further validated and
 analyzed with better statistical tools such as R or SPSS.
+
+
+
+## Bibliography
+
+(1) A. Aamodt and E. Plaza, “Case-based reasoning: Foundational issues,
+    methodological variations, and system approaches,”
+    AI communications, vol. 7, no. 1, pp. 39–59, 1994.
+
+(2) D. W. Aha, “The omnipresence of case-based reasoning in science and
+    application,” Knowledge-based systems, vol. 11, no. 5, pp. 261–273, 1998.
+
+(3) H. Osborne and D. Bridge, “Models of similarity for case-based reasoning,”
+    in Procs. of the Interdisciplinary Workshop on Similarity and Categorisation,
+    pp. 173–179, Citeseer, 1997.
+
+(4)  Brent Boyer, “Robust Java benchmarking”, IBM developerWorks, 2008.
+     http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
 
 
 
