@@ -34,7 +34,7 @@ class Benchmark(t: TimeUnit) {
     println("Start Reasoner verification")
     stopper.start()
 
-    for (i <- (1 to 1024)) yield {
+    for (i <- 1 to 1024) yield {
       val refCase = cm.getCase(i)
       val refSim = cRef.getMostSimilarCase(refCase, cm, fw)
       val testSim = cTest.getMostSimilarCase(refCase, cm, fw)

@@ -8,10 +8,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
-import org.remotefutures.core.RemoteFuture
-
 //
 
+import org.remotefutures.core.RemoteFuture
 import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
 
 
@@ -22,7 +21,7 @@ object RemoteExampleSimple extends App {
 
   val rmt = RemoteFuture {
     println(Thread.currentThread.getName)
-    42 * 23
+    42 * 42 * 233
   }
 
   val fut = Future {
@@ -43,9 +42,8 @@ object RemoteExampleSimple extends App {
     f <- fut
   } yield r + f
 
-  println("final result of remote AND future")
   comb onComplete {
-    case Success(all) => println(all)
+    case Success(all) => println("Final result of remote AND future is: " + all)
     case Failure(t) => println("An error happened: " + t.getMessage)
   }
 
