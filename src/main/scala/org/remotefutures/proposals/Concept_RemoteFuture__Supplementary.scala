@@ -5,6 +5,7 @@ package org.remotefutures.proposals
 
 import scala.concurrent.Future
 import scala.util.Try
+import org.remotefutures.proposals
 
 abstract class ExecutionLocation
 case object EX_LOCAL extends ExecutionLocation
@@ -111,20 +112,20 @@ object ConceptSupplementary {
 // =====================================================================================================================
 // =====================================================================================================================
 
-class UnlocRemoteFuture[+T](f : () => T)
-extends Function[ExecutionLocation, RemoteFuture[T]] {
+class UnlocRemoteFuture[+T](f : () => T) {
+// extends Function[ExecutionLocation, RemoteFuture[T]] {
 
-  def apply( location: ExecutionLocation ) : RemoteFuture[T] = {
-    RemoteFuture( f() )( location )
-  }
+//  def apply( location: ExecutionLocation ) : RemoteFuture[T] = {
+//    RemoteFuture( f() )( location )
+//  }
 
   def at( location: ExecutionLocation ) : RemoteFuture[T] = {
     RemoteFuture( f() )( location )
   }
 
-  def map[S]( f: T => S ) : UnlocRemoteFuture[S] = ???
+  def map[S]( f: T => S )( location: ExecutionLocation ) : UnlocRemoteFuture[S] = ???
 
-  def flatMap[S](f: T => UnlocRemoteFuture[S]): UnlocRemoteFuture[S] = ???
+  def flatMap[S](f: T => UnlocRemoteFuture[S])( location: ExecutionLocation ): UnlocRemoteFuture[S] = ???
 
   /**
    * When this remote future is completed on caller site, either through an exception, or a value,
@@ -151,40 +152,47 @@ object ConceptSupplementary__ {
   def heavyComputationOfSecondFactor = 80
 
   def main(args: Array[String]) : Unit = {
-    val t1 = UnlocRemoteFuture {
+    val t1: UnlocRemoteFuture[Int] = UnlocRemoteFuture {
       heavyComputationOfFirstFactor
     }
     val t2 = UnlocRemoteFuture {
       heavyComputationOfSecondFactor
     }
 
-    val tResult: UnlocRemoteFuture[Int] = for {
-      v1 <- t1
-      x2 <- t2
-    } yield v1 * x2
+    // simple with map
+    val r1: UnlocRemoteFuture[Int] = t1.map(v1 => v1*5)(EX_LOCAL)
 
-    tResult at EX_LOCAL
+    // explicit
+    val r2: (ExecutionLocation => UnlocRemoteFuture[Int]) = for {
+      v1 <- t1
+    } yield v1*5
+    val r2_ = r2(EX_LOCAL)
+
+    val r3: UnlocRemoteFuture[Int] = (for {
+      v1 <- t1
+    } yield v1*5)(EX_LOCAL)
+
+
+    // execute flatmap v1 => v1 * _    by strategy
+    // execute map v2 => v1 *v1        locally
+    val s1 : UnlocRemoteFuture[Int] = t1.flatMap(v1 => t2.map( v2 => v1*v2 )(EX_LOCAL))(EX_BY_STRATEGY)
+
+
+    // HOW does it look like with for-comprehension???
+
 
 
 
     val loc1 = EX_BY_STRATEGY
     implicit val standardLocation = EX_LOCAL
 
-    val f1 : RemoteFuture[Int] = RemoteFuture{ heavyComputationOfFirstFactor }(loc1)
-    val f2 : RemoteFuture[Int] = RemoteFuture { heavyComputationOfSecondFactor }
-    val f3 : UnlocRemoteFuture[Int] = {
-      case EX_LOCAL => {
-        RemoteFuture { 32 }
-      }
-      case _ => {
-        RemoteFuture { 12 }
-      }
-    }
+    val u1 : UnlocRemoteFuture[Int] = UnlocRemoteFuture { heavyComputationOfFirstFactor }
+    val u2 : UnlocRemoteFuture[Int] = UnlocRemoteFuture { heavyComputationOfSecondFactor }
 
     val fMultiplication: RemoteFuture[Int] = {
       for {
-        v1 <- f1
-        v2 <- (f3(loc1))
+        v1 <- u1 at EX_BY_STRATEGY
+        v2 <- u2 at EX_LOCAL
       } yield v1*v2
     }
   }

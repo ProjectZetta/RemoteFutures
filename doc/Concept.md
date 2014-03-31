@@ -100,7 +100,7 @@ Ok. Now we try to *simply* translate this to monad RemoteFuture
 
 => We need locations to specify **what** is running **where**.
 
-_Editiorial node: Extend, why this is really not the desired behavior  ...._
+_Editorial node: Extend, why this is really not the desired behavior  ...._
 
 ## Consequences of the use-cases above: Locations awareness
 
