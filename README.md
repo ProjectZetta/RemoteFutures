@@ -1,24 +1,22 @@
 # Distributed Remote Futures
 
+Distributed programming but simple, efficient and very fast.
+
 <!-- [![Build Status](https://secure.travis-ci.org/scala/async.png)](http://travis-ci.org/scala/async) -->
 [![Build Status](https://travis-ci.org/DistributedRemoteFutures/DistributedRemoteFutures.svg?branch=master)](https://travis-ci.org/DistributedRemoteFutures/DistributedRemoteFutures)
 
 
 ## About
 
-Not only the number of cores per CPU has tremendously increased but also the number of available PCs. [cite]
-Therefore, it is desirable to provide a programming model that allows to profit by this extra computational power
-in both execution speed and performance.
-The project "DistributedRemoteFutures" provides a programming model, such that a programmer can easily make use of these additional resources
-but without tampering with distributed models and code. Instead, the paradigm and model of Scala futures is chosen. This model is then extended
-by a configuration based approach, such that the setup of the distributed environment ( e.g. remote nodes setup, strategy for load-balancing)
-is easily possible.
 
-In the end, distributed remote futures allow you
-- to make distributed programming simple, efficient and
-- very fast to program and
+The project "DistributedRemoteFutures" provides a programming model that seamlessly integrates additional cloud computing resources
+but without tampering with distributed models and code. It does so by extending Scala's Futures towards a remote execution for simply
+adding more computational power according to changing demand. In the end, distributed remote futures allow you
+- simple and efficient distributed execution
+- very fast to program
 - easy to maintain.
 
+It might even brings fun back to your work....
 
 ## Example
 
