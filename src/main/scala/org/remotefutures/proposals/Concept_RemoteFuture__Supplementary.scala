@@ -53,8 +53,6 @@ extends RemoteFuture[T] {
 }
 
 
-// =========================================
-
 object RemoteFuture {
 
   def apply[T]( f: => T )( implicit location: ExecutionLocation) : RemoteFuture[T] = {
@@ -74,6 +72,8 @@ object RemoteFuture {
 
 object ConceptSupplementary {
 
+  type UnlocalizedRemoteFuture[U] = (ExecutionLocation => RemoteFuture[U])
+
   def heavyComputationOfFirstFactor = 42
 
   def heavyComputationOfSecondFactor = 80
@@ -82,7 +82,7 @@ object ConceptSupplementary {
     val loc1 = EX_BY_STRATEGY
     implicit val standardLocation = EX_LOCAL
 
-    type UnlocalizedRemoteFuture[U] = (ExecutionLocation => RemoteFuture[U])
+
 
     val f1 : RemoteFuture[Int] = RemoteFuture{ heavyComputationOfFirstFactor }(loc1)
     val f2 : RemoteFuture[Int] = RemoteFuture { heavyComputationOfSecondFactor }
@@ -98,8 +98,95 @@ object ConceptSupplementary {
     val fMultiplication: RemoteFuture[Int] = {
       for {
         v1 <- f1
-        v2 <- f3(loc1)
+        v2 <- (f3(loc1))
       } yield v1*v2
     }
   }
 }
+
+
+// =====================================================================================================================
+// =====================================================================================================================
+// =====================================================================================================================
+// =====================================================================================================================
+// =====================================================================================================================
+
+class UnlocRemoteFuture[+T](f : () => T)
+extends Function[ExecutionLocation, RemoteFuture[T]] {
+
+  def apply( location: ExecutionLocation ) : RemoteFuture[T] = {
+    RemoteFuture( f() )( location )
+  }
+
+  def at( location: ExecutionLocation ) : RemoteFuture[T] = {
+    RemoteFuture( f() )( location )
+  }
+
+  def map[S]( f: T => S ) : UnlocRemoteFuture[S] = ???
+
+  def flatMap[S](f: T => UnlocRemoteFuture[S]): UnlocRemoteFuture[S] = ???
+
+  /**
+   * When this remote future is completed on caller site, either through an exception, or a value,
+   * apply the provided function.
+   *
+   * (executor: RemoteExecutionContext) was changed to (location: ExecutionLocation)
+   */
+  def onComplete[U]( f: Try[T] => U): Unit = ???
+}
+
+
+object UnlocRemoteFuture {
+
+  def apply[T](f: => T) : UnlocRemoteFuture[T] = {
+    new UnlocRemoteFuture[T]( () => f )
+  }
+
+}
+
+object ConceptSupplementary__ {
+
+  def heavyComputationOfFirstFactor = 42
+
+  def heavyComputationOfSecondFactor = 80
+
+  def main(args: Array[String]) : Unit = {
+    val t1 = UnlocRemoteFuture {
+      heavyComputationOfFirstFactor
+    }
+    val t2 = UnlocRemoteFuture {
+      heavyComputationOfSecondFactor
+    }
+
+    val tResult: UnlocRemoteFuture[Int] = for {
+      v1 <- t1
+      x2 <- t2
+    } yield v1 * x2
+
+    tResult at EX_LOCAL
+
+
+
+    val loc1 = EX_BY_STRATEGY
+    implicit val standardLocation = EX_LOCAL
+
+    val f1 : RemoteFuture[Int] = RemoteFuture{ heavyComputationOfFirstFactor }(loc1)
+    val f2 : RemoteFuture[Int] = RemoteFuture { heavyComputationOfSecondFactor }
+    val f3 : UnlocRemoteFuture[Int] = {
+      case EX_LOCAL => {
+        RemoteFuture { 32 }
+      }
+      case _ => {
+        RemoteFuture { 12 }
+      }
+    }
+
+    val fMultiplication: RemoteFuture[Int] = {
+      for {
+        v1 <- f1
+        v2 <- (f3(loc1))
+      } yield v1*v2
+    }
+  }
+}
+
