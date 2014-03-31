@@ -1,6 +1,4 @@
-Distributed Remote Futures
-==========================
-
+# Distributed Remote Futures
 
 <!-- [![Build Status](https://secure.travis-ci.org/scala/async.png)](http://travis-ci.org/scala/async) -->
 [![Build Status](https://travis-ci.org/DistributedRemoteFutures/DistributedRemoteFutures.svg?branch=master)](https://travis-ci.org/DistributedRemoteFutures/DistributedRemoteFutures)
@@ -8,10 +6,18 @@ Distributed Remote Futures
 
 ## About
 
-Distributed RemoteFutures are used to make distributed programming simple,
-efficient, very fast to program and easy to maintain.
+Not only the number of cores per CPU has tremendously increased but also the number of available PCs. [cite]
+Therefore, it is desirable to provide a programming model that allows to profit by this extra computational power
+in both execution speed and performance.
+The project "DistributedRemoteFutures" provides a programming model, such that a programmer can easily make use of these additional resources
+but without tampering with distributed models and code. Instead, the paradigm and model of Scala futures is chosen. This model is then extended
+by a configuration based approach, such that the setup of the distributed environment ( e.g. remote nodes setup, strategy for load-balancing)
+is easily possible.
 
-This project is in an early stage with daily changes.
+In the end, distributed remote futures allow you
+- to make distributed programming simple, efficient and
+- very fast to program and
+- easy to maintain.
 
 
 ## Example
@@ -105,8 +111,7 @@ Requirements:
 * [Marvin Hansen](https://github.com/marvin-hansen)
 
 
-Licence
-----------
+## Licnse
 
 This software is licensed under the Apache 2 license.
 
