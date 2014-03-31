@@ -67,7 +67,7 @@ solute, relative and metric similarity (3). I’ve chose a metric model that cal
 a global similarity score, based on the k nearest neighbour (K-NN) algorithm.
 The applied formula is:
 
-https://github.com/DistributedRemoteFutures/DistributedRemoteFutures/tree/master/doc/img/SimilarityFormular.png?raw=true
+https://github.com/DistributedRemoteFutures/DistributedRemoteFutures/tree/master/doc/img/SimilarityFormular.png
 
 In the formula, T is the target case, S is the source case, n is the number of attributes
 in each case and index i refers to an individual attribute from 1 to n. Function f
