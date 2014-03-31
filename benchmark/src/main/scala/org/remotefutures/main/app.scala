@@ -60,6 +60,7 @@ object app extends App {
     lazy val lin_data_out: File = new File(p + "lin_data.xml")
     lazy val lin_scala_stats: File = new File(p + "lin.xls")
     lazy val lin_handler = new linearCaseHandler
+    //
     lazy val cr = new CaseReasoner_lin
 
     /* linear run */
@@ -71,11 +72,11 @@ object app extends App {
 
 
   if (runALL || runParArr) {
-    //parallel case
+    //parallel collections
     lazy val aos_name = "Par Arr"
     lazy val aos_data_out: File = new File(p + "Par_Arr.xml")
     lazy val aos_scala_stats: File = new File(p + "Par_Arr.xls")
-
+    //
     lazy val cr = new CaseReasoner_Par_ARR
 
     /* parallel collection run */
@@ -99,13 +100,24 @@ object app extends App {
     cleanUp()
   }
 
-
+  /**
+   * Triggers garbage collection and finalizes handler
+   */
   private[this] def cleanUp() {
     Runtime.getRuntime.gc()
     Thread.sleep(500)
     handler.finalize()
   }
 
+  /**
+   * @deprecated
+   *
+   * Might be removed in the near future
+   *
+   * @param cRef
+   * @param cTest
+   * @param cTestName
+   */
   private[this] def runReasonerVerification(cRef: CaseReasonerI, cTest: CaseReasonerI, cTestName: String) {
     println("verifying case reasoner: " + cTestName)
     bm.verifyReasoner(cRef, cTest, data)
