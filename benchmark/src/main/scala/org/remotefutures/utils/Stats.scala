@@ -54,7 +54,7 @@ class Stats(name: String, iterations: Int, timeUnit: TimeUnit) {
     * @param timeUnit  time unit
     * @param arr data array
     * @return a new statsData case class containing a statistical evaluation of the raw data */
-  private def getAllStatsData(name: String, timeUnit: TimeUnit, arr: Array[Double]): StatsData = createNewStatsData(name, timeUnit, arr)
+  def getAllStatsData(name: String, timeUnit: TimeUnit, arr: Array[Double]): StatsData = createNewStatsData(name, timeUnit, arr)
 
 
   def printExecutionTime() {
