@@ -31,12 +31,12 @@ object app extends App {
   * See doc/Benchmark.md for details
   * Note, off-set has to be smaller compared to iterations.
   */
-  private[this] final val OFF_Set: Int = 10
-  private[this] final val iterations: Int = 10
+  private[this] final val OFF_Set: Int = 5
+  private[this] final val iterations: Int = 5
   //// Flags to switch on / off the benchmarks to run
   private[this] val runALL: Boolean = false
   private[this] final val runLin: Boolean = false
-  private[this] final val runParArr: Boolean = false
+  private[this] final val runParArr: Boolean = true
   private[this] final val runFutureParArr: Boolean = true
   //// set the handler to use for all measurements except linear.
   //// Currently, ParColCaseHandler is the fastest one.
@@ -46,7 +46,7 @@ object app extends App {
   // TimeUnit for measurements
   private[this] final val t = TimeUnit.SECONDS
   // switches export to excel on or off
-  private[this] final val EXCL_STATS = false
+  private[this] final val EXCL_STATS = true
   private[this] final val bm = new Benchmark(t, EXCL_STATS)
   private[this] final val cm = new CaseManager(data)
 
