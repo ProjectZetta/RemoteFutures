@@ -144,6 +144,21 @@ object UnlocRemoteFuture {
   }
 
 }
+//
+//object Tmp {
+//  def strlen = {
+//    x:String => x.length
+//  }
+//
+//  def doit : (String => Int) = {
+//    x => x.length - 3
+//  }
+//
+//  val res = for {
+//    a <- strlen
+//  } yield a
+//
+//}
 
 object ConceptSupplementary__ {
 
@@ -163,10 +178,10 @@ object ConceptSupplementary__ {
     val r1: UnlocRemoteFuture[Int] = t1.map(v1 => v1*5)(EX_LOCAL)
 
     // explicit
-    val r2: (ExecutionLocation => UnlocRemoteFuture[Int]) = for {
-      v1 <- t1
-    } yield v1*5
-    val r2_ = r2(EX_LOCAL)
+//    val r2: (ExecutionLocation => UnlocRemoteFuture[Int]) = for {
+//      v1 <- t1
+//    } yield v1*5
+//    val r2_ = r2(EX_LOCAL)
 
     val r3: UnlocRemoteFuture[Int] = (for {
       v1 <- t1
@@ -179,7 +194,10 @@ object ConceptSupplementary__ {
 
 
     // HOW does it look like with for-comprehension???
-
+//    val s2 : UnlocRemoteFuture[Int] = for {
+//      v1 <- t1
+//      v2 <- t2
+//    } yield v1*v2
 
 
 
