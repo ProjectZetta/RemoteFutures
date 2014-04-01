@@ -14,6 +14,15 @@ import java.text.DateFormat
 object Locals {
 
   def ShowLanguageAndLocale() {
+    println("System & user locals are: ")
+    println()
+    for (m <- messages) {
+      println(m)
+    }
+  }
+
+  def ShowLanguageAndLocaleGui() {
+
     javax.swing.JOptionPane.showMessageDialog(null, messages)
   }
 
@@ -32,6 +41,4 @@ object Locals {
     // date test
     "Date: " + DateFormat.getDateInstance(DateFormat.FULL).format(new Date())
   )
-
-
 }
