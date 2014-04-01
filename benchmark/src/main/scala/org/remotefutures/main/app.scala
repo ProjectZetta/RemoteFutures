@@ -36,7 +36,7 @@ object app extends App {
   //// Flags to switch on / off the benchmarks to run
   private[this] val runALL: Boolean = false
   private[this] final val runLin: Boolean = false
-  private[this] final val runParArr: Boolean = false
+  private[this] final val runParArr: Boolean = true
   private[this] final val runFutureParArr: Boolean = true
   //// set the handler to use for all measurements except linear.
   //// Currently, ParColCaseHandler is the fastest one.
