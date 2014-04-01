@@ -48,13 +48,8 @@ object app extends App {
   private[this] final val t = TimeUnit.SECONDS
   // switches export to excel on or off
   private[this] final val EXCL_STATS = false
-  private[this] final val LOCAL_CHECK = false
   private[this] final val bm = new Benchmark(t, EXCL_STATS)
   private[this] final val cm = new CaseManager(data)
-
-  if (LOCAL_CHECK) {
-    ShowLanguageAndLocale()
-  }
 
 
   if (runALL || runLin) {
