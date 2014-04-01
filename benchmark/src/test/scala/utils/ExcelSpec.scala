@@ -4,7 +4,7 @@
 
 
 import org.remotefutures.utils.{ExcelWriter, Stats}
-import org.scalatest.{FlatSpec, WordSpec, MustMatchers}
+import org.scalatest.FlatSpec
 
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -47,6 +47,5 @@ class ExcelSpec extends FlatSpec {
     } array(i) = r.nextDouble()
     array
   }
-
 
 }
