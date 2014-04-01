@@ -51,8 +51,8 @@ object Dependencies {
   val comCol = "org.apache.commons" % "commons-collections4" % "4.0" withSources() withJavadoc()
   val json = "net.minidev" % "json-smart" % "1.0.9" withSources() withJavadoc()
 
+  lazy val benchDeps = Seq(scalaCheck, scalaTest, jxl, xstream, commons, comCol, json)
   lazy val allDeps = Seq(scalaCheck, scalaTest, config, hazelcast, akkaActor, akkaTestkit, akkaCluster, akkaRemote, akkaMultiNode)
-  lazy val benchDeps = Seq(jxl, xstream, commons, comCol, json)
 }
 
 object MyBuild extends Build {
