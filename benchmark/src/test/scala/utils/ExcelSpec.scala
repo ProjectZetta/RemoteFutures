@@ -3,8 +3,9 @@
 */
 
 
+import org.remotefutures.utils.Locals._
 import org.remotefutures.utils.{ExcelWriter, Stats}
-import org.scalatest.{FlatSpec, WordSpec, MustMatchers}
+import org.scalatest.FlatSpec
 
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -15,6 +16,10 @@ import scala.util.Random
  * @author Marvin Hansen
  */
 class ExcelSpec extends FlatSpec {
+
+  println("Checking locals")
+  ShowLanguageAndLocale()
+  println("done")
 
   final val name = "Test"
   final val t = TimeUnit.SECONDS
@@ -47,6 +52,5 @@ class ExcelSpec extends FlatSpec {
     } array(i) = r.nextDouble()
     array
   }
-
 
 }

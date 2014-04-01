@@ -6,6 +6,7 @@ package org.remotefutures.main
 import java.io.File
 import org.remotefutures.controller.manager.CaseManager
 import java.util.concurrent.TimeUnit
+import org.remotefutures.utils.Locals._
 import org.remotefutures.controller.reasoner._
 import org.remotefutures.controller.handler._
 
