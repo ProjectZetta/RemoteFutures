@@ -13,6 +13,9 @@ import java.text.DateFormat
  */
 object Locals {
 
+  /**
+   * Prints system-, user locals and date on the command line.
+   */
   def ShowLanguageAndLocale() {
     println("System & user locals are: ")
     println()
@@ -21,8 +24,11 @@ object Locals {
     }
   }
 
+  /**
+   * Displays system-, user locals and date in a neat GUI Clickbox.
+   * (For Windows users...)
+   */
   def ShowLanguageAndLocaleGui() {
-
     javax.swing.JOptionPane.showMessageDialog(null, messages)
   }
 
