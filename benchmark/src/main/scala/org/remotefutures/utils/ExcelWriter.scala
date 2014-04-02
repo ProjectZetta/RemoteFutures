@@ -10,9 +10,10 @@ import _root_.jxl.write.NumberFormats
 import _root_.jxl.write.WritableCellFormat
 import _root_.jxl.write.WritableSheet
 import _root_.jxl.write.WritableWorkbook
-import jxl.Workbook
+import jxl.{WorkbookSettings, Workbook}
 import java.io.{IOException, File}
 import jxl.write.Number
+import java.util.Locale
 
 /**
  * @author Marvin Hansen
@@ -22,6 +23,7 @@ object ExcelWriter extends ExcelWriter
 class ExcelWriter {
 
   private var idx_sheet = 0
+  private val local: Locale = new Locale.Builder().setLanguage("en").setRegion("US").build()
 
   def writeAllStats(file: File, args: List[StatsData]) {
     val workbook: WritableWorkbook = createNewWritableWorkbook(file)
@@ -122,7 +124,7 @@ class ExcelWriter {
     val l4_3_Mean: Label = new Label(3, 0, " 3 x Mean")
     sheet.addCell(l4_3_Mean)
     buf = new StringBuffer
-    buf.append("3 *C2")
+    buf.append("3 * C2")
     f = new Formula(3, 1, buf.toString)
     sheet.addCell(f)
     number = new Number(3, 2, 3 * mean, cf)
@@ -186,9 +188,13 @@ class ExcelWriter {
    * @return a newly created excel workbook
    */
   private def createWorkBook(file: File): WritableWorkbook = {
+    val settings = new WorkbookSettings
+
+    settings.setLocale(local)
     var workbook: WritableWorkbook = null
+
     try {
-      workbook = Workbook.createWorkbook(file)
+      workbook = Workbook.createWorkbook(file, settings)
     }
     catch {
       case e: IOException =>

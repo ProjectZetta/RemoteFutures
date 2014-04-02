@@ -6,6 +6,7 @@ package org.remotefutures.main
 import java.io.File
 import org.remotefutures.controller.manager.CaseManager
 import java.util.concurrent.TimeUnit
+import org.remotefutures.utils.Locals._
 import org.remotefutures.controller.reasoner._
 import org.remotefutures.controller.handler._
 
@@ -36,7 +37,7 @@ object app extends App {
   //// Flags to switch on / off the benchmarks to run
   private[this] val runALL: Boolean = false
   private[this] final val runLin: Boolean = false
-  private[this] final val runParArr: Boolean = false
+  private[this] final val runParArr: Boolean = true
   private[this] final val runFutureParArr: Boolean = true
   //// set the handler to use for all measurements except linear.
   //// Currently, ParColCaseHandler is the fastest one.
