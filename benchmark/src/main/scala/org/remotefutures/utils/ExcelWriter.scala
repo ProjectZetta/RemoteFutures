@@ -23,6 +23,8 @@ object ExcelWriter extends ExcelWriter
 class ExcelWriter {
 
   private var idx_sheet = 0
+  // workbook locals are important,
+  // please check: https://code.google.com/p/gcal2excel/issues/detail?id=6
   private val local: Locale = new Locale.Builder().setLanguage("en").setRegion("US").build()
 
   def writeAllStats(file: File, args: List[StatsData]) {
