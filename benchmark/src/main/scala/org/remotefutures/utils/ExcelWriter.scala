@@ -25,20 +25,16 @@ class ExcelWriter {
   private var idx_sheet = 0
   // workbook locals are important,
   // please check: https://code.google.com/p/gcal2excel/issues/detail?id=6
-  private val local: Locale = new Locale.Builder().setLanguage("en").setRegion("US").build()
+  private final val local: Locale = new Locale.Builder().setLanguage("en").setRegion("US").build()
 
   def writeAllStats(file: File, args: List[StatsData]) {
     val workbook: WritableWorkbook = createNewWritableWorkbook(file)
-
     writeSummary(workbook, args)
-
 
     for (v <- args) {
       writeStats(workbook, v)
     }
-
     writeWorkBook(workbook)
-
   }
 
   /**

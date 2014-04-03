@@ -79,7 +79,7 @@ class Benchmark(t: TimeUnit, Excel: Boolean) {
   }
 
 
-  def execute(verbose: Boolean, name: String, cm: CaseManager, cr: CaseReasonerI, handler: CaseHandlerI, statsFile: File, outfile: File, iterations: Int, OFF_SET: Int): StatsData = {
+  def execute(verbose: Boolean, name: String, cm: CaseManager, cr: CaseReasonerI, handler: CaseHandlerI, statsFile: File, iterations: Int, OFF_SET: Int): StatsData = {
 
     require(iterations >= OFF_SET, "OFF_SET must be less then iterations to prevent division by zero exception")
 
@@ -214,7 +214,6 @@ class Benchmark(t: TimeUnit, Excel: Boolean) {
         val resList = cm.createNewCaseMap(100)
 
         for (i <- 0 to 1) {
-
           for (j <- (MIN until MAX).par) yield {
             val refCase = cm.getCase(j)
             resList.addCase(refCase)

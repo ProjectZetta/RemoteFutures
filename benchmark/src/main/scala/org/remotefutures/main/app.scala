@@ -6,7 +6,6 @@ package org.remotefutures.main
 import java.io.File
 import org.remotefutures.controller.manager.CaseManager
 import java.util.concurrent.TimeUnit
-import org.remotefutures.utils.Locals._
 import org.remotefutures.controller.reasoner._
 import org.remotefutures.controller.handler._
 
@@ -47,7 +46,7 @@ object app extends App {
   // TimeUnit for measurements
   private[this] final val t = TimeUnit.SECONDS
   // switches export to excel on or off
-  private[this] final val EXCL_STATS = false
+  private[this] final val EXCL_STATS = true
   private[this] final val bm = new Benchmark(t, EXCL_STATS)
   private[this] final val cm = new CaseManager(data)
 
@@ -58,14 +57,13 @@ object app extends App {
     // unless required. Having said, this one reflects the "base" version
     // all other implementations are compared to.
     lazy val lin_name = "Linear"
-    lazy val lin_data_out: File = new File(p + "lin_data.xml")
     lazy val lin_scala_stats: File = new File(p + "lin.xls")
     lazy val lin_handler = new linearCaseHandler
     //
     lazy val cr = new CaseReasoner_lin
 
     /* linear run */
-    runBenchmark(lin_name, cr, lin_handler, lin_scala_stats, lin_data_out)
+    runBenchmark(lin_name, cr, lin_handler, lin_scala_stats)
     //cleanup
     handler.finalize()
     cleanUp()
@@ -75,13 +73,12 @@ object app extends App {
   if (runALL || runParArr) {
     //parallel collections
     lazy val aos_name = "Par Arr"
-    lazy val aos_data_out: File = new File(p + "Par_Arr.xml")
     lazy val aos_scala_stats: File = new File(p + "Par_Arr.xls")
     //
     lazy val cr = new CaseReasoner_Par_ARR
 
     /* parallel collection run */
-    runBenchmark(aos_name, cr, handler, aos_scala_stats, aos_data_out)
+    runBenchmark(aos_name, cr, handler, aos_scala_stats)
     //cleanup
     handler.finalize()
     cleanUp()
@@ -91,12 +88,11 @@ object app extends App {
   if (runALL || runFutureParArr) {
     //parallel case
     lazy val fut_arr_name = "Futures Par Arr"
-    lazy val fut_arr_data_out: File = new File(p + "future_par_arr.xml")
     lazy val fut_arr_stats: File = new File(p + "futures_par_arr.xls")
     //
     lazy val cr = new CaseReasoner_Futures_ARR
     /* future par. coll run */
-    runBenchmark(fut_arr_name, cr, handler, fut_arr_stats, fut_arr_data_out)
+    runBenchmark(fut_arr_name, cr, handler, fut_arr_stats)
     //cleanup
     cleanUp()
   }
@@ -111,25 +107,15 @@ object app extends App {
   }
 
   /**
-   * @deprecated
    *
-   * Might be removed in the near future
-   *
-   * @param cRef
-   * @param cTest
-   * @param cTestName
+   * @param name name of the run
+   * @param cr case reasoner to use
+   * @param ch case handler to use
+   * @param statsFile  path to generated Excel file
    */
-  private[this] def runReasonerVerification(cRef: CaseReasonerI, cTest: CaseReasonerI, cTestName: String) {
-    println("verifying case reasoner: " + cTestName)
-    bm.verifyReasoner(cRef, cTest, data)
-    println("DONE, all good!")
-    println()
+  private[this] def runBenchmark(name: String, cr: CaseReasonerI, ch: CaseHandlerI, statsFile: File) {
 
-  }
-
-  private[this] def runBenchmark(name: String, cr: CaseReasonerI, ch: CaseHandlerI, statsFile: File, outfile: File) {
-
-    bm.execute(verbose, name, cm, cr, ch, statsFile, outfile, iterations, OFF_Set)
+    bm.execute(verbose, name, cm, cr, ch, statsFile, iterations, OFF_Set)
 
   }
 
