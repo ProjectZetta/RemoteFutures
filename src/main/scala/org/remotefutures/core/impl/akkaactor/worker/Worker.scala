@@ -42,6 +42,8 @@ class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval
     case None         => throw new IllegalStateException("Not working")
   }
 
+  // what is OneForOneStrategy?
+  // Does it mean on supervisor for one worker?
   override def supervisorStrategy = OneForOneStrategy() {
     case _: ActorInitializationException => Stop
     case _: DeathPactException           => Stop
