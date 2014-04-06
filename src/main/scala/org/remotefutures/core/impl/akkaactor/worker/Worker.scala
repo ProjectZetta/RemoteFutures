@@ -34,6 +34,7 @@ class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval
   val registerTask = context.system.scheduler.schedule(0.seconds, registerInterval, clusterClient,
     SendToAll("/user/master/active", RegisterWorker(workerId)))
 
+  // I guess that is the actual worker executing the job/task
   val workExecutor = context.watch(context.actorOf(workExecutorProps, "exec"))
 
   var currentWorkId: Option[String] = None
@@ -43,7 +44,7 @@ class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval
   }
 
   // what is OneForOneStrategy?
-  // Does it mean on supervisor for one worker?
+  // Ok, have read the Akka manual, its clear now.
   override def supervisorStrategy = OneForOneStrategy() {
     case _: ActorInitializationException => Stop
     case _: DeathPactException           => Stop
@@ -64,6 +65,10 @@ class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval
     case Work(workId, job) =>
       log.debug("Got work: {}", job)
       currentWorkId = Some(workId)
+      // Marvin: While sending work for execution,
+      // how do you link the result back to the actual callback?
+      // Is it done implicitly through actor reference?
+      // Just asking for clarification.
       workExecutor ! job
       context.become(working)
   }
@@ -75,10 +80,16 @@ class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval
       context.setReceiveTimeout(5.seconds)
       context.become(waitForWorkIsDoneAck(result))
 
+    //Marvin: is queing an option or a bad idea in this case?
     case _: Work =>
       log.info("Yikes. Master told me to do work, while I'm working.")
   }
 
+  // Marvin:
+  // Am i getting it right, that once the result s back from
+  // the executor, it's forwarded to the master.
+  // Ack ID & workID is matching result to job
+  // thus it answers the question asked above...
   def waitForWorkIsDoneAck(result: Any): Receive = {
     case Ack(id) if id == workId =>
       sendToMaster(WorkerRequestsWork(workerId))
