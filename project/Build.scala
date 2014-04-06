@@ -43,7 +43,7 @@ object Dependencies {
   val akkaCluster = "com.typesafe.akka" %% "akka-cluster" % akkaVersion withSources() withJavadoc()
   val akkaRemote = "com.typesafe.akka" %% "akka-remote" % akkaVersion withSources() withJavadoc()
   val akkaMultiNode = "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaVersion withSources() withJavadoc()
-  val akkaContrib = "com.typesafe.akka" %% "akka-contrib" % akkaVersion
+  val akkaContrib = "com.typesafe.akka" %% "akka-contrib" % akkaVersion withSources() withJavadoc()
 
   // benchmark dependencies
   val jxl = "net.sourceforge.jexcelapi" % "jxl" % "2.6.12" withSources() withJavadoc()

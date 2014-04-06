@@ -175,6 +175,13 @@ object ConceptSupplementary__ {
     }
 
     // simple with map
+
+    // Marvin: okay, makes sense.
+    // However, can Location be an implicit parameter?
+    // I'm asking because one can still pass it explicitely,
+    // as in the exampple below but the "default" case
+    // could be defined with an implicit constant.
+    // Just a thought.
     val r1: UnlocRemoteFuture[Int] = t1.map(v1 => v1*5)(EX_LOCAL)
 
     // explicit
@@ -194,7 +201,8 @@ object ConceptSupplementary__ {
 
 
     // HOW does it look like with for-comprehension???
-//    val s2 : UnlocRemoteFuture[Int] = for {
+    // Marvin: That looks like a plan :-)
+    //    val s2 : UnlocRemoteFuture[Int] = for {
 //      v1 <- t1
 //      v2 <- t2
 //    } yield v1*v2
