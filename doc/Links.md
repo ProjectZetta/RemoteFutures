@@ -16,3 +16,10 @@
 
 * [Markdown Reference](http://daringfireball.net/projects/markdown/syntax)
 * [Github-flavored Markdown Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
+
+## Java Serialization (JDK7)
+
+* [How java serialization works internally](http://youtu.be/nJrbbmySI70)
+* [ Java Object Serialization Specification](http://docs.oracle.com/javase/7/docs/platform/serialization/spec/serialTOC.html)
+* [Versioning of Serializable Objects ] (http://docs.oracle.com/javase/7/docs/platform/serialization/spec/version.html)
+

@@ -13,7 +13,7 @@ class HazelcastRemoteExecutor extends RemoteExecutor {
   implicit final val DBG = true
 
   final val hz = Hazelcast.newHazelcastInstance()
-  final val executor = hz.getExecutorService("defaul-executor")
+  final val executor = hz.getExecutorService("default-executor")
 
 
   /**
@@ -28,7 +28,7 @@ class HazelcastRemoteExecutor extends RemoteExecutor {
   override def execute[C, T](fnc: () => T, fncContext: C, promise: Promise[T]): Unit = {
 
     printDbg("Create new PromiseCompleting ")
-    val runnable = new PromiseCompletingRunnable(fnc, promise)
+    val runnable: PromiseCompletingRunnable[T] = new PromiseCompletingRunnable(fnc, promise)
     printDbg("Sending tasks to hazelcast grid")
     executor.execute(runnable)
   }
