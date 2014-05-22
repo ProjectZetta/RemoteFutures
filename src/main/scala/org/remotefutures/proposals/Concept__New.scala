@@ -1,11 +1,13 @@
+package org.remotefutures.proposals
+
 /*
  * Copyright (c) 2014 Martin Senne, Marvin Hansen.
  */
 package org.remotefutures.proposals
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
-import org.remotefutures.proposals
+import java.util.concurrent.Executor
 
 abstract class ExecutionLocation
 case object EX_LOCAL extends ExecutionLocation
@@ -26,19 +28,10 @@ protected trait RemoteFuture[+T] {
    * (executor: RemoteExecutionContext) was changed to (location: ExecutionLocation)
    */
   def onComplete[U]( f: Try[T] => U)(implicit location: ExecutionLocation): Unit
-
-  /**
-   * Turn this RemoteFuture[T] into a Future[T]
-   */
-  def makeLocal : Future[T]
 }
 
 class RemoteFutureImpl[+T]
 extends RemoteFuture[T] {
-  /**
-   * Turn this RemoteFuture[T] into a Future[T]
-   */
-  override def makeLocal: Future[T] = ???
 
   /**
    * When this remote future is completed on caller site, either through an exception, or a value,
@@ -59,15 +52,6 @@ object RemoteFuture {
   def apply[T]( f: => T )( implicit location: ExecutionLocation) : RemoteFuture[T] = {
     new RemoteFutureImpl[T]
   }
-
-  // Alternative idea: keep the location unset, meaning that
-  // RemoteFuture { } returns an UnlocalizedRemoteFuture
-  //   def RemoteFuture( ... ) : UnlocalizedRemoteFuture
-  // An UnlocalizedRemoteFuture is turned in an RemoteFuture by a location.
-  //
-  // trait UnlocalizedRemoteFuture {
-  //   apply(location: ExecutionLocation) : RemoteFuture
-  // }
 }
 
 
@@ -85,7 +69,7 @@ object ConceptSupplementary {
 
 
 
-    val f1 : RemoteFuture[Int] = RemoteFuture{ heavyComputationOfFirstFactor }(loc1)
+    val f1 : RemoteFuture[Int] = RemoteFuture { heavyComputationOfFirstFactor }(loc1)
     val f2 : RemoteFuture[Int] = RemoteFuture { heavyComputationOfSecondFactor }
     val f3 : UnlocalizedRemoteFuture[Int] = {
       case EX_LOCAL => {
@@ -113,11 +97,11 @@ object ConceptSupplementary {
 // =====================================================================================================================
 
 class UnlocRemoteFuture[+T](f : () => T) {
-// extends Function[ExecutionLocation, RemoteFuture[T]] {
+  // extends Function[ExecutionLocation, RemoteFuture[T]] {
 
-//  def apply( location: ExecutionLocation ) : RemoteFuture[T] = {
-//    RemoteFuture( f() )( location )
-//  }
+  //  def apply( location: ExecutionLocation ) : RemoteFuture[T] = {
+  //    RemoteFuture( f() )( location )
+  //  }
 
   def at( location: ExecutionLocation ) : RemoteFuture[T] = {
     RemoteFuture( f() )( location )
@@ -178,10 +162,10 @@ object ConceptSupplementary__ {
     val r1: UnlocRemoteFuture[Int] = t1.map(v1 => v1*5)(EX_LOCAL)
 
     // explicit
-//    val r2: (ExecutionLocation => UnlocRemoteFuture[Int]) = for {
-//      v1 <- t1
-//    } yield v1*5
-//    val r2_ = r2(EX_LOCAL)
+    //    val r2: (ExecutionLocation => UnlocRemoteFuture[Int]) = for {
+    //      v1 <- t1
+    //    } yield v1*5
+    //    val r2_ = r2(EX_LOCAL)
 
     val r3: UnlocRemoteFuture[Int] = (for {
       v1 <- t1
@@ -195,10 +179,10 @@ object ConceptSupplementary__ {
 
 
     // HOW does it look like with for-comprehension???
-//    val s2 : UnlocRemoteFuture[Int] = for {
-//      v1 <- t1
-//      v2 <- t2
-//    } yield v1*v2
+    //    val s2 : UnlocRemoteFuture[Int] = for {
+    //      v1 <- t1
+    //      v2 <- t2
+    //    } yield v1*v2
 
 
 
@@ -216,6 +200,137 @@ object ConceptSupplementary__ {
     }
   }
 }
+
+
+object Fun {
+  // import scala.concurrent.ExecutionContext.Implicits.global
+
+  implicit val ex1 = scala.concurrent.ExecutionContext.Implicits.global
+  implicit val standardLocation = EX_LOCAL
+
+  def computationA: String = {
+    "asdf" + "ibjmaretg"
+  }
+
+  def computationB: Int = {
+    (25 * 342 + 12) * 2
+  }
+
+  def computationC(x: String, y: Int): Double = {
+    (x.length + y) * 0.3
+  }
+
+  // Scenarios:
+  //
+  // Variant | A           | B           | C           |
+  // ---------------------------------------------------
+  //       1 | local       | local       | local       |
+  //       2 | remote      | remote      | local       |
+  //       3 | remote      | remote      | remote      |
+  //       4 | local       | local       | remote      |
+
+  // =============================================================
+  // variant 1
+  val fx1 = Future(computationA)
+  val fy1 = Future(computationB)
+
+  val z1: Future[Double] = for {
+    x1 <- fx1
+    y1 <- fy1
+  } yield computationC(x1, y1)
+
+  // =============================================================
+  // variant 2
+  val rfx2 = RemoteFuture(computationA)
+  val rfy2 = RemoteFuture(computationB)
+
+  val rfz2 = for {
+    x1 <- fx1
+    y1 <- fy1
+  } yield computationC(x1, y1)
+
+  // =============================================================
+  // variant 4
+  val fx4 = Future(computationA)
+  val fy4 = Future(computationB)
+
+  val rfz4 = Remote {
+    for {
+      x1 <- fx4
+      y1 <- fy4
+    } yield computationC(x1, y1)
+  }
+}
+
+object RealFun {
+  def computationA: String = {
+    "asdf" + "ibjmaretg"
+  }
+
+  def computationB: Int = {
+    (25 * 342 + 12) * 2
+  }
+
+  def computationC(x: String, y: Int): Double = {
+    (x.length + y) * 0.3
+  }
+
+  def main(args: Array[String]) : Unit = {
+
+    implicit val defEc = ExecutionContext.Implicits.global
+
+    val ec1 = ExecutionContext.Implicits.global
+    val ex2 = ExecutionContextImpl.fromExecutor(2, null: Executor)
+
+    val fx5 = Future(computationA)(ec1)
+    val fy5 = Future(computationB)(ec1)
+
+    val fz5 = (for {
+      x1 <- fx5
+      y1 <- fy5
+    } yield computationC(x1, y1))(ex2)
+
+    // val fz5 = fx5.flatMap(x1 => fy5.map( y1 => computationC(x1, y1) )(defEc))(ex2)
+
+  }
+
+  def main2(args: Array[String]) : Unit = {
+    // implicit val defEc = ExecutionContext.Implicits.global
+    implicit val defEc = ExecutionContextImpl.fromExecutor(0, null: Executor)
+
+    // val ec1 = ExecutionContext.Implicits.global
+    val ec1 = ExecutionContextImpl.fromExecutor(1, null: Executor)
+    val ec2 = ExecutionContextImpl.fromExecutor(2, null: Executor)
+
+    val fx5 = Future(computationA)(ec1)
+    val fy5 = Future(computationB)(ec1)
+
+    val fz5 = (for {
+      x1 <- fx5
+      // implicit val ex = ec2;
+      // ex = ec2
+      y1 <- fy5
+    } yield computationC(x1, y1))(ec2)
+
+    // val fz5 = fx5.flatMap(x1 => fy5.map( y1 => computationC(x1, y1) )(defEc))(ex2)
+
+  }
+}
+
+object Remote {
+
+  def apply[T](f: => Future[T]) : Future[T] = {
+    val r = new Remote[T]( () => f )
+    r.future
+  }
+}
+
+class Remote[+T](f : () => Future[T]) {
+  def future: Future[T] = ???
+}
+
+// def async[T](body: => T): Future[T]
+// def await[T](future: Future[T]): T
 
 
 
