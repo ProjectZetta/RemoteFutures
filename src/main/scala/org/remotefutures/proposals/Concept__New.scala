@@ -5,9 +5,12 @@ package org.remotefutures.proposals
  */
 package org.remotefutures.proposals
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Promise, Await, ExecutionContext, Future}
 import scala.util.Try
+import scala.util.Success
+import scala.util.Failure
 import java.util.concurrent.Executor
+import scala.util.control.NonFatal
 
 abstract class ExecutionLocation
 case object EX_LOCAL extends ExecutionLocation
@@ -317,8 +320,106 @@ object RealFun {
   }
 }
 
-object Remote {
+object RealFun2 {
+  import ExecutionContext.Implicits.global
+  import scala.async.Async.{async, await}
+  import scala.concurrent.duration._
+  import scala.concurrent.duration.Duration.Inf
 
+  def slowCalcFuture: Future[Int] = Future {
+    23 + 23 + 23 + 23
+  }
+
+  def main(args: Array[String]) : Unit = {
+
+    def combined: Future[Int] = async {
+      // 02
+      await(slowCalcFuture) + await(slowCalcFuture) // 03
+    }
+    val x: Int = Await.result(combined, 10.seconds) // 05
+  }
+
+  class StateMachine extends AnyRef with (Try[Any] => Unit) with (() => Unit) {
+    // class stateMachine$macro$1 extends AnyRef with scala.util.Try[Any] => Unit with () => Unit {
+    var await$macro$3$macro$7: Int = 0;
+    var await$macro$5$macro$8: Int = 0;
+    var state: Int = 0;
+    val result: scala.concurrent.Promise[Int] = Promise.apply[Int]();
+
+    val execContext: scala.concurrent.ExecutionContextExecutor = scala.concurrent.ExecutionContext.Implicits.global;
+
+    def resume(): Unit = try {
+      state match {
+        case 0 => {
+          ();
+          val awaitable2: Future[Int]@scala.reflect.internal.annotations.uncheckedBounds = RealFun2.this.slowCalcFuture;
+          awaitable2.onComplete[Unit](this)(execContext);
+          ()
+        }
+        case 1 => {
+          val awaitable4: Future[Int]@scala.reflect.internal.annotations.uncheckedBounds = RealFun2.this.slowCalcFuture;
+          awaitable4.onComplete[Unit](this)(execContext);
+          ()
+        }
+        case 2 => {
+          result.complete(Success.apply[Int]({
+            val x$macro$6: Int = await$macro$5$macro$8;
+            await$macro$3$macro$7.+(x$macro$6)
+          }));
+          ()
+        }
+      }
+    } catch {
+      case (throwable@_) if NonFatal.apply(throwable) => {
+        result.complete(Failure.apply[Int](throwable));
+        ()
+      }
+    };
+
+    def apply(tr: scala.util.Try[Any]): Unit = state match {
+      case 0 => {
+        if (tr.isFailure) {
+          result.complete(tr.asInstanceOf[scala.util.Try[Int]]);
+          ()
+        }
+        else {
+          await$macro$3$macro$7 = tr.get.asInstanceOf[Int];
+          state = 1;
+          resume()
+        };
+        ()
+      }
+      case 1 => {
+        if (tr.isFailure) {
+          result.complete(tr.asInstanceOf[scala.util.Try[Int]]);
+          ()
+        }
+        else {
+          await$macro$5$macro$8 = tr.get.asInstanceOf[Int];
+          state = 2;
+          resume()
+        };
+        ()
+      }
+    };
+
+    def apply: Unit = resume();
+
+    val extra: Unit = ();
+  };
+
+  def foo :Unit = {
+    val stateMachine = new StateMachine();
+    Future.apply (stateMachine.apply) (stateMachine.execContext);
+    stateMachine.result.future
+  }
+
+}
+
+
+
+
+object Remote {
   def apply[T](f: => Future[T]) : Future[T] = {
     val r = new Remote[T]( () => f )
     r.future

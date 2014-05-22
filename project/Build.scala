@@ -10,7 +10,19 @@ object BuildSettings {
     scalaVersion := "2.11.1",
 
     // scalacOptions in(Compile, compile) ++= Seq("-optimize", "-feature", "-deprecation", "-unchecked", "-Xlint")
-    scalacOptions ++= Seq()
+    //scalacOptions ++= Seq()
+
+    scalacOptions ++= Seq(
+      // "-deprecation",
+      // "-feature",
+      // "-unchecked",
+      // "-Xlint",
+      // "-Xlog-reflective-calls",
+      // "-Ywarn-adapted-args",
+      // "-encoding", "UTF-8",
+      // "-target:jvm-1.6",
+      "-Ymacro-debug-lite"
+    )
   )
 }
 
