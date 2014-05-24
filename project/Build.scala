@@ -27,6 +27,7 @@ object BuildSettings {
 }
 
 object Resolvers {
+
   val sonatypeReleases = Resolver.sonatypeRepo("releases")
   val typesafeResolver = "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
   val compassResolver = "Compass Repository" at "http://repo.compass-project.org"
@@ -37,8 +38,6 @@ object Resolvers {
   val allResolvers = Seq(sonatypeReleases, typesafeResolver, compassResolver, twitterResolver, maven2Resolver, mavenCentralResolver)
 }
 
-<<<<<<< HEAD
-=======
 object Dependencies {
   // val scalaTestVersion = "2.1.0"
   val scalaTestVersion = "2.1.7"
@@ -51,50 +50,24 @@ object Dependencies {
 
   val scalaCheck = "org.scalacheck" %% "scalacheck" % scalaCheckVersion withSources() withJavadoc()
   val scalaTest = "org.scalatest" %% "scalatest" % scalaTestVersion % "test" withSources() withJavadoc()
->>>>>>> 5c3d758480b629bf82550a8463a05fd709e52247
 
-object Dependencies {
+  val config = "com.typesafe" % "config" % "1.2.0" withSources() withJavadoc()
 
-<<<<<<< HEAD
-  object Version {
-    val ScalaTest = "2.1.0"
-    val ScalaCheck = "1.11.3"
-    val HazelCast = "3.2-RC1"
-    val Akka = "2.3.1"
-    val Config = "1.2.0"
-    // for benchmark
-    val Jxl = "2.6.12"
-    val XStream = "1.4.4"
-    val Commons = "2.6"
-    val ComCol = "4.0"
-    val Json = "1.0.9"
-  }
+  val hazelcast = "com.hazelcast" % "hazelcast" % hazelVersion withSources() withJavadoc()
 
-  val scalaCheck = "org.scalacheck" %% "scalacheck" % Version.ScalaCheck withSources() withJavadoc()
-  val scalaTest = "org.scalatest" %% "scalatest" % Version.ScalaTest % "test" withSources() withJavadoc()
-  val config = "com.typesafe" % "config" % Version.Config withSources() withJavadoc()
-  val hazelcast = "com.hazelcast" % "hazelcast" % Version.HazelCast withSources() withJavadoc()
-  val akkaActor = "com.typesafe.akka" %% "akka-actor" % Version.Akka withSources() withJavadoc()
-  val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % Version.Akka withSources() withJavadoc()
-  val akkaCluster = "com.typesafe.akka" %% "akka-cluster" % Version.Akka withSources() withJavadoc()
-  val akkaRemote = "com.typesafe.akka" %% "akka-remote" % Version.Akka withSources() withJavadoc()
-  val akkaMultiNode = "com.typesafe.akka" %% "akka-multi-node-testkit" % Version.Akka withSources() withJavadoc()
-  val akkaContrib = "com.typesafe.akka" %% "akka-contrib" % Version.Akka withSources() withJavadoc()
-=======
   val akkaActor = "com.typesafe.akka" %% "akka-actor" % akkaVersion withSources() withJavadoc()
   val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % akkaVersion withSources() withJavadoc()
   val akkaCluster = "com.typesafe.akka" %% "akka-cluster" % akkaVersion withSources() withJavadoc()
   val akkaRemote = "com.typesafe.akka" %% "akka-remote" % akkaVersion withSources() withJavadoc()
   val akkaMultiNode = "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaVersion withSources() withJavadoc()
   val akkaContrib = "com.typesafe.akka" %% "akka-contrib" % akkaVersion withSources() withJavadoc()
->>>>>>> 5c3d758480b629bf82550a8463a05fd709e52247
 
   // benchmark dependencies
-  val jxl = "net.sourceforge.jexcelapi" % "jxl" % Version.Jxl withSources() withJavadoc()
-  val xstream = "com.thoughtworks.xstream" % "xstream" % Version.XStream withSources() withJavadoc()
-  val commons = "commons-lang" % "commons-lang" % Version.Commons withSources() withJavadoc()
-  val comCol = "org.apache.commons" % "commons-collections4" % Version.ComCol withSources() withJavadoc()
-  val json = "net.minidev" % "json-smart" % Version.Json withSources() withJavadoc()
+  val jxl = "net.sourceforge.jexcelapi" % "jxl" % "2.6.12" withSources() withJavadoc()
+  val xstream = "com.thoughtworks.xstream" % "xstream" % "1.4.4" withSources() withJavadoc()
+  val commons = "commons-lang" % "commons-lang" % "2.6" withSources() withJavadoc()
+  val comCol = "org.apache.commons" % "commons-collections4" % "4.0" withSources() withJavadoc()
+  val json = "net.minidev" % "json-smart" % "1.0.9" withSources() withJavadoc()
 
   lazy val benchDeps = Seq(scalaCheck, scalaTest, jxl, xstream, commons, comCol, json)
   lazy val allDeps = Seq(scalaAsync, scalaCheck, scalaTest, config, hazelcast, akkaActor, akkaTestkit, akkaCluster, akkaRemote, akkaMultiNode, akkaContrib)
