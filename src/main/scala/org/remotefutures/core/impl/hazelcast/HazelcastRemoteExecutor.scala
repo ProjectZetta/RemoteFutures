@@ -35,7 +35,8 @@ class HazelcastRemoteExecutor extends RemoteExecutor {
 
   override def finalize(): Unit = {
     super.finalize()
-    hz.shutdown()
+    //hz.shutdown()
+    Hazelcast.shutdownAll()
     executor.shutdown()
   }
 }

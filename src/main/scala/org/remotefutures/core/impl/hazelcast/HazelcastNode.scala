@@ -8,8 +8,7 @@ import com.hazelcast.core.Hazelcast
 /**
  * Creates a new default (local) instance. Starting this class n-times
  * creates n-instances running locally but listing on different ports.
- *
- * Don't ask me why there is no other way...
+ * Section 6.2 in "The book of Hazlecast"
  *
  * @author Marvin Hansen
  */
