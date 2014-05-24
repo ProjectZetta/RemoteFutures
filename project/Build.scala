@@ -6,10 +6,23 @@ object BuildSettings {
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := "org.remotefutures",
     version := "0.0.1",
-    scalaVersion := "2.10.4",
+    // scalaVersion := "2.10.4",
+    scalaVersion := "2.11.1",
 
     // scalacOptions in(Compile, compile) ++= Seq("-optimize", "-feature", "-deprecation", "-unchecked", "-Xlint")
-    scalacOptions ++= Seq()
+    //scalacOptions ++= Seq()
+
+    scalacOptions ++= Seq(
+      // "-deprecation",
+      // "-feature",
+      // "-unchecked",
+      // "-Xlint",
+      // "-Xlog-reflective-calls",
+      // "-Ywarn-adapted-args",
+      // "-encoding", "UTF-8",
+      // "-target:jvm-1.6",
+      "-Ymacro-debug-lite"
+    )
   )
 }
 
@@ -24,9 +37,25 @@ object Resolvers {
   val allResolvers = Seq(sonatypeReleases, typesafeResolver, compassResolver, twitterResolver, maven2Resolver, mavenCentralResolver)
 }
 
+<<<<<<< HEAD
+=======
+object Dependencies {
+  // val scalaTestVersion = "2.1.0"
+  val scalaTestVersion = "2.1.7"
+  val scalaCheckVersion = "1.11.3"
+  val hazelVersion = "3.2-RC1"
+  // val akkaVersion = "2.3.1"
+  val akkaVersion = "2.3.3"
+
+  val scalaAsync = "org.scala-lang.modules" %% "scala-async" % "0.9.1"
+
+  val scalaCheck = "org.scalacheck" %% "scalacheck" % scalaCheckVersion withSources() withJavadoc()
+  val scalaTest = "org.scalatest" %% "scalatest" % scalaTestVersion % "test" withSources() withJavadoc()
+>>>>>>> 5c3d758480b629bf82550a8463a05fd709e52247
 
 object Dependencies {
 
+<<<<<<< HEAD
   object Version {
     val ScalaTest = "2.1.0"
     val ScalaCheck = "1.11.3"
@@ -51,6 +80,14 @@ object Dependencies {
   val akkaRemote = "com.typesafe.akka" %% "akka-remote" % Version.Akka withSources() withJavadoc()
   val akkaMultiNode = "com.typesafe.akka" %% "akka-multi-node-testkit" % Version.Akka withSources() withJavadoc()
   val akkaContrib = "com.typesafe.akka" %% "akka-contrib" % Version.Akka withSources() withJavadoc()
+=======
+  val akkaActor = "com.typesafe.akka" %% "akka-actor" % akkaVersion withSources() withJavadoc()
+  val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % akkaVersion withSources() withJavadoc()
+  val akkaCluster = "com.typesafe.akka" %% "akka-cluster" % akkaVersion withSources() withJavadoc()
+  val akkaRemote = "com.typesafe.akka" %% "akka-remote" % akkaVersion withSources() withJavadoc()
+  val akkaMultiNode = "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaVersion withSources() withJavadoc()
+  val akkaContrib = "com.typesafe.akka" %% "akka-contrib" % akkaVersion withSources() withJavadoc()
+>>>>>>> 5c3d758480b629bf82550a8463a05fd709e52247
 
   // benchmark dependencies
   val jxl = "net.sourceforge.jexcelapi" % "jxl" % Version.Jxl withSources() withJavadoc()
@@ -60,7 +97,7 @@ object Dependencies {
   val json = "net.minidev" % "json-smart" % Version.Json withSources() withJavadoc()
 
   lazy val benchDeps = Seq(scalaCheck, scalaTest, jxl, xstream, commons, comCol, json)
-  lazy val allDeps = Seq(scalaCheck, scalaTest, config, hazelcast, akkaActor, akkaTestkit, akkaCluster, akkaRemote, akkaMultiNode, akkaContrib)
+  lazy val allDeps = Seq(scalaAsync, scalaCheck, scalaTest, config, hazelcast, akkaActor, akkaTestkit, akkaCluster, akkaRemote, akkaMultiNode, akkaContrib)
 }
 
 object MyBuild extends Build {

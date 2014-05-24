@@ -197,6 +197,7 @@ object ConceptSupplementary__ {
 
     // execute flatmap v1 => v1 * _    by strategy
     // execute map v2 => v1 *v1        locally
+    val s1a : UnlocRemoteFuture[Int] = t1.flatMap(v1 => (for ( v2 <- t2 ) yield v1*v2)(EX_LOCAL))(EX_BY_STRATEGY)
     val s1 : UnlocRemoteFuture[Int] = t1.flatMap(v1 => t2.map( v2 => v1*v2 )(EX_LOCAL))(EX_BY_STRATEGY)
 
 
@@ -223,4 +224,6 @@ object ConceptSupplementary__ {
     }
   }
 }
+
+
 
