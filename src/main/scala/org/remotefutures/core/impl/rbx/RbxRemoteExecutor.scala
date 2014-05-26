@@ -1,20 +1,22 @@
+/*
+ * Copyright (c) 2014 Marvin Hansen.
+*/
+package org.remotefutures.core.impl.rbx
 
-package org.remotefutures.core.impl.hazelcast
-
+import org.remotefutures.core.impl.{PromiseCompletingRunnable, RemoteExecutor}
 import org.remotefutures.util.Debug._
 import scala.concurrent.Promise
-import com.hazelcast.core.Hazelcast
-import org.remotefutures.core.impl.{PromiseCompletingRunnable, RemoteExecutor}
 
 
-class HazelcastRemoteExecutor extends RemoteExecutor {
+/**
+ * @author Marvin Hansen
+ */
+
+class RbxRemoteExecutor extends RemoteExecutor {
 
   // switches debugging on and off
   implicit final val DBG = true
-
-  final val hz = Hazelcast.newHazelcastInstance()
-  final val executor = hz.getExecutorService("default-executor")
-
+  final val executor = ???
 
   /**
    * Execute function {@code fnc} with its context / closure given as {@code fncContext} remotely and
@@ -26,17 +28,11 @@ class HazelcastRemoteExecutor extends RemoteExecutor {
    * @tparam T return value of function
    */
   override def execute[C, T](fnc: () => T, fncContext: C, promise: Promise[T]): Unit = {
-
     printDbg("Create new PromiseCompleting ")
     val runnable: PromiseCompletingRunnable[T] = new PromiseCompletingRunnable(fnc, promise)
-    printDbg("Sending tasks to hazelcast grid")
-    executor.execute(runnable)
-  }
 
-  override def finalize(): Unit = {
-    super.finalize()
-    //hz.shutdown()
-    Hazelcast.shutdownAll()
-    executor.shutdown()
+    printDbg("Sending tasks to executor")
+    //executor.execute(runnable)
+
   }
 }

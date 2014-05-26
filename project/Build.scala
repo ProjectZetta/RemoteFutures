@@ -45,6 +45,7 @@ object Dependencies {
   val hazelVersion = "3.2-RC1"
   // val akkaVersion = "2.3.1"
   val akkaVersion = "2.3.3"
+  val disruptorVersion = "3.2.1"
 
   val scalaAsync = "org.scala-lang.modules" %% "scala-async" % "0.9.1"
 
@@ -68,6 +69,9 @@ object Dependencies {
   val commons = "commons-lang" % "commons-lang" % "2.6" withSources() withJavadoc()
   val comCol = "org.apache.commons" % "commons-collections4" % "4.0" withSources() withJavadoc()
   val json = "net.minidev" % "json-smart" % "1.0.9" withSources() withJavadoc()
+
+  // RBX dependencies
+  libraryDependencies += "com.lmax" % "disruptor" % disruptorVersion withSources() withJavadoc()
 
   lazy val benchDeps = Seq(scalaCheck, scalaTest, jxl, xstream, commons, comCol, json)
   lazy val allDeps = Seq(scalaAsync, scalaCheck, scalaTest, config, hazelcast, akkaActor, akkaTestkit, akkaCluster, akkaRemote, akkaMultiNode, akkaContrib)

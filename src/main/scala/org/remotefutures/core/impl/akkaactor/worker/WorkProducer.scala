@@ -22,6 +22,8 @@ class WorkProducer(frontend: ActorRef) extends Actor with ActorLogging {
   var n = 0
 
   override def preStart(): Unit =
+  // waiting five whopping seconds before sending a tick???.
+  // Is there a particular reason for using this strategy?
     scheduler.scheduleOnce(5.seconds, self, Tick)
 
   // override postRestart so we don't call preStart and schedule a new Tick
