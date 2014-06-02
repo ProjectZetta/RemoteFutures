@@ -59,11 +59,9 @@ class DistributedWorkerSpec(_system: ActorSystem)
   "Distributed workers" should "perform work and publish results" in {
     val clusterAddress = Cluster(system).selfAddress
     Cluster(system).join(clusterAddress)
-    system.actorOf(ClusterSingletonManager.props(Master.props(workTimeout), "active",
-      PoisonPill, None), "master")
+    system.actorOf(ClusterSingletonManager.props(Master.props(workTimeout), "active", PoisonPill, None), "master")
 
-    val initialContacts = Set(
-      system.actorSelection(RootActorPath(clusterAddress) / "user" / "receptionist"))
+    val initialContacts = Set( system.actorSelection(RootActorPath(clusterAddress) / "user" / "receptionist") )
     val clusterClient = system.actorOf(ClusterClient.props(initialContacts), "clusterClient")
     for (n <- 1 to 3)
       system.actorOf(Worker.props(clusterClient, Props[WorkExecutor], 1.second), "worker-" + n)
