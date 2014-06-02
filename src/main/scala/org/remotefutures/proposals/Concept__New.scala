@@ -278,7 +278,7 @@ object RealFun {
     (x.length + y) * 0.3
   }
 
-  def main(args: Array[String]) : Unit = {
+  def main2(args: Array[String]) : Unit = {
 
     implicit val defEc = ExecutionContext.Implicits.global
 
@@ -297,9 +297,9 @@ object RealFun {
 
   }
 
-  def main2(args: Array[String]) : Unit = {
+  def main(args: Array[String]) : Unit = {
     // implicit val defEc = ExecutionContext.Implicits.global
-    implicit val defEc = ExecutionContextImpl.fromExecutor(0, null: Executor)
+    implicit var defEc = ExecutionContextImpl.fromExecutor(0, null: Executor)
 
     // val ec1 = ExecutionContext.Implicits.global
     val ec1 = ExecutionContextImpl.fromExecutor(1, null: Executor)
@@ -310,6 +310,8 @@ object RealFun {
 
     val fz5 = (for {
       x1 <- fx5
+      if { defEc = ec2; true }
+
       // implicit val ex = ec2;
       // ex = ec2
       y1 <- fy5
@@ -330,11 +332,21 @@ object RealFun2 {
     23 + 23 + 23 + 23
   }
 
+//  def main(args: Array[String]) : Unit = {
+//
+//    def combined: Future[Int] = async {
+//      // 02
+//      await(slowCalcFuture) + await(slowCalcFuture) // 03
+//    }
+//    val x: Int = Await.result(combined, 10.seconds) // 05
+//  }
+
   def main(args: Array[String]) : Unit = {
 
     def combined: Future[Int] = async {
-      // 02
-      await(slowCalcFuture) + await(slowCalcFuture) // 03
+      val f1 = slowCalcFuture
+      val f2 = slowCalcFuture
+      await(f1) + await(f2) // 03
     }
     val x: Int = Await.result(combined, 10.seconds) // 05
   }
