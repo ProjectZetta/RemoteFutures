@@ -1,8 +1,13 @@
 package org.remotefutures
 
 import org.scalatest.WordSpec
-import org.scalatest.matchers.MustMatchers
+import org.scalatest.MustMatchers
 
+/**
+ * Naming scheme: {TestName}MultiJvm{NodeName}
+ *
+ * http://doc.akka.io/docs/akka/snapshot/dev/multi-jvm-testing.html
+ */
 class SpecMultiJvmNode1 extends WordSpec with MustMatchers {
   println("Node 1")
   "A node" should {

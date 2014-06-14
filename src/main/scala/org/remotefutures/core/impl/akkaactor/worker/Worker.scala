@@ -20,36 +20,65 @@ object Worker {
   def props(clusterClient: ActorRef, workExecutorProps: Props, registerInterval: FiniteDuration = 10.seconds): Props =
     Props(classOf[Worker], clusterClient, workExecutorProps, registerInterval)
 
-  case class WorkComplete(result: Any)
 }
 
+/**
+ * A worker actor runs on a node (not a member of the cluster).
+ * A worker actor is in any of the "states"
+ *  - '''idle''',
+ *  - '''working''' or
+ *  - '''waitForWorkIsDoneAck'''
+ *
+ * Concrete,
+ *  - in state '''idle''' it can be
+ *    - informed (from master), that new work is available at master via [[MasterWorkerProtocol.WorkNeedsToBeDone]]
+ *      in which case it requests work from master via [[MasterWorkerProtocol.RequestForWork]]
+ *    - receive concrete new work (from master) via [[org.remotefutures.core.impl.akkaactor.worker.Work]] which is
+ *      delegated to the child actor "exec" and then switch to 'working' state.
+
+ *  - in state '''working''' it can be
+ *    - informed (from exec actor), that work execution is ready via [[WorkExecutor.WorkComplete]].
+ *      It then informs master via [[MasterWorkerProtocol.WorkSuccess]] and changes to __waitForWorkIsDoneAck__ state.
+ *
+ *  - in state '''waitForWorkIsDoneAck''' it
+ *     - waits for acknowledgement from master via [[MasterWorkerProtocol.WorkStatusAck]] in which case
+ *       the worker request new work [[MasterWorkerProtocol.RequestForWork]] and becomes idle
+ *
+ * @param clusterClient
+ * @param workExecutorProps
+ * @param registerInterval
+ */
 class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval: FiniteDuration)
   extends Actor with ActorLogging {
-  import Worker._
   import MasterWorkerProtocol._
 
   val workerId = UUID.randomUUID().toString
 
   import context.dispatcher
+
+  // At a regular interval, worker registers at master (via clusterClient ! SendToAll)
   val registerTask = context.system.scheduler.schedule(0.seconds, registerInterval, clusterClient,
     SendToAll("/user/master/active", RegisterWorker(workerId)))
 
-  // I guess that is the actual worker executing the job/task
+  // Create an child actor "exec", which
+  // - performs the real work
+  // - is watched (by this actor): The worker actor will receive a Terminated(subject) message when watched actor is terminated.
   val workExecutor = context.watch(context.actorOf(workExecutorProps, "exec"))
 
   var currentWorkId: Option[String] = None
+
   def workId: String = currentWorkId match {
     case Some(workId) => workId
     case None         => throw new IllegalStateException("Not working")
   }
 
-  // what is OneForOneStrategy?
-  // Ok, have read the Akka manual, its clear now.
+  // handle errors according to strategy
   override def supervisorStrategy = OneForOneStrategy() {
+    // partial function [Throwable => Directive] (see SupervisorStrategy.Decider)
     case _: ActorInitializationException => Stop
     case _: DeathPactException           => Stop
     case _: Exception =>
-      currentWorkId foreach { workId => sendToMaster(WorkFailed(workerId, workId)) }
+      currentWorkId foreach { workId => sendToMaster(WorkFailure(workerId, workId)) }
       context.become(idle)
       Restart
   }
@@ -59,50 +88,59 @@ class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval
   def receive = idle
 
   def idle: Receive = {
-    case WorkIsReady =>
-      sendToMaster(WorkerRequestsWork(workerId))
+    case WorkNeedsToBeDone =>
+      sendToMaster(RequestForWork(workerId))
 
     case Work(workId, job) =>
       log.debug("Got work: {}", job)
       currentWorkId = Some(workId)
-      // Marvin: While sending work for execution,
-      // how do you link the result back to the actual callback?
-      // Is it done implicitly through actor reference?
-      // Just asking for clarification.
+      // Marvin: While sending work for execution, how do you link the result back to the actual callback?
+      // Is it done implicitly through actor reference? Just asking for clarification.
+
+      // 1. delegate work to "exec" actor
+      // 2. switch context ( see partial function PartialFunction[Any, Unit] "working" below ):
+      // --> This actor (worker) will receive Worker.WorkComplete( result ) from "exec" actor. (
       workExecutor ! job
       context.become(working)
   }
 
   def working: Receive = {
-    case WorkComplete(result) =>
+    // work is completed on "workExecutor" actor
+    case WorkExecutor.WorkComplete(result) =>
       log.debug("Work is complete. Result {}.", result)
-      sendToMaster(WorkIsDone(workerId, workId, result))
+      sendToMaster(WorkSuccess(workerId, workId, result))
       context.setReceiveTimeout(5.seconds)
-      context.become(waitForWorkIsDoneAck(result))
+      context.become(waitForWorkStatusAck(result))
 
-    //Marvin: is queing an option or a bad idea in this case?
+    // Marvin: is queing an option or a bad idea in this case?
+    // Martin: Which actor is queueing ? A worker pulls for work. (see waitForWorkIsDoneAck)
     case _: Work =>
       log.info("Yikes. Master told me to do work, while I'm working.")
   }
 
-  // Marvin:
-  // Am i getting it right, that once the result s back from
-  // the executor, it's forwarded to the master.
+  // Marvin: Am i getting it right, that once the result s back from
+  // the exec actor, it's forwarded to the master.
   // Ack ID & workID is matching result to job
   // thus it answers the question asked above...
-  def waitForWorkIsDoneAck(result: Any): Receive = {
-    case Ack(id) if id == workId =>
-      sendToMaster(WorkerRequestsWork(workerId))
+  // Martin: Nearly
+  //   1.a)  MasterWorkerProtocol.WorkSuccess is sent to master (see working(...) )
+  //         MasterWorkerProtocol.WorkFailure is sent to master in case of an exception (see supervisorStrategy()
+  //     b)  Master actor acknowledges with MasterWorkerProtocol.WorkStatusAck (see below )
+  //   2. MasterWorkerProtocol.RequestForWork is sent to master (see below) to request more work
+
+  def waitForWorkStatusAck(result: Any): Receive = {
+    case WorkStatusAck(id) if id == workId =>
+      sendToMaster(RequestForWork(workerId))
       context.setReceiveTimeout(Duration.Undefined)
       context.become(idle)
     case ReceiveTimeout =>
       log.info("No ack from master, retrying")
-      sendToMaster(WorkIsDone(workerId, workId, result))
+      sendToMaster(WorkSuccess(workerId, workId, result))
   }
 
   override def unhandled(message: Any): Unit = message match {
     case Terminated(`workExecutor`) => context.stop(self)
-    case WorkIsReady                =>
+    case WorkNeedsToBeDone          =>
     case _                          => super.unhandled(message)
   }
 

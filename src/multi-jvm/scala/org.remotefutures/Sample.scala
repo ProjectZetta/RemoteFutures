@@ -8,7 +8,7 @@ object SampleMultiJvmNode1 {
 
 object SampleMultiJvmNode2 {
   def main(args: Array[String]) {
-    println("Hello from node 2")
+    println("Hello from node ss2")
   }
 }
 
