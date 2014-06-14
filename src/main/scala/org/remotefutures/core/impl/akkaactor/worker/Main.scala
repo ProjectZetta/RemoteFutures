@@ -29,6 +29,13 @@ trait Startup {
   def systemName = "Workers"
   def workTimeout = 10.seconds
 
+
+  /**
+   *
+   * @param joinAddressOption
+   * @param role
+   * @return
+   */
   def startBackend(joinAddressOption: Option[Address], role: String): Address = {
     val conf = ConfigFactory.parseString(s"akka.cluster.roles=[$role]").
       withFallback(ConfigFactory.load())
@@ -40,13 +47,25 @@ trait Startup {
     joinAddress
   }
 
+
+  /**
+   * Setup worker node. This node is not member of the cluster.
+   * Create a special actor "ClusterClient" on this node.
+   * This cluster client communicates with a receptionist.
+   *
+   * @see http://doc.akka.io/docs/akka/2.3.3/contrib/cluster-client.html
+   *
+   * @param contactAddress
+   */
   def startWorker(contactAddress: akka.actor.Address): Unit = {
     val system = ActorSystem(systemName)
-    val initialContacts = Set(
-      system.actorSelection(RootActorPath(contactAddress) / "user" / "receptionist"))
+    val initialContacts = Set(system.actorSelection(RootActorPath(contactAddress) / "user" / "receptionist"))
     val clusterClient = system.actorOf(ClusterClient.props(initialContacts), "clusterClient")
+
+    // create the worker actor
     system.actorOf(Worker.props(clusterClient, Props[WorkExecutor]), "worker")
   }
+
 
   def startFrontend(joinAddress: akka.actor.Address): Unit = {
     val system = ActorSystem(systemName)

@@ -52,12 +52,14 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
         workers += (workerId -> workers(workerId).copy(ref = sender))
       } else {
         log.debug("Worker registered: {}", workerId)
-        workers += (workerId -> WorkerState(sender, status = Idle))
-        if (pendingWork.nonEmpty)
-          sender ! WorkIsReady
+        val worker = sender
+        workers += (workerId -> WorkerState(worker, status = Idle))
+        if (pendingWork.nonEmpty) {
+          worker ! WorkNeedsToBeDone
+        }
       }
 
-    case WorkerRequestsWork(workerId) =>
+    case RequestForWork(workerId) =>
       if (pendingWork.nonEmpty) {
         workers.get(workerId) match {
           case Some(s @ WorkerState(_, Idle)) =>
@@ -72,22 +74,22 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
         }
       }
 
-    case WorkIsDone(workerId, workId, result) =>
+    case WorkSuccess(workerId, workId, result) =>
       workers.get(workerId) match {
         case Some(s @ WorkerState(_, Busy(work, _))) if work.workId == workId =>
           log.debug("Work is done: {} => {} by worker {}", work, result, workerId)
           // TODO store in Eventsourced
           workers += (workerId -> s.copy(status = Idle))
           mediator ! DistributedPubSubMediator.Publish(ResultsTopic, WorkResult(workId, result))
-          sender ! MasterWorkerProtocol.Ack(workId)
+          sender ! MasterWorkerProtocol.WorkStatusAck(workId)
         case _ =>
           if (workIds.contains(workId)) {
             // previous Ack was lost, confirm again that this is done
-            sender ! MasterWorkerProtocol.Ack(workId)
+            sender ! MasterWorkerProtocol.WorkStatusAck(workId)
           }
       }
 
-    case WorkFailed(workerId, workId) =>
+    case WorkFailure(workerId, workId) =>
       workers.get(workerId) match {
         case Some(s @ WorkerState(_, Busy(work, _))) if work.workId == workId =>
           log.info("Work failed: {}", work)
@@ -127,7 +129,7 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
     if (pendingWork.nonEmpty) {
       // could pick a few random instead of all
       workers.foreach {
-        case (_, WorkerState(ref, Idle)) => ref ! WorkIsReady
+        case (_, WorkerState(ref, Idle)) => ref ! WorkNeedsToBeDone
         case _                           => // busy
       }
     }

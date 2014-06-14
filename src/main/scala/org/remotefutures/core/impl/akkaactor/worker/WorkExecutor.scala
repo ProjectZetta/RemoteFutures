@@ -2,6 +2,10 @@ package org.remotefutures.core.impl.akkaactor.worker
 
 import akka.actor.Actor
 
+object WorkExecutor {
+  case class WorkComplete(result: Any)
+}
+
 // I don't get this one...
 // Presumably, this is a proof of concept for an executor.
 // I assume an actor for generic code execution,
@@ -24,6 +28,6 @@ class WorkExecutor extends Actor {
     case n: Int =>
       val n2 = n * n
       val result = s"$n * $n = $n2"
-      sender ! Worker.WorkComplete(result)
+      sender ! WorkExecutor.WorkComplete(result)
   }
 }
