@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014 Martin Senne, Marvin Hansen.
  */
-package org.remotefutures.core.impl.akkaactor
+package org.remotefutures.core.impl.akka.simple
 
 import _root_.akka.actor.ActorRef
 import org.remotefutures.core.{RemoteExecutionContext, Settings}

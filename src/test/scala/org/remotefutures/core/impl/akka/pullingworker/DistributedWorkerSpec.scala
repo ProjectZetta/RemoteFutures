@@ -1,4 +1,4 @@
-package org.remotefutures.core.impl.akkaactor.worker
+package org.remotefutures.core.impl.akka.pullingworker
 
 import scala.concurrent.duration._
 import org.scalatest.{ BeforeAndAfterAll, FlatSpecLike, Matchers }

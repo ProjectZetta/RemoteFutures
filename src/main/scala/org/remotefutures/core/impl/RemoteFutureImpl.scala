@@ -16,22 +16,22 @@ object RemoteFutureImpl {
    * --Paul Phillips
    *
    * @param body Code to execute
-   * @param res: RemoteExecutionContext
+   * @param rec: RemoteExecutionContext
    * @tparam T type oif the code to execute
    * @return  Result of the remote computation.
    *
    */
-  def apply[T](body: => T)(implicit res: RemoteExecutionContext): Future[T] = {
+  def apply[T](body: => T)(implicit rec: RemoteExecutionContext): Future[T] = {
     val p = Promise[T]()
-    res.execute(() => body, null, p)
+    rec.execute(() => body, null, p)
     p.future
   }
 
 
-  private def createRunnable[T](body: => T): PromiseBackedRunnable[T] = {
-    val promise = Promise[T]
-    new PromiseCompletingRunnable(() => body, promise)
-  }
+//  private def createRunnable[T](body: => T): PromiseBackedRunnable[T] = {
+//    val promise = Promise[T]
+//    new PromiseCompletingRunnable(() => body, promise)
+//  }
 
 
   override def finalize(): Unit = {

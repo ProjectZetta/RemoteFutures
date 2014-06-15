@@ -1,4 +1,4 @@
-package org.remotefutures.core.impl.akkaactor.worker
+package org.remotefutures.core.impl.akka.pullingworker
 
 case class Work(workId: String, job: Any)
 

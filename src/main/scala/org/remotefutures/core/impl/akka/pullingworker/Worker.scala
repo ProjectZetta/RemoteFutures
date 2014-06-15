@@ -1,4 +1,4 @@
-package org.remotefutures.core.impl.akkaactor.worker
+package org.remotefutures.core.impl.akka.pullingworker
 
 import java.util.UUID
 import scala.concurrent.duration._
@@ -33,7 +33,7 @@ object Worker {
  *  - in state '''idle''' it can be
  *    - informed (from master), that new work is available at master via [[MasterWorkerProtocol.WorkNeedsToBeDone]]
  *      in which case it requests work from master via [[MasterWorkerProtocol.RequestForWork]]
- *    - receive concrete new work (from master) via [[org.remotefutures.core.impl.akkaactor.worker.Work]] which is
+ *    - receive concrete new work (from master) via [[org.remotefutures.core.impl.akka.pullingworker.Work]] which is
  *      delegated to the child actor "exec" and then switch to 'working' state.
 
  *  - in state '''working''' it can be

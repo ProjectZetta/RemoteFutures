@@ -1,4 +1,4 @@
-package org.remotefutures.core.impl.akkaactor.worker
+package org.remotefutures.core.impl.akka.pullingworker
 
 object MainManyMasters extends Startup {
 
