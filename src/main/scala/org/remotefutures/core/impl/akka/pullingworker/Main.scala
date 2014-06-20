@@ -79,7 +79,7 @@ trait Startup {
       val system = ActorSystem(systemName)
       Cluster(system).join(joinAddress)
       val frontend = system.actorOf(Props[Frontend], "frontend")
-      system.actorOf(Props(classOf[WorkProducerNew], frontend), "producer")
-      system.actorOf(Props[WorkConsumerNew], "consumer")
+      system.actorOf(Props(classOf[WorkProducer], frontend), "producer")
+      system.actorOf(Props[WorkConsumer], "consumer")
     }
 }

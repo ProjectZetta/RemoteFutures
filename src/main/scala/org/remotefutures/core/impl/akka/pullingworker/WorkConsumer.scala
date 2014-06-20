@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging}
 import akka.contrib.pattern.{DistributedPubSubExtension, DistributedPubSubMediator}
 import org.remotefutures.core.impl.akka.pullingworker.{Master, WorkResult}
 
-class WorkConsumerNew extends Actor with ActorLogging {
+class WorkConsumer extends Actor with ActorLogging {
 
   val mediator = DistributedPubSubExtension(context.system).mediator
   mediator ! DistributedPubSubMediator.Subscribe(Master.ResultsTopic, self)
