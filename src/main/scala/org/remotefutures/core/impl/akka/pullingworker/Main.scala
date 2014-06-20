@@ -67,11 +67,19 @@ trait Startup {
   }
 
 
-  def startFrontend(joinAddress: akka.actor.Address): Unit = {
-    val system = ActorSystem(systemName)
-    Cluster(system).join(joinAddress)
-    val frontend = system.actorOf(Props[Frontend], "frontend")
-    system.actorOf(Props(classOf[WorkProducer], frontend), "producer")
-    system.actorOf(Props[WorkResultConsumer], "consumer")
-  }
+//  def startFrontend(joinAddress: akka.actor.Address): Unit = {
+//    val system = ActorSystem(systemName)
+//    Cluster(system).join(joinAddress)
+//    val frontend = system.actorOf(Props[Frontend], "frontend")
+//    system.actorOf(Props(classOf[WorkProducer], frontend), "producer")
+//    system.actorOf(Props[WorkResultConsumer], "consumer")
+//  }
+
+    def startFrontend(joinAddress: akka.actor.Address): Unit = {
+      val system = ActorSystem(systemName)
+      Cluster(system).join(joinAddress)
+      val frontend = system.actorOf(Props[Frontend], "frontend")
+      system.actorOf(Props(classOf[WorkProducerNew], frontend), "producer")
+      system.actorOf(Props[WorkConsumerNew], "consumer")
+    }
 }

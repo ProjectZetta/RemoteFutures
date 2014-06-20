@@ -1,4 +1,4 @@
-package org.remotefutures.core.impl.akka.pullingworker.old
+package org.remotefutures.core.impl.akka.pullingworker
 
 import java.util.UUID
 
@@ -8,13 +8,13 @@ import org.remotefutures.core.impl.akka.pullingworker.{Frontend, Work}
 import scala.concurrent.duration._
 import scala.concurrent.forkjoin.ThreadLocalRandom
 
-object WorkProducer {
+object WorkProducerNew {
   case object Tick
 }
 
-class WorkProducer(frontend: ActorRef) extends Actor with ActorLogging {
+class WorkProducerNew(frontend: ActorRef) extends Actor with ActorLogging {
   import context.dispatcher
-  import org.remotefutures.core.impl.akka.pullingworker.old.WorkProducer._
+  import org.remotefutures.core.impl.akka.pullingworker.WorkProducerNew._
 
   def scheduler = context.system.scheduler
   def rnd = ThreadLocalRandom.current
@@ -22,10 +22,10 @@ class WorkProducer(frontend: ActorRef) extends Actor with ActorLogging {
 
   var n = 0
 
-  override def preStart(): Unit =
-  // waiting five whopping seconds before sending a tick???.
-  // Is there a particular reason for using this strategy?
-    scheduler.scheduleOnce(5.seconds, self, Tick)
+//  override def preStart(): Unit =
+//  // waiting five whopping seconds before sending a tick???.
+//  // Is there a particular reason for using this strategy?
+//    scheduler.scheduleOnce(5.seconds, self, Tick)
 
   // override postRestart so we don't call preStart and schedule a new Tick
   override def postRestart(reason: Throwable): Unit = ()

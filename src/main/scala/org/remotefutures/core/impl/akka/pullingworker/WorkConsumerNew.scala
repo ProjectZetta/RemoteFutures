@@ -1,4 +1,4 @@
-package org.remotefutures.core.impl.akka.pullingworker.old
+package org.remotefutures.core.impl.akka.pullingworker
 
 import akka.actor.{Actor, ActorLogging}
 import akka.contrib.pattern.{DistributedPubSubExtension, DistributedPubSubMediator}
