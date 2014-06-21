@@ -14,7 +14,6 @@ object Frontend {
 }
 
 class Frontend extends Actor {
-  import Frontend._
   import context.dispatcher
 
   val mediator = DistributedPubSubExtension(context.system).mediator
@@ -23,8 +22,8 @@ class Frontend extends Actor {
     case work =>
       implicit val timeout = Timeout(5.seconds)
       (mediator ? Send("/user/master/active", work, localAffinity = false)) map {
-        case Master.Ack(_) => Ok
-      } recover { case _ => NotOk } pipeTo sender
+        case Master.Ack(_) => Frontend.Ok
+      } recover { case _ => Frontend.NotOk } pipeTo sender
 
 //      val f: Future[Any] = mediator ? Send("/user/master/active", work, localAffinity = false)
 //      val f2: Future[Ok.type] = f map { case Master.Ack(_) => Ok }

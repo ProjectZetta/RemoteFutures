@@ -36,7 +36,7 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
 
   mediator ! Put(self)
 
-  private var workers = Map[String, WorkerState]()
+  private var workerStates = Map[String, WorkerState]()
   private var pendingWork = Queue[Work]()
   private var workIds = Set[String]()
 
@@ -48,12 +48,12 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
 
   def receive = {
     case RegisterWorker(workerId) =>
-      if (workers.contains(workerId)) {
-        workers += (workerId -> workers(workerId).copy(ref = sender))
+      if (workerStates.contains(workerId)) {
+        workerStates += (workerId -> workerStates(workerId).copy(ref = sender))
       } else {
         log.debug("Worker registered: {}", workerId)
         val worker = sender
-        workers += (workerId -> WorkerState(worker, status = Idle))
+        workerStates += (workerId -> WorkerState(worker, status = Idle))
         if (pendingWork.nonEmpty) {
           worker ! WorkNeedsToBeDone
         }
@@ -61,25 +61,25 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
 
     case RequestForWork(workerId) =>
       if (pendingWork.nonEmpty) {
-        workers.get(workerId) match {
+        workerStates.get(workerId) match {
           case Some(s @ WorkerState(_, Idle)) =>
             val (work, rest) = pendingWork.dequeue
             pendingWork = rest
             log.debug("Giving worker {} some work {}", workerId, work.job)
             // TODO store in Eventsourced
             sender ! work
-            workers += (workerId -> s.copy(status = Busy(work, Deadline.now + workTimeout)))
+            workerStates += (workerId -> s.copy(status = Busy(work, Deadline.now + workTimeout)))
           case _ =>
 
         }
       }
 
     case WorkSuccess(workerId, workId, result) =>
-      workers.get(workerId) match {
+      workerStates.get(workerId) match {
         case Some(s @ WorkerState(_, Busy(work, _))) if work.workId == workId =>
           log.debug("Work is done: {} => {} by worker {}", work, result, workerId)
           // TODO store in Eventsourced
-          workers += (workerId -> s.copy(status = Idle))
+          workerStates += (workerId -> s.copy(status = Idle))
           mediator ! DistributedPubSubMediator.Publish(ResultsTopic, WorkResult(workId, result))
           sender ! MasterWorkerProtocol.WorkStatusAck(workId)
         case _ =>
@@ -90,11 +90,11 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
       }
 
     case WorkFailure(workerId, workId) =>
-      workers.get(workerId) match {
+      workerStates.get(workerId) match {
         case Some(s @ WorkerState(_, Busy(work, _))) if work.workId == workId =>
           log.info("Work failed: {}", work)
           // TODO store in Eventsourced
-          workers += (workerId -> s.copy(status = Idle))
+          workerStates += (workerId -> s.copy(status = Idle))
           pendingWork = pendingWork enqueue work
           notifyWorkers()
         case _ =>
@@ -114,11 +114,11 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
       }
 
     case CleanupTick =>
-      for ((workerId, s @ WorkerState(_, Busy(work, timeout))) <- workers) {
+      for ((workerId, s @ WorkerState(_, Busy(work, timeout))) <- workerStates) {
         if (timeout.isOverdue) {
           log.info("Work timed out: {}", work)
           // TODO store in Eventsourced
-          workers -= workerId
+          workerStates -= workerId
           pendingWork = pendingWork enqueue work
           notifyWorkers()
         }
@@ -128,7 +128,7 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
   def notifyWorkers(): Unit =
     if (pendingWork.nonEmpty) {
       // could pick a few random instead of all
-      workers.foreach {
+      workerStates.foreach {
         case (_, WorkerState(ref, Idle)) => ref ! WorkNeedsToBeDone
         case _                           => // busy
       }
