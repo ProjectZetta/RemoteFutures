@@ -62,14 +62,26 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
 
     implicit val timeout = Timeout(5 seconds)
 
-    val remoteProducerActor = frontendSetup.system.actorOf(
-      Props(classOf[RemoteProducerActor], frontendSetup.mediator, promise))
+    val msg = Execute( () => body )
+    val possibleResult: Future[T] = (frontendSetup.remoteProducerActor ? msg).asInstanceOf[Future[T]]
 
-    println("Sending execute to actor " + remoteProducerActor)
-    remoteProducerActor ! Execute( () => body )
+    // complete the promise
+    possibleResult.onComplete {
+      case x ⇒ {
+        promise.complete(x)
+      }
+    }
 
 
-    // old =====================================================
+    // old 3 =====================================================
+//    val remoteProducerActor = frontendSetup.system.actorOf(
+//      Props(classOf[RemoteProducerActor], frontendSetup.mediator, promise))
+//
+//    println("Sending execute to actor " + remoteProducerActor)
+//    remoteProducerActor ! Execute( () => body )
+
+
+    // old 2 =====================================================
 //    val work = Work(nextWorkId(), 1)
 //    val r: Future[Any] = frontEnd.mediator ? Send("/user/master/active", work, localAffinity = false)
 //
@@ -80,8 +92,7 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
 //    }
 
 
-
-    // very old =====================================================
+    // old 1 (very old )=====================================================
     // val result: Future[Try[T]] = (service ? Execute( () ⇒ body )).asInstanceOf[Future[Try[T]]]
 
 
@@ -145,6 +156,7 @@ class FrontendSetup(joinAddress: akka.actor.Address, systemName: String) {
   val system = ActorSystem(systemName)
   Cluster(system).join(joinAddress)
   val mediator = DistributedPubSubExtension(system).mediator
+  val remoteProducerActor = system.actorOf( Props(classOf[RemoteProducerActor2], mediator))
 
   //  val frontend = actorSystem.actorOf(Props[Frontend], "frontend")
   //  actorSystem.actorOf(Props(classOf[WorkProducer], frontend), "producer")
@@ -156,13 +168,16 @@ class FrontendSetup(joinAddress: akka.actor.Address, systemName: String) {
  * @param mediatorToMaster
  * @param promise
  */
-class RemoteProducerActor(mediatorToMaster: ActorRef, promise: Promise[Any]) extends Actor with ActorLogging {
+class RemoteProducerActor2(mediatorToMaster: ActorRef, promise: Promise[Any]) extends Actor with ActorLogging {
   import org.remotefutures.core.impl.akka.pullingworker.PullingWorkerRemoteExecutionContext.Execute
 
   // register this actor to listen to result topic messages
   mediatorToMaster ! DistributedPubSubMediator.Subscribe(Master.ResultsTopic, self)
 
+  // private var workerStates = Map[String, Promise[T]]()
+
   def scheduler = context.system.scheduler
+
   def rnd = ThreadLocalRandom.current
   def nextWorkId(): String = UUID.randomUUID().toString
 
@@ -179,9 +194,9 @@ class RemoteProducerActor(mediatorToMaster: ActorRef, promise: Promise[Any]) ext
       log.info("Remote producer actor got Execute.")
       val work = Work(nextWorkId(), rnd.nextInt()) // TODO: this is intermediate and needs to be adapted to Work( ..., body )
       mediatorToMaster ! Send("/user/master/active", work, localAffinity = false)
-//      (mediatorForMaster ? Send("/user/master/active", work, localAffinity = false)) map {
-//        case Master.Ack(_) => Frontend.Ok
-//      } recover { case _ => Frontend.NotOk } pipeTo sender
+      //      (mediatorForMaster ? Send("/user/master/active", work, localAffinity = false)) map {
+      //        case Master.Ack(_) => Frontend.Ok
+      //      } recover { case _ => Frontend.NotOk } pipeTo sender
       context.become(waitForMasterAck(work), discardOld = false)
     }
     case _: DistributedPubSubMediator.SubscribeAck => {
@@ -192,7 +207,7 @@ class RemoteProducerActor(mediatorToMaster: ActorRef, promise: Promise[Any]) ext
   def waitForMasterAck(work: Work): Actor.Receive = {
     case Master.Ack =>
       context.become(waitForWorkResult, discardOld = false)
-      // TODO: Error handling ( see FrontEnd.NotOk )
+    // TODO: Error handling ( see FrontEnd.NotOk )
     case WorkResult(workId, result) =>
       log.info("Whoops. Received result before Master.Ack. Still consuming result: {}", result)
       promise.success(result)
@@ -212,6 +227,76 @@ class RemoteProducerActor(mediatorToMaster: ActorRef, promise: Promise[Any]) ext
   }
 }
 
+
+
+
+// old 3 =====================================================
+
+
+///**
+// *
+// * @param mediatorToMaster
+// * @param promise
+// */
+//class RemoteProducerActor(mediatorToMaster: ActorRef, promise: Promise[Any]) extends Actor with ActorLogging {
+//  import org.remotefutures.core.impl.akka.pullingworker.PullingWorkerRemoteExecutionContext.Execute
+//
+//  // register this actor to listen to result topic messages
+//  mediatorToMaster ! DistributedPubSubMediator.Subscribe(Master.ResultsTopic, self)
+//
+//  private var workerStates = Map[String, Promise[T]]()
+//
+//  def scheduler = context.system.scheduler
+//
+//  def rnd = ThreadLocalRandom.current
+//  def nextWorkId(): String = UUID.randomUUID().toString
+//
+//  //  override def preStart(): Unit =
+//  //  // waiting five whopping seconds before sending a tick???.
+//  //  // Is there a particular reason for using this strategy?
+//  //    scheduler.scheduleOnce(5.seconds, self, Tick)
+//
+//  // override postRestart so we don't call preStart and schedule a new Tick
+//  override def postRestart(reason: Throwable): Unit = ()
+//
+//  def receive = {
+//    case Execute(body) => {
+//      log.info("Remote producer actor got Execute.")
+//      val work = Work(nextWorkId(), rnd.nextInt()) // TODO: this is intermediate and needs to be adapted to Work( ..., body )
+//      mediatorToMaster ! Send("/user/master/active", work, localAffinity = false)
+////      (mediatorForMaster ? Send("/user/master/active", work, localAffinity = false)) map {
+////        case Master.Ack(_) => Frontend.Ok
+////      } recover { case _ => Frontend.NotOk } pipeTo sender
+//      context.become(waitForMasterAck(work), discardOld = false)
+//    }
+//    case _: DistributedPubSubMediator.SubscribeAck => {
+//      log.info("SubscribeAck for actor " + self)
+//    }
+//  }
+//
+//  def waitForMasterAck(work: Work): Actor.Receive = {
+//    case Master.Ack =>
+//      context.become(waitForWorkResult, discardOld = false)
+//      // TODO: Error handling ( see FrontEnd.NotOk )
+//    case WorkResult(workId, result) =>
+//      log.info("Whoops. Received result before Master.Ack. Still consuming result: {}", result)
+//      promise.success(result)
+//      log.info("Stopping remote producer actor " + self)
+//      // 1) context.stop(self)
+//      context.become(waitForWorkResult, discardOld = false)
+//  }
+//
+//  def waitForWorkResult: Actor.Receive = {
+//    case Master.Ack =>
+//      log.info("And Whoops. Received master ack after work result.")
+//    case WorkResult(workId, result) =>
+//      log.info("Consuming result: {}", result)
+//      promise.success(result)
+//      log.info("Stopping remote producer actor " + self)
+//      context.stop(self)
+//  }
+//}
+//
 
 
 

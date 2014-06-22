@@ -23,6 +23,7 @@ object Master {
   private sealed trait WorkerStatus
   private case object Idle extends WorkerStatus
   private case class Busy(work: Work, deadline: Deadline) extends WorkerStatus
+
   private case class WorkerState(ref: ActorRef, status: WorkerStatus)
  
   private case object CleanupTick
