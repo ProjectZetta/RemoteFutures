@@ -39,14 +39,14 @@ object Dependencies {
   val scalaTestVersion = "2.2.0"
   val scalaCheckVersion = "1.11.4"
   val akkaVersion = "2.3.3"
-  val tsConfigVersion = "1.2.1"
   val disruptorVersion = "3.2.1"
 
   val scalaAsync = "org.scala-lang.modules" %% "scala-async" % "0.9.1"
 
   val scalaCheck = "org.scalacheck" %% "scalacheck" % scalaCheckVersion withSources() withJavadoc()
   val scalaTest = "org.scalatest" %% "scalatest" % scalaTestVersion % "test" withSources() withJavadoc()
-  val config = "com.typesafe" %% "config" % tsConfigVersion withSources() withJavadoc()
+
+  val config = "com.typesafe" % "config" % "1.2.0" withSources() withJavadoc()
 
   val akkaActor = "com.typesafe.akka" %% "akka-actor" % akkaVersion withSources() withJavadoc()
   val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % akkaVersion withSources() withJavadoc()
