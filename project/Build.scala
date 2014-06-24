@@ -66,10 +66,10 @@ object Dependencies {
   libraryDependencies += "com.lmax" % "disruptor" % disruptorVersion withSources() withJavadoc()
 
   // Akka Streams a.k.a reactive streams
-  val rxstreams = "com.typesafe.akka" % "akka-stream-experimental_2.11" % "0.3"
+  // val rxstreams = "com.typesafe.akka" % "akka-stream-experimental_2.11" % "0.3"
 
   lazy val benchDeps = Seq(scalaCheck, scalaTest, jxl, xstream, commons, comCol, json)
-  lazy val allDeps = Seq(scalaAsync, scalaCheck, scalaTest, config, akkaActor, akkaTestkit, akkaCluster, akkaRemote, akkaMultiNode, akkaContrib, rxstreams)
+  lazy val allDeps = Seq(scalaAsync, scalaCheck, scalaTest, config, akkaActor, akkaTestkit, akkaCluster, akkaRemote, akkaMultiNode, akkaContrib)
 }
 
 object MyBuild extends Build {
