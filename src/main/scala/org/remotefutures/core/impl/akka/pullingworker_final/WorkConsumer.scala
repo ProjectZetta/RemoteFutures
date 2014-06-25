@@ -2,7 +2,6 @@ package org.remotefutures.core.impl.akka.pullingworker_final
 
 import akka.actor.{Actor, ActorLogging}
 import akka.contrib.pattern.{DistributedPubSubExtension, DistributedPubSubMediator}
-import org.remotefutures.core.impl.akka.pullingworker.{Master, WorkResult}
 
 class WorkConsumer extends Actor with ActorLogging {
 

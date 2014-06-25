@@ -9,7 +9,6 @@ import akka.actor._
 import akka.cluster.Cluster
 import akka.contrib.pattern.{DistributedPubSubMediator, DistributedPubSubExtension}
 import akka.contrib.pattern.DistributedPubSubMediator.Send
-import org.remotefutures.core.impl.akka.pullingworker.PullingWorkerRemoteExecutionContext.Execute
 import org.remotefutures.core.{RemoteExecutionContext, Settings}
 import scala.concurrent.forkjoin.ThreadLocalRandom
 import scala.concurrent.{Future, Promise}
@@ -30,6 +29,8 @@ object PullingWorkerRemoteExecutionContext {
 class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwable => Unit)
   extends RemoteExecutionContext
   with Startup {
+
+  import PullingWorkerRemoteExecutionContext.Execute
 
   // =====================================================
   // this is the code to setup other nodes

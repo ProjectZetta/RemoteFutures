@@ -3,7 +3,6 @@ package org.remotefutures.core.impl.akka.pullingworker
 import java.util.UUID
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import org.remotefutures.core.impl.akka.pullingworker.{Frontend, Work}
 
 import scala.concurrent.duration._
 import scala.concurrent.forkjoin.ThreadLocalRandom

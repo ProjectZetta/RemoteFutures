@@ -33,13 +33,23 @@ object Master {
 // TODO: modify master, such that
 //   - it does not send results via
 //     mediator ! DistributedPubSubMediator.Publish(ResultsTopic, WorkResult(workId, result))
+//     but instead keeps the actor, which "raised" the unit of work (Work sender)
 
 
+/**
+ * See the sources
+ *   - [[http://letitcrash.com/post/29044669086/balancing-workload-across-nodes-with-akka-2]]
+ *   - Activator template (Patrik Nordwall)
+ *
+ * @param workTimeout
+ */
 class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
   import Master._
   import MasterWorkerProtocol._
   val mediator = DistributedPubSubExtension(context.system).mediator
 
+  // in order allow node transparent communication as to allow messages from client, frontend (via Send)
+  // mediator Send <-> mediator Put work hand in hand
   mediator ! Put(self)
 
   private var workerStates = Map[String, WorkerState]()
@@ -47,12 +57,26 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
   private var workIds = Set[String]()
 
   import context.dispatcher
-  val cleanupTask = context.system.scheduler.schedule(workTimeout / 2, workTimeout / 2,
-    self, CleanupTick)
+  val cleanupTask = context.system.scheduler.schedule(workTimeout / 2, workTimeout / 2, self, CleanupTick)
 
   override def postStop(): Unit = cleanupTask.cancel()
 
   def receive = {
+    // from frontend, client, whatever.......
+    case work: Work =>
+      // idempotent
+      if (workIds.contains(work.workId)) {
+        sender ! Master.Ack(work.workId)
+      } else {
+        log.debug("Accepted work: {}", work)
+        // TODO store in Eventsourced
+        pendingWork = pendingWork enqueue work
+        workIds += work.workId
+        sender ! Master.Ack(work.workId)
+        notifyWorkers()
+      }
+
+    // from worker
     case RegisterWorker(workerId) =>
       if (workerStates.contains(workerId)) {
         workerStates += (workerId -> workerStates(workerId).copy(ref = sender))
@@ -65,14 +89,15 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
         }
       }
 
+    // from worker
     case RequestForWork(workerId) =>
       if (pendingWork.nonEmpty) {
         workerStates.get(workerId) match {
           case Some(s @ WorkerState(_, Idle)) =>
             val (work, rest) = pendingWork.dequeue
             pendingWork = rest
-            log.debug("Giving worker {} some work {}", workerId, work.job)
-            // TODO store in Eventsourced
+            log.debug("Giving worker {} some work {}", workerId, work.body)
+            // TODO store in Eventsourced (now persistence)
             sender ! work
             workerStates += (workerId -> s.copy(status = Busy(work, Deadline.now + workTimeout)))
           case _ =>
@@ -80,13 +105,17 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
         }
       }
 
+    // from worker
     case WorkSuccess(workerId, workId, result) =>
       workerStates.get(workerId) match {
         case Some(s @ WorkerState(_, Busy(work, _))) if work.workId == workId =>
           log.debug("Work is done: {} => {} by worker {}", work, result, workerId)
           // TODO store in Eventsourced
           workerStates += (workerId -> s.copy(status = Idle))
+
+          // TODO ..... remember sender
           mediator ! DistributedPubSubMediator.Publish(ResultsTopic, WorkResult(workId, result))
+
           sender ! MasterWorkerProtocol.WorkStatusAck(workId)
         case _ =>
           if (workIds.contains(workId)) {
@@ -95,6 +124,7 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
           }
       }
 
+    // from worker
     case WorkFailure(workerId, workId) =>
       workerStates.get(workerId) match {
         case Some(s @ WorkerState(_, Busy(work, _))) if work.workId == workId =>
@@ -104,19 +134,6 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
           pendingWork = pendingWork enqueue work
           notifyWorkers()
         case _ =>
-      }
-
-    case work: Work =>
-      // idempotent
-      if (workIds.contains(work.workId)) {
-        sender ! Master.Ack(work.workId)
-      } else {
-        log.debug("Accepted work: {}", work)
-        // TODO store in Eventsourced
-        pendingWork = pendingWork enqueue work
-        workIds += work.workId
-        sender ! Master.Ack(work.workId)
-        notifyWorkers()
       }
 
     case CleanupTick =>
