@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2014 Martin Senne
+ */
 package org.remotefutures.core.impl.akka.pullingworker_final
 
 import scala.collection.immutable.Queue
@@ -22,11 +25,14 @@ object Master {
 
   private sealed trait WorkerStatus
   private case object Idle extends WorkerStatus
-  private case class Busy(work: Work, deadline: Deadline) extends WorkerStatus
+  private case class Busy(workAndClient: WorkAndClient, deadline: Deadline) extends WorkerStatus
 
   private case class WorkerState(ref: ActorRef, status: WorkerStatus)
  
   private case object CleanupTick
+
+  // new case class
+  private case class WorkAndClient(client: ActorRef, work: Work)
 
 }
 
@@ -48,12 +54,14 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
   import MasterWorkerProtocol._
   val mediator = DistributedPubSubExtension(context.system).mediator
 
-  // in order allow node transparent communication as to allow messages from client, frontend (via Send)
-  // mediator Send <-> mediator Put work hand in hand
+  // in order allow node transparent communication:
+  // Allow messages from client, frontend (via PubSub - Send)
+  // Mediator Send <-> Mediator Put work hand in hand
   mediator ! Put(self)
 
   private var workerStates = Map[String, WorkerState]()
-  private var pendingWork = Queue[Work]()
+  // private var pendingWork = Queue[Work]()
+  private var pendingWork = Queue[WorkAndClient]()
   private var workIds = Set[String]()
 
   import context.dispatcher
@@ -63,21 +71,22 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
 
   def receive = {
     // from frontend, client, whatever.......
-    case work: Work =>
+    case work: Work ⇒
       // idempotent
       if (workIds.contains(work.workId)) {
         sender ! Master.Ack(work.workId)
       } else {
         log.debug("Accepted work: {}", work)
         // TODO store in Eventsourced
-        pendingWork = pendingWork enqueue work
+        // pendingWork = pendingWork enqueue work
+        pendingWork = pendingWork enqueue WorkAndClient(sender, work)
         workIds += work.workId
         sender ! Master.Ack(work.workId)
         notifyWorkers()
       }
 
     // from worker
-    case RegisterWorker(workerId) =>
+    case RegisterWorker(workerId) ⇒
       if (workerStates.contains(workerId)) {
         workerStates += (workerId -> workerStates(workerId).copy(ref = sender))
       } else {
@@ -90,34 +99,36 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
       }
 
     // from worker
-    case RequestForWork(workerId) =>
+    case RequestForWork(workerId) ⇒
       if (pendingWork.nonEmpty) {
         workerStates.get(workerId) match {
-          case Some(s @ WorkerState(_, Idle)) =>
-            val (work, rest) = pendingWork.dequeue
+          case Some(s @ WorkerState(_, Idle)) ⇒
+            val (workAndClient, rest) = pendingWork.dequeue
             pendingWork = rest
-            log.debug("Giving worker {} some work {}", workerId, work.body)
+            log.debug("Giving worker {} some work {}", workerId, workAndClient.work.job)
             // TODO store in Eventsourced (now persistence)
-            sender ! work
-            workerStates += (workerId -> s.copy(status = Busy(work, Deadline.now + workTimeout)))
-          case _ =>
+            sender ! workAndClient.work
+            workerStates += (workerId -> s.copy(status = Busy(workAndClient, Deadline.now + workTimeout)))
+          case _ ⇒
 
         }
       }
 
     // from worker
-    case WorkSuccess(workerId, workId, result) =>
+    case WorkSuccess(workerId, workId, result) ⇒
       workerStates.get(workerId) match {
-        case Some(s @ WorkerState(_, Busy(work, _))) if work.workId == workId =>
-          log.debug("Work is done: {} => {} by worker {}", work, result, workerId)
+        case Some(s @ WorkerState(_, Busy(workAndClient, _))) if workAndClient.work.workId == workId ⇒
+          log.debug("Work is done: {} ⇒ {} by worker {}", workAndClient.work, result, workerId)
           // TODO store in Eventsourced
           workerStates += (workerId -> s.copy(status = Idle))
 
           // TODO ..... remember sender
-          mediator ! DistributedPubSubMediator.Publish(ResultsTopic, WorkResult(workId, result))
+          // mediator ! DistributedPubSubMediator.Publish(ResultsTopic, WorkResult(workId, result))
+          workAndClient.client ! WorkResult(workId, result)
 
+          // sender is the worker, that submitted the successful job
           sender ! MasterWorkerProtocol.WorkStatusAck(workId)
-        case _ =>
+        case _ ⇒
           if (workIds.contains(workId)) {
             // previous Ack was lost, confirm again that this is done
             sender ! MasterWorkerProtocol.WorkStatusAck(workId)
@@ -125,18 +136,19 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
       }
 
     // from worker
-    case WorkFailure(workerId, workId) =>
+    case WorkFailure(workerId, workId) ⇒
       workerStates.get(workerId) match {
-        case Some(s @ WorkerState(_, Busy(work, _))) if work.workId == workId =>
-          log.info("Work failed: {}", work)
+        case Some(s @ WorkerState(_, Busy(workAndClient, _))) if workAndClient.work.workId == workId ⇒
+          log.info("Work failed: {}", workAndClient.work)
           // TODO store in Eventsourced
           workerStates += (workerId -> s.copy(status = Idle))
-          pendingWork = pendingWork enqueue work
+          pendingWork = pendingWork enqueue workAndClient
           notifyWorkers()
-        case _ =>
+        case _ ⇒
       }
 
-    case CleanupTick =>
+      // from self (master)
+    case CleanupTick ⇒
       for ((workerId, s @ WorkerState(_, Busy(work, timeout))) <- workerStates) {
         if (timeout.isOverdue) {
           log.info("Work timed out: {}", work)
@@ -152,8 +164,8 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
     if (pendingWork.nonEmpty) {
       // could pick a few random instead of all
       workerStates.foreach {
-        case (_, WorkerState(ref, Idle)) => ref ! WorkNeedsToBeDone
-        case _                           => // busy
+        case (_, WorkerState(ref, Idle)) ⇒ ref ! WorkNeedsToBeDone
+        case _                           ⇒ // busy
       }
     }
 

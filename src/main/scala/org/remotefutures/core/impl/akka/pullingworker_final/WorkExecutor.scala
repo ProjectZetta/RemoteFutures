@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2014 Martin Senne
+ */
 package org.remotefutures.core.impl.akka.pullingworker_final
 
 import akka.actor.Actor
@@ -25,7 +28,7 @@ object WorkExecutor {
 class WorkExecutor extends Actor {
 
   def receive = {
-    case n: Int =>
+    case n: Int ⇒
       val n2 = n * n
       val result = s"$n * $n = $n2"
       sender ! WorkExecutor.WorkComplete(result)

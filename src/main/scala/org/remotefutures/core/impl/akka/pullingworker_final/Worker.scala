@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2014 Martin Senne
+ */
 package org.remotefutures.core.impl.akka.pullingworker_final
 
 import java.util.UUID
@@ -68,17 +71,17 @@ class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval
   var currentWorkId: Option[String] = None
 
   def workId: String = currentWorkId match {
-    case Some(workId) => workId
-    case None         => throw new IllegalStateException("Not working")
+    case Some(workId) ⇒ workId
+    case None         ⇒ throw new IllegalStateException("Not working")
   }
 
   // handle errors according to strategy
   override def supervisorStrategy = OneForOneStrategy() {
-    // partial function [Throwable => Directive] (see SupervisorStrategy.Decider)
-    case _: ActorInitializationException => Stop
-    case _: DeathPactException           => Stop
-    case _: Exception =>
-      currentWorkId foreach { workId => sendToMaster(WorkFailure(workerId, workId)) }
+    // partial function [Throwable ⇒ Directive] (see SupervisorStrategy.Decider)
+    case _: ActorInitializationException ⇒ Stop
+    case _: DeathPactException           ⇒ Stop
+    case _: Exception ⇒
+      currentWorkId foreach { workId ⇒ sendToMaster(WorkFailure(workerId, workId)) }
       context.become(idle)
       Restart
   }
@@ -88,10 +91,10 @@ class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval
   def receive = idle
 
   def idle: Receive = {
-    case WorkNeedsToBeDone =>
+    case WorkNeedsToBeDone ⇒
       sendToMaster(RequestForWork(workerId))
 
-    case Work(workId, job) =>
+    case Work(workId, job) ⇒
       log.debug("Got work: {}", job)
       currentWorkId = Some(workId)
       // Marvin: While sending work for execution, how do you link the result back to the actual callback?
@@ -106,7 +109,7 @@ class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval
 
   def working: Receive = {
     // work is completed on "workExecutor" actor
-    case WorkExecutor.WorkComplete(result) =>
+    case WorkExecutor.WorkComplete(result) ⇒
       log.debug("Work is complete. Result {}.", result)
       sendToMaster(WorkSuccess(workerId, workId, result))
       context.setReceiveTimeout(5.seconds)
@@ -114,7 +117,7 @@ class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval
 
     // Marvin: is queing an option or a bad idea in this case?
     // Martin: Which actor is queueing ? A worker pulls for work. (see waitForWorkIsDoneAck)
-    case _: Work =>
+    case _: Work ⇒
       log.info("Yikes. Master told me to do work, while I'm working.")
   }
 
@@ -129,19 +132,19 @@ class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval
   //   2. MasterWorkerProtocol.RequestForWork is sent to master (see below) to request more work
 
   def waitForWorkStatusAck(result: Any): Receive = {
-    case WorkStatusAck(id) if id == workId =>
+    case WorkStatusAck(id) if id == workId ⇒
       sendToMaster(RequestForWork(workerId))
       context.setReceiveTimeout(Duration.Undefined)
       context.become(idle)
-    case ReceiveTimeout =>
+    case ReceiveTimeout ⇒
       log.info("No ack from master, retrying")
       sendToMaster(WorkSuccess(workerId, workId, result))
   }
 
   override def unhandled(message: Any): Unit = message match {
-    case Terminated(`workExecutor`) => context.stop(self)
-    case WorkNeedsToBeDone          =>
-    case _                          => super.unhandled(message)
+    case Terminated(`workExecutor`) ⇒ context.stop(self)
+    case WorkNeedsToBeDone          ⇒
+    case _                          ⇒ super.unhandled(message)
   }
 
   def sendToMaster(msg: Any): Unit = {

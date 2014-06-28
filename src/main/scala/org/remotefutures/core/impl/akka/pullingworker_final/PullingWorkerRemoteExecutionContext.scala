@@ -20,7 +20,7 @@ import akka.util.Timeout
 
 
 
-class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwable => Unit)
+class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwable ⇒ Unit)
   extends RemoteExecutionContext
   with Startup {
 
@@ -45,17 +45,17 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
    * Execute a function in its given context on a distant place.
    *
    * @param body is the code to execute and return T eventually
-   * @param bodyContext is the context/closure of of function fnc: () => T
+   * @param bodyContext is the context/closure of of function fnc: () ⇒ T
    * @tparam C specifies the Context type
    * @tparam T specifies the return tyoe
    */
-  override def execute[C, T](body: () => T, bodyContext: C, promise: Promise[T]): Unit = {
+  override def execute[C, T](body: () ⇒ T, bodyContext: C, promise: Promise[T]): Unit = {
 
     import scala.concurrent.ExecutionContext.Implicits.global
 
     implicit val timeout = Timeout(5 seconds)
 
-    val msg = Execute( () => body )
+    val msg = Execute( () ⇒ body )
     val possibleResult: Future[T] = (frontendSetup.remoteProducerActor ? msg).asInstanceOf[Future[T]]
 
     // complete the promise
@@ -71,7 +71,7 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
 //      Props(classOf[RemoteProducerActor], frontendSetup.mediator, promise))
 //
 //    println("Sending execute to actor " + remoteProducerActor)
-//    remoteProducerActor ! Execute( () => body )
+//    remoteProducerActor ! Execute( () ⇒ body )
 
 
     // old 2 =====================================================
@@ -183,25 +183,25 @@ class RemoteProducerActor(mediatorToMaster: ActorRef, promise: Promise[Any]) ext
   override def postRestart(reason: Throwable): Unit = ()
 
   def receive = {
-    case Execute(body) => {
+    case Execute(body) ⇒ {
       log.info("Remote producer actor got Execute.")
       val work = Work(nextWorkId(), body)
       mediatorToMaster ! Send("/user/master/active", work, localAffinity = false)
       //      (mediatorForMaster ? Send("/user/master/active", work, localAffinity = false)) map {
-      //        case Master.Ack(_) => Frontend.Ok
-      //      } recover { case _ => Frontend.NotOk } pipeTo sender
+      //        case Master.Ack(_) ⇒ Frontend.Ok
+      //      } recover { case _ ⇒ Frontend.NotOk } pipeTo sender
       context.become(waitForMasterAck(work), discardOld = false)
     }
-    case _: DistributedPubSubMediator.SubscribeAck => {
+    case _: DistributedPubSubMediator.SubscribeAck ⇒ {
       log.info("SubscribeAck for actor " + self)
     }
   }
 
   def waitForMasterAck(work: Work): Actor.Receive = {
-    case Master.Ack =>
+    case Master.Ack ⇒
       context.become(waitForWorkResult, discardOld = false)
     // TODO: Error handling ( see FrontEnd.NotOk )
-    case WorkResult(workId, result) =>
+    case WorkResult(workId, result) ⇒
       log.info("Whoops. Received result before Master.Ack. Still consuming result: {}", result)
       promise.success(result)
       log.info("Stopping remote producer actor " + self)
@@ -210,9 +210,9 @@ class RemoteProducerActor(mediatorToMaster: ActorRef, promise: Promise[Any]) ext
   }
 
   def waitForWorkResult: Actor.Receive = {
-    case Master.Ack =>
+    case Master.Ack ⇒
       log.info("And Whoops. Received master ack after work result.")
-    case WorkResult(workId, result) =>
+    case WorkResult(workId, result) ⇒
       log.info("Consuming result: {}", result)
       promise.success(result)
       log.info("Stopping remote producer actor " + self)

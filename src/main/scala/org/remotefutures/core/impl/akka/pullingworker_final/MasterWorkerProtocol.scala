@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2014 Martin Senne
+ */
 package org.remotefutures.core.impl.akka.pullingworker_final
 
 object MasterWorkerProtocol {
