@@ -44,7 +44,7 @@ object RemoteFutureExample {
 
     // instead of
     //    import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
-    // we use this implicit val, as to have access to the context
+    // we use this implicit val, as to have access to the context and to be able to call startup and shutdown
     implicit val DefaultConfigBasedRemoteExecutionContext = RemoteExecutionContext.fromDefaultConfig
 
     DefaultConfigBasedRemoteExecutionContext.startup()
@@ -59,6 +59,48 @@ object RemoteFutureExample {
     val fs: List[Future[Long]] = xs3.map(x => RemoteFuture {
       // println(Thread.currentThread.getName)
       Computations.fibLong(x)
+    })
+
+    val r: Future[List[Long]] = Future sequence (fs)
+
+    r onComplete {
+      case Success(x) => {
+        println(x)
+        DefaultConfigBasedRemoteExecutionContext.shutdown()
+      }
+      case Failure(t) => {
+        println("Problem " + t)
+        DefaultConfigBasedRemoteExecutionContext.shutdown()
+      }
+    }
+  }
+}
+
+object RemoteFutureExample2 {
+  def main(args: Array[String]): Unit = {
+    import scala.concurrent.ExecutionContext.Implicits.global
+
+    // instead of
+    //    import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
+    // we use this implicit val, as to have access to the context and to be able to call startup and shutdown
+    implicit val DefaultConfigBasedRemoteExecutionContext = RemoteExecutionContext.fromDefaultConfig
+
+    DefaultConfigBasedRemoteExecutionContext.startup()
+
+    val from = 1000000000L
+    val size = 100L
+
+    val xs3: List[Long] = (from to from + size).toList
+
+    println("Remote: " + xs3)
+
+    val s: Spore[Long, Long] = spore {
+      (a: Long) => Computations.fibLong(a)
+    }
+
+    val fs: List[Future[Long]] = xs3.map(x => RemoteFuture {
+      // println(Thread.currentThread.getName)
+      s(x)
     })
 
     val r: Future[List[Long]] = Future sequence (fs)

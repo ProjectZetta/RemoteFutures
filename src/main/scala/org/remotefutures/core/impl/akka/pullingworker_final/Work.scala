@@ -9,7 +9,8 @@ package org.remotefutures.core.impl.akka.pullingworker_final
  */
 case class Execute[T](body: () => T)
 
-// case class Work(workId: String, body: () => Any)
-case class Work(workId: String, job: Any)
+case class Work(workId: String, job: () => Any)
+// case class Work(workId: String, job: Any)
+
 
 case class WorkResult(workId: String, result: Any)

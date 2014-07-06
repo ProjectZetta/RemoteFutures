@@ -95,7 +95,7 @@ class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval
       sendToMaster(RequestForWork(workerId))
 
     case Work(workId, job) ⇒
-      log.debug("Got work: {}", job)
+      log.info("Got work: {} with type {}", job, job.getClass)
       currentWorkId = Some(workId)
       // Marvin: While sending work for execution, how do you link the result back to the actual callback?
       // Is it done implicitly through actor reference? Just asking for clarification.
@@ -110,7 +110,7 @@ class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval
   def working: Receive = {
     // work is completed on "workExecutor" actor
     case WorkExecutor.WorkComplete(result) ⇒
-      log.debug("Work is complete. Result {}.", result)
+      log.info("Work is complete. Result {}.", result)
       sendToMaster(WorkSuccess(workerId, workId, result))
       context.setReceiveTimeout(5.seconds)
       context.become(waitForWorkStatusAck(result))

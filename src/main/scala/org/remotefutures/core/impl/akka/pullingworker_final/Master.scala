@@ -32,6 +32,11 @@ object Master {
   private case object CleanupTick
 
   // new case class
+  /**
+   * WorkAndClient holds the client, which is the customer, that sends the piece of work.
+   * @param client identifies the client as ActorRef.
+   * @param work is the piece of work to be executed.
+   */
   private case class WorkAndClient(client: ActorRef, work: Work)
 
 }
@@ -72,13 +77,13 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
   def receive = {
     // from frontend, client, whatever.......
     case work: Work ⇒
+      log.info("Master got work.")
       // idempotent
       if (workIds.contains(work.workId)) {
         sender ! Master.Ack(work.workId)
       } else {
-        log.debug("Accepted work: {}", work)
+        log.info("Accepted work: {}", work)
         // TODO store in Eventsourced
-        // pendingWork = pendingWork enqueue work
         pendingWork = pendingWork enqueue WorkAndClient(sender, work)
         workIds += work.workId
         sender ! Master.Ack(work.workId)
@@ -90,7 +95,7 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
       if (workerStates.contains(workerId)) {
         workerStates += (workerId -> workerStates(workerId).copy(ref = sender))
       } else {
-        log.debug("Worker registered: {}", workerId)
+        log.info("Worker registered: {}", workerId)
         val worker = sender
         workerStates += (workerId -> WorkerState(worker, status = Idle))
         if (pendingWork.nonEmpty) {
@@ -105,7 +110,7 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
           case Some(s @ WorkerState(_, Idle)) ⇒
             val (workAndClient, rest) = pendingWork.dequeue
             pendingWork = rest
-            log.debug("Giving worker {} some work {}", workerId, workAndClient.work.job)
+            log.info("Giving worker {} some work {}", workerId, workAndClient.work.job)
             // TODO store in Eventsourced (now persistence)
             sender ! workAndClient.work
             workerStates += (workerId -> s.copy(status = Busy(workAndClient, Deadline.now + workTimeout)))
@@ -118,7 +123,7 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
     case WorkSuccess(workerId, workId, result) ⇒
       workerStates.get(workerId) match {
         case Some(s @ WorkerState(_, Busy(workAndClient, _))) if workAndClient.work.workId == workId ⇒
-          log.debug("Work is done: {} ⇒ {} by worker {}", workAndClient.work, result, workerId)
+          log.info("Work is done: {} ⇒ {} by worker {}", workAndClient.work, result, workerId)
           // TODO store in Eventsourced
           workerStates += (workerId -> s.copy(status = Idle))
 
@@ -149,12 +154,12 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
 
       // from self (master)
     case CleanupTick ⇒
-      for ((workerId, s @ WorkerState(_, Busy(work, timeout))) <- workerStates) {
+      for ((workerId, s @ WorkerState(_, Busy(workAndClient, timeout))) <- workerStates) {
         if (timeout.isOverdue) {
-          log.info("Work timed out: {}", work)
+          log.info("Work timed out: {}", workAndClient)
           // TODO store in Eventsourced
           workerStates -= workerId
-          pendingWork = pendingWork enqueue work
+          pendingWork = pendingWork enqueue workAndClient
           notifyWorkers()
         }
       }

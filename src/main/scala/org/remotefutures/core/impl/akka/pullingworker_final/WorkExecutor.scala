@@ -3,7 +3,7 @@
  */
 package org.remotefutures.core.impl.akka.pullingworker_final
 
-import akka.actor.Actor
+import akka.actor.{ActorLogging, Actor}
 
 object WorkExecutor {
   case class WorkComplete(result: Any)
@@ -25,12 +25,19 @@ object WorkExecutor {
 // specific, fully typed, worker actors.
 // the later is how pickler generates type specific serializers
 //
-class WorkExecutor extends Actor {
+class WorkExecutor extends Actor with ActorLogging{
 
   def receive = {
-    case n: Int ⇒
-      val n2 = n * n
-      val result = s"$n * $n = $n2"
-      sender ! WorkExecutor.WorkComplete(result)
+    case body: (() => Any) ⇒
+      log.info("WorkExecutor got job " + body)
+      // use () to actually execute the job
+      val result: Any = body.apply()
+      log.info("WorkExecutor has result: " + result + " with type " + result.getClass + ".")
+      // sender ! WorkExecutor.WorkComplete( body.apply() )
+      sender ! WorkExecutor.WorkComplete( 5 )
+//    case n: Int ⇒
+//      val n2 = n * n
+//      val result = s"$n * $n = $n2"
+//      sender ! WorkExecutor.WorkComplete(result)
   }
 }
