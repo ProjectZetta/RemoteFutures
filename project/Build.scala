@@ -1,27 +1,24 @@
-import sbt._
 import sbt.Keys._
+import sbt._
 
 
 object BuildSettings {
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := "org.remotefutures",
     version := "0.0.1",
-    // scalaVersion := "2.10.4",
     scalaVersion := "2.11.1",
 
-    // scalacOptions in(Compile, compile) ++= Seq("-optimize", "-feature", "-deprecation", "-unchecked", "-Xlint")
-    //scalacOptions ++= Seq()
-
     scalacOptions ++= Seq(
-      // "-deprecation",
+      "-deprecation",
       // "-feature",
-      // "-unchecked",
+      "-unchecked"
       // "-Xlint",
       // "-Xlog-reflective-calls",
       // "-Ywarn-adapted-args",
       // "-encoding", "UTF-8",
       // "-target:jvm-1.6",
-      // "-Ymacro-debug-lite" // information on macro expansion
+      // "-Ymacro-debug-lite" // information on macro expansion and switch this boy on demand since its flooding your console....
+      // "-optimize"
     )
   )
 }
@@ -39,11 +36,8 @@ object Resolvers {
 }
 
 object Dependencies {
-  // val scalaTestVersion = "2.1.0"
-  val scalaTestVersion = "2.1.7"
-  val scalaCheckVersion = "1.11.3"
-  val hazelVersion = "3.2-RC1"
-  // val akkaVersion = "2.3.1"
+  val scalaTestVersion = "2.2.0"
+  val scalaCheckVersion = "1.11.4"
   val akkaVersion = "2.3.3"
   val disruptorVersion = "3.2.1"
 
@@ -53,8 +47,6 @@ object Dependencies {
   val scalaTest = "org.scalatest" %% "scalatest" % scalaTestVersion % "test" withSources() withJavadoc()
 
   val config = "com.typesafe" % "config" % "1.2.0" withSources() withJavadoc()
-
-  val hazelcast = "com.hazelcast" % "hazelcast" % hazelVersion withSources() withJavadoc()
 
   val akkaActor = "com.typesafe.akka" %% "akka-actor" % akkaVersion withSources() withJavadoc()
   val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % akkaVersion withSources() withJavadoc()
@@ -73,8 +65,11 @@ object Dependencies {
   // RBX dependencies
   libraryDependencies += "com.lmax" % "disruptor" % disruptorVersion withSources() withJavadoc()
 
+  // Akka Streams a.k.a reactive streams
+  // val rxstreams = "com.typesafe.akka" % "akka-stream-experimental_2.11" % "0.3"
+
   lazy val benchDeps = Seq(scalaCheck, scalaTest, jxl, xstream, commons, comCol, json)
-  lazy val allDeps = Seq(scalaAsync, scalaCheck, scalaTest, config, hazelcast, akkaActor, akkaTestkit, akkaCluster, akkaRemote, akkaMultiNode, akkaContrib)
+  lazy val allDeps = Seq(scalaAsync, scalaCheck, scalaTest, config, akkaActor, akkaTestkit, akkaCluster, akkaRemote, akkaMultiNode, akkaContrib)
 }
 
 object MyBuild extends Build {
