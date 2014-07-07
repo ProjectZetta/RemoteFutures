@@ -42,6 +42,17 @@ object RemoteFutureExample {
   def main(args: Array[String]): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
 
+
+    val tmp : ( () => Any ) = {
+      () => Computations.fibLong(3)
+    }
+
+    println("tmp is " + tmp.hashCode() + "[" + tmp.getClass + "]")
+    val res = tmp()
+    println("tmp is " + tmp.hashCode() + "[" + tmp.getClass + "]")
+    println("res is " + res.hashCode() + "[" + res.getClass + "]")
+
+
     // instead of
     //    import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
     // we use this implicit val, as to have access to the context and to be able to call startup and shutdown
@@ -50,11 +61,16 @@ object RemoteFutureExample {
     DefaultConfigBasedRemoteExecutionContext.startup()
 
     val from = 1000000000L
-    val size = 100L
+    val size = 10L
 
     val xs3: List[Long] = (from to from + size).toList
 
     println("Remote: " + xs3)
+
+    // object RemoteFuture {
+    // def apply[T](body: => T)(implicit res: RemoteExecutionContext): Future[T] = impl.RemoteFutureImpl[T](body)
+    // }
+
 
     val fs: List[Future[Long]] = xs3.map(x => RemoteFuture {
       // println(Thread.currentThread.getName)

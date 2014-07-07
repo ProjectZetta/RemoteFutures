@@ -29,12 +29,16 @@ class WorkExecutor extends Actor with ActorLogging{
 
   def receive = {
     case body: (() => Any) ⇒
-      log.info("WorkExecutor got job " + body)
+
       // use () to actually execute the job
+      // val result: Any = body.apply()
+
       val result: Any = body.apply()
-      log.info("WorkExecutor has result: " + result + " with type " + result.getClass + ".")
+      log.info("WorkExecutor got job {} [{}].", body.hashCode(), body.getClass)
+
+      log.info("WorkExecutor has result: " + result + " with type " + result.getClass + " and hash " + result.hashCode())
       // sender ! WorkExecutor.WorkComplete( body.apply() )
-      sender ! WorkExecutor.WorkComplete( 5 )
+      sender ! WorkExecutor.WorkComplete( result )
 //    case n: Int ⇒
 //      val n2 = n * n
 //      val result = s"$n * $n = $n2"

@@ -90,6 +90,11 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
         notifyWorkers()
       }
 
+//      val body: () => Any = work.job
+//      log.info("Master has  {} [{}].", body.hashCode(), body.getClass)
+//      val result: Any = body.apply()
+//      log.info("Master has result" + result + " with type " + result.getClass + " and hash " + result.hashCode())
+
     // from worker
     case RegisterWorker(workerId) ⇒
       if (workerStates.contains(workerId)) {

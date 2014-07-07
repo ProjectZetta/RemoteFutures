@@ -56,7 +56,7 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
     implicit val timeout = Timeout(5 seconds)
 
     // construct the message
-    val msg = Execute( () ⇒ body )
+    val msg = Execute( body )
 
     // determine system and mediator
     val system = frontendSetup.system
@@ -200,8 +200,14 @@ class RemoteProducerActor(mediatorToMaster: ActorRef, promise: Promise[Any]) ext
 
   def receive = {
     case Execute(job) ⇒ {
-      log.info("Remote producer actor got Execute.")
-      val work = Work(nextWorkId(), job)
+      log.info("Remote producer actor got Execute message.")
+
+      val work = Work(nextWorkId(), job) // HERE
+
+//      val body: () => Any = work.job
+//      log.info("RemoteProducerActor has  {} [{}].", body.hashCode(), body.getClass)
+//      val result: Any = body.apply()
+//      log.info("RemoteProducerActor has result" + result + " with type " + result.getClass + " and hash " + result.hashCode())
 
       mediatorToMaster ! Send("/user/master/active", work, localAffinity = false)
       //      (mediatorForMaster ? Send("/user/master/active", work, localAffinity = false)) map {
