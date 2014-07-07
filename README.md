@@ -8,7 +8,6 @@ Distributed programming but simple, efficient and very fast.
 
 ## About
 
-
 The project "DistributedRemoteFutures" provides a programming model that seamlessly integrates additional cloud computing resources
 but without tampering with distributed models and code. It does so by extending Scala's Futures towards a remote execution for simply
 adding more computational power according to changing demand. In the end, distributed remote futures allow you:
