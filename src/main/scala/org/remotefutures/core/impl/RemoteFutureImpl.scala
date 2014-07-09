@@ -1,6 +1,7 @@
 package org.remotefutures.core.impl
 
 import org.remotefutures.core.{PromiseBackedRunnable, RemoteExecutionContext}
+import org.remotefutures.spores.NullarySpore
 import scala.concurrent.{Promise, Future}
 
 /**
@@ -27,6 +28,12 @@ object RemoteFutureImpl {
     p.future
   }
 
+  def apply[T](spore: NullarySpore[T])(implicit rec: RemoteExecutionContext): Future[T] = {
+    println("apply(spore) in RemoteFutureImpl.")
+    val p = Promise[T]()
+    rec.execute(spore, null, p)
+    p.future
+  }
 
 //  private def createRunnable[T](body: => T): PromiseBackedRunnable[T] = {
 //    val promise = Promise[T]

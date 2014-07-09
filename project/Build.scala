@@ -11,13 +11,13 @@ object BuildSettings {
     scalacOptions ++= Seq(
       "-deprecation",
       // "-feature",
-      "-unchecked"
+      "-unchecked",
       // "-Xlint",
       // "-Xlog-reflective-calls",
       // "-Ywarn-adapted-args",
       // "-encoding", "UTF-8",
       // "-target:jvm-1.6",
-      // "-Ymacro-debug-lite" // information on macro expansion and switch this boy on demand since its flooding your console....
+      "-Ymacro-debug-lite" // information on macro expansion and switch this boy on demand since its flooding your console....
       // "-optimize"
     )
   )

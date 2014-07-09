@@ -16,7 +16,9 @@ trait Spore2[-T1, -T2, +R] extends Function2[T1, T2, R]
 
 trait Spore3[-T1, -T2, -T3, +R] extends Function3[T1, T2, T3, R]
 
-class NullarySporeImpl[+R](f: () => R) extends NullarySpore[R] {
+// TODO: clarify if Serializable is fine here
+
+class NullarySporeImpl[+R](f: () => R) extends NullarySpore[R] with Serializable {
   def apply(): R = f()
 }
 

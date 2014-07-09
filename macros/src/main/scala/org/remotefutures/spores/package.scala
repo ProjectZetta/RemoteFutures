@@ -28,6 +28,9 @@ package object spores {
    *  Check that body only accesses x, y, p, and variables local to (owned by) the
    *  closure.
    */
+  // Martin adds:
+  def spore[R](fun: () => R): NullarySpore[R] = macro nullarySporeImpl[R]
+
   def spore[T, R](fun: T => R): Spore[T, R] = macro sporeImpl[T, R]
 
   def spore[T1, T2, R](fun: (T1, T2) => R): Spore2[T1, T2, R] = macro spore2Impl[T1, T2, R]
@@ -68,7 +71,7 @@ package object spores {
           stmt match {
             case vd @ ValDef(mods, name, tpt, rhs) => List(vd.symbol)
             case _ =>
-              c.error(stmt.pos, "Only val defs allowed at this position")
+              c.error(stmt.pos, "[Spores]: Only val defs allowed at this position")
               List()
           }
         }
@@ -93,7 +96,7 @@ package object spores {
             capturedSyms.contains(s) ||
             s.owner == fun.symbol ||
             s.isStatic || {
-            c.error(s.pos, "invalid reference to " + s)
+            c.error(s.pos, "[Spores]: invalid reference to " + s)
             false
           }
 
@@ -119,9 +122,9 @@ package object spores {
             case app @ Apply(fun, List(captured)) if (fun.symbol == captureSym) =>
               debug("found capture: " + app)
               if (!isPathWith(captured)(_.isStable))
-                c.error(captured.pos, "Only stable paths can be captured")
+                c.error(captured.pos, "[Spores]: Only stable paths can be captured")
               else if (!isPathWith(captured)(!_.isLazy))
-                c.error(captured.pos, "A captured path cannot contain lazy members")
+                c.error(captured.pos, "[Spores]: A captured path cannot contain lazy members")
               else
                 capturedSyms ::= captured.symbol
             case _ =>
@@ -146,7 +149,7 @@ package object spores {
                 debug("checking select (app)" + sel)
                 if (app.symbol.isStatic) {
                   debug("OK, fun static")
-                } else c.error(sel.pos, "the fun is not static")
+                } else c.error(sel.pos, "[Spores]: the fun is not static")
 
               case sel @ Select(pre, _) =>
                 debug("checking select " + sel)
@@ -160,7 +163,20 @@ package object spores {
 
         traverser.traverse(body)
       case _ =>
-        c.error(funLiteral.pos, "Incorrect usage of `spore`: function literal expected")
+        c.error(funLiteral.pos, "[Spores]: Incorrect usage of `spore`: function literal expected")
+    }
+  }
+
+  // TODO: Write tests
+  // Martin adds
+  def nullarySporeImpl[R: c.WeakTypeTag](c: Context)(fun: c.Expr[() => R]): c.Expr[NullarySpore[R]] = {
+    import c.universe._
+
+    // check Spore constraints
+    check(c)(fun.tree)
+
+    reify {
+      new NullarySporeImpl[R](fun.splice)
     }
   }
 
@@ -221,7 +237,7 @@ package object spores {
               }
               List()
             case _ =>
-              c.error(stmt.pos, "Only val defs allowed at this position")
+              c.error(stmt.pos, "[Spores]: Only val defs allowed at this position")
               List()
           }
         }
@@ -239,7 +255,7 @@ package object spores {
           validEnv.map(_._1).contains(s) ||
             s.owner == fun.symbol ||
             s.isStatic || {
-            c.error(s.pos, "invalid reference to " + s)
+            c.error(s.pos, "[Spores]: invalid reference to " + s)
             false
           }
 
@@ -255,7 +271,7 @@ package object spores {
                 debug("checking select (app)" + sel)
                 if (app.symbol.isStatic) {
                   debug("OK, fun static")
-                } else c.error(sel.pos, "the fun is not static")
+                } else c.error(sel.pos, "[Spores]: the fun is not static")
 
               case sel @ Select(pre, _) =>
                 debug("checking select " + sel)
@@ -269,7 +285,7 @@ package object spores {
 
         traverser.traverse(body)
       case _ =>
-        c.error(funLiteral.pos, "Function literal expected")
+        c.error(funLiteral.pos, "[Spores]: Function literal expected")
     }
 
     validEnv map { _._2 }
