@@ -17,9 +17,13 @@ import scala.util.Random
  */
 class ExcelSpec extends FlatSpec {
 
-  println("Checking locals")
-  ShowLanguageAndLocale()
-  println("done")
+  final val DBG_LOCALS = false
+
+  if (DBG_LOCALS) {
+    println("Checking locals")
+    ShowLanguageAndLocale()
+    println("done")
+  }
 
   final val name = "Test"
   final val t = TimeUnit.SECONDS
