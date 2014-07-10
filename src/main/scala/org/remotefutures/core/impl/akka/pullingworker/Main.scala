@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2014 Martin Senne
+ */
 package org.remotefutures.core.impl.akka.pullingworker
 
 import scala.concurrent.duration._
@@ -18,8 +21,8 @@ object Main extends Startup {
     Thread.sleep(5000)
     startBackend(Some(joinAddress), "backend")
     startWorker(joinAddress)
-    Thread.sleep(5000)
-    startFrontend(joinAddress)
+    // Thread.sleep(5000)
+    // startFrontend(joinAddress)
   }
 
 }
@@ -65,21 +68,4 @@ trait Startup {
     // create the worker actor
     system.actorOf(Worker.props(clusterClient, Props[WorkExecutor]), "worker")
   }
-
-
-//  def startFrontend(joinAddress: akka.actor.Address): Unit = {
-//    val system = ActorSystem(systemName)
-//    Cluster(system).join(joinAddress)
-//    val frontend = system.actorOf(Props[Frontend], "frontend")
-//    system.actorOf(Props(classOf[WorkProducer], frontend), "producer")
-//    system.actorOf(Props[WorkResultConsumer], "consumer")
-//  }
-
-    def startFrontend(joinAddress: akka.actor.Address): Unit = {
-      val system = ActorSystem(systemName)
-      Cluster(system).join(joinAddress)
-      val frontend = system.actorOf(Props[Frontend], "frontend")
-      system.actorOf(Props(classOf[WorkProducer], frontend), "producer")
-      system.actorOf(Props[WorkConsumer], "consumer")
-    }
 }

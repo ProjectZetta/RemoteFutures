@@ -1,6 +1,9 @@
+/*
+ * Copyright (c) 2014 Martin Senne
+ */
 package org.remotefutures.core.impl
 
-import org.remotefutures.core.{PromiseBackedRunnable, RemoteExecutionContext}
+import org.remotefutures.core.RemoteExecutionContext
 import org.remotefutures.spores.NullarySpore
 import scala.concurrent.{Promise, Future}
 
@@ -9,18 +12,19 @@ import scala.concurrent.{Promise, Future}
  * on a remote host by using a remote executor. The result of
  * a Remote is wrapped into a Future thus
  * can be freely composed and combined with other Futures.
+ *
+ * "Modification is undesirable, but modifiability is paramount"
+ * --Paul Phillips
  */
 object RemoteFutureImpl {
 
   /**
-   * "Modification is undesirable, but modifiability is paramount"
-   * --Paul Phillips
+   * Create a Future,such that the body is executed by the given remote execution context.
    *
    * @param body Code to execute
-   * @param rec: RemoteExecutionContext
-   * @tparam T type oif the code to execute
-   * @return  Result of the remote computation.
-   *
+   * @param rec: RemoteExecutionContext used for execution of body
+   * @tparam T result type of the executed code
+   * @return the eventual result of the remote computation.
    */
   def apply[T](body: => T)(implicit rec: RemoteExecutionContext): Future[T] = {
     val p = Promise[T]()
@@ -28,20 +32,19 @@ object RemoteFutureImpl {
     p.future
   }
 
+  /**
+   * Create a Future,such that the spore is executed by the given remote execution context.
+   * A nullary spore is a [[Function0]] ( () => T ) plus that it captures variables used within the function.
+   *
+   * @param spore
+   * @param rec: RemoteExecutionContext used for execution of body
+   * @tparam T result type of the executed code
+   * @return the eventual result of the remote computation.
+   */
   def apply[T](spore: NullarySpore[T])(implicit rec: RemoteExecutionContext): Future[T] = {
     println("apply(spore) in RemoteFutureImpl.")
     val p = Promise[T]()
     rec.execute(spore, null, p)
     p.future
-  }
-
-//  private def createRunnable[T](body: => T): PromiseBackedRunnable[T] = {
-//    val promise = Promise[T]
-//    new PromiseCompletingRunnable(() => body, promise)
-//  }
-
-
-  override def finalize(): Unit = {
-    super.finalize()
   }
 }

@@ -1,11 +1,14 @@
 /*
- * Copyright (c) 2014 Martin Senne, Marvin Hansen.
+ * Copyright (c) 2014 Martin Senne
  */
 package org.remotefutures.core.impl
 
 import org.remotefutures.core.{Settings, RemoteExecutionContext}
 import com.typesafe.config.Config
 
+/**
+ *
+ */
 private[core] object RemoteExecutionContextImpl {
   def fromConfig( c: Config, reporter: Throwable => Unit = RemoteExecutionContext.defaultReporter): RemoteExecutionContext = {
 
@@ -20,8 +23,10 @@ private[core] object RemoteExecutionContextImpl {
 
     val settings = Settings(c)
 
-    // construction of the remote execution context by reflection and
-    // the classname given in [[settings.RemoteExecutionContextClassName]]
+    /**
+     * Constructed remote execution context via reflection and
+     * the classname given in [[settings.RemoteExecutionContextClassname]]
+     */
     val rec: RemoteExecutionContext = {
       instantiateByClassname[RemoteExecutionContext](settings.RemoteExecutionContextClassname)(settings, reporter)
     }
