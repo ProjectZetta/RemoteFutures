@@ -17,8 +17,8 @@ object BuildSettings {
       // "-Ywarn-adapted-args",
       // "-encoding", "UTF-8",
       // "-target:jvm-1.6",
-      //"-Ymacro-debug-lite" // switch this boy on demand since its flooding your console....
-      "-optimize"
+      "-Ymacro-debug-lite" // information on macro expansion and switch this boy on demand since its flooding your console....
+      // "-optimize"
     )
   )
 }

@@ -13,7 +13,7 @@ import org.remotefutures.core.PromiseBackedRunnable
 /**
  * A runnable wrapping the execution of fnc, whose result is put the a promise.
  *
- * Shamelessly copied from concurrent.impl.Future and modified.
+ * Shamelessly copied from scala.concurrent.impl.Future and modified.
  *
  * @param body the fnc to execute
  * @param promise is the promise to put the result of type T into
@@ -21,7 +21,7 @@ import org.remotefutures.core.PromiseBackedRunnable
  */
 class PromiseCompletingRunnable[T](body: () => T, val promise: Promise[T]) extends PromiseBackedRunnable[T] {
 
-  implicit final val DBG = true
+  implicit val DEBUG = false
 
   override def run() = {
     promise complete {
