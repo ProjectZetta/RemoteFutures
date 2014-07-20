@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014 Martin Senne, Marvin Hansen.
  */
-package org.remotefutures.core
+package org.remotefutures.proposals.idea_runnable
 
 import scala.concurrent.Promise
 

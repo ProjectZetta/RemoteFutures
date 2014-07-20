@@ -3,13 +3,14 @@
  */
 package org.remotefutures.proposals.idea_runnable
 
+import org.remotefutures.proposals.idea_runnable.PromiseBackedRunnable
+
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.{Try, Failure, Success}
 import akka.actor._
 import akka.pattern.ask
 import scala.concurrent.duration._
 import akka.util.Timeout
-import org.remotefutures.core.PromiseBackedRunnable
 
 
 /**
