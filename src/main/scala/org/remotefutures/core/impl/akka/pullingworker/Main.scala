@@ -17,9 +17,9 @@ import akka.contrib.pattern.ClusterSingletonManager
 object Main extends Startup {
 
   def main(args: Array[String]): Unit = {
-    val joinAddress = startBackend(None, "backend")
+    val joinAddress = startMaster(None, "backend")
     Thread.sleep(5000)
-    startBackend(Some(joinAddress), "backend")
+    startMaster(Some(joinAddress), "backend")
     startWorker(joinAddress)
     // Thread.sleep(5000)
     // startFrontend(joinAddress)
@@ -39,7 +39,7 @@ trait Startup {
    * @param role
    * @return
    */
-  def startBackend(joinAddressOption: Option[Address], role: String): Address = {
+  def startMaster(joinAddressOption: Option[Address], role: String): Address = {
     val conf = ConfigFactory.parseString(s"akka.cluster.roles=[$role]").
       withFallback(ConfigFactory.load())
     val system = ActorSystem(systemName, conf)

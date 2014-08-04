@@ -1,22 +1,23 @@
-package org.remotefutures
+package org.remotefutures.core
+
 
 /**
- * Start the example with "multi-jvm:run org.remotefutures.Sample"
+ * Start the master worker example with "multi-jvm:run org.remotefutures.MasterWorker"
  */
 
-object SampleMultiJvmNode1 {
+object MasterWorkerMultiJvmNode1 {
   def main(args: Array[String]) {
     println("Hello from node 1")
   }
 }
 
-object SampleMultiJvmNode2 {
+object MasterWorkerMultiJvmNode2 {
   def main(args: Array[String]) {
     println("Hello from node ss2")
   }
 }
 
-object SampleMultiJvmNode3 {
+object MasterWorkerMultiJvmNode3 {
   def main(args: Array[String]) {
     println("Hello from node 3")
   }

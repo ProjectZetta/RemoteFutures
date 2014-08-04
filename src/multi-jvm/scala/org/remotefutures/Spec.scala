@@ -6,6 +6,8 @@ import org.scalatest.MustMatchers
 /**
  * Naming scheme: {TestName}MultiJvm{NodeName}
  *
+ * Call with "multi-jvm:test-only org.remotefutures.Spec"
+ *
  * http://doc.akka.io/docs/akka/snapshot/dev/multi-jvm-testing.html
  */
 class SpecMultiJvmNode1 extends WordSpec with MustMatchers {

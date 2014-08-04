@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2014 Martin Senne, Marvin Hansen.
+ * Copyright (c) 2014 Martin Senne
  */
 package org.remotefutures.examples
 
 import java.math.MathContext
 
 import scala.annotation.tailrec
+import scala.math.BigDecimal.RoundingMode
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
@@ -13,39 +14,9 @@ import org.remotefutures.core.RemoteFuture
 
 
 /**
- *
+ * Contains all methods for computiong PI by various methods..
  */
-object Computations extends Serializable {
-
-  /* Fibonacci code from
-   * http://peter-braun.org/2012/06/fibonacci-numbers-in-scala/
-   */
-  def fib(n: Int): Int = {
-    @tailrec
-    def fib_tail(n: Int, a: Int, b: Int): Int = n match {
-      case 0 => a
-      case _ => fib_tail(n - 1, b, (a + b) % 1000000)
-    }
-    fib_tail(n % 1500000, 0, 1)
-  }
-
-  def fibLong(n: Long): Long = {
-    @tailrec
-    def fib_tail(n: Long, a: Long, b: Long): Long = n match {
-      case 0 => a
-      case _ => fib_tail(n - 1, b, (a + b))
-    }
-    fib_tail(n, 0, 1)
-  }
-
-  def fibBigInt(n: Long): BigInt = {
-    @tailrec
-    def fib_tail(n: Long, a: BigInt, b: BigInt): BigInt = n match {
-      case 0 => a
-      case _ => fib_tail(n - 1, b, (a + b))
-    }
-    fib_tail(n, 0, 1)
-  }
+object PiComputations extends Serializable {
 
   /**
    * Compute the value of pi to the specified number of digits after the
@@ -57,10 +28,18 @@ object Computations extends Serializable {
     val scale = digits + 5
     val arctan1_5 = arctan(5, scale)
     val arctan1_239 = arctan(239, scale)
-    val pi = (arctan1_5 * BigDecimal(4)) - (arctan1_239 * BigDecimal (4))
+    val pi = ((arctan1_5 * BigDecimal(4)) - (arctan1_239)) * BigDecimal(4)
     return pi.setScale(digits, BigDecimal.RoundingMode.HALF_UP);
   }
 
+
+  /**
+   * Calculate sum elements from start to start+nrOfElements.
+   *
+   * @param start
+   * @param nrOfElements
+   * @return
+   */
   def computePiFor(start: Int, nrOfElements: Int): Double = {
     var acc = 0.0
     for (i ← start until (start + nrOfElements))
@@ -77,7 +56,7 @@ object Computations extends Serializable {
    * tangent:
    * arctan(x) = x - (x^3)/3 + (x^5)/5 - (x^7)/7 + (x^9)/9 ...
    */
-  def arctan(inverseX: Int, scale:Int): BigDecimal = {
+  private def arctan(inverseX: Int, scale:Int): BigDecimal = {
 
     val mc: java.math.MathContext = new MathContext(scale, java.math.RoundingMode.HALF_EVEN)
 
@@ -91,12 +70,20 @@ object Computations extends Serializable {
     var result = numer;
     var i:Int = 1
     var term= BigDecimal(0.0, mc)
+    val zero = BigDecimal(0, mc)
+    var termIsNotZero: Boolean = true
     do {
       // numer = numer.divide(invX2, scale, roundingMode);
       numer = numer / invX2
+      println("1." + numer + " " + numer.scale)
+      numer = numer(mc)
+      println("2." + numer + " " + numer.scale)
+      numer = numer.setScale( scale, RoundingMode.HALF_EVEN)
+      println("3." + numer + " " + numer.scale)
+
       val denom = 2 * i + 1;
       // term = numer.divide(BigDecimal.valueOf(denom), scale, roundingMode);
-      term = numer / BigDecimal(denom, mc)
+      val term = numer / BigDecimal(denom, mc)
       if ((i % 2) != 0) {
         result = result - term
       } else {
@@ -104,27 +91,27 @@ object Computations extends Serializable {
       }
       i = i + 1
       println("Scala: " + i + " Numer: " + numer + " " + " term: " + term + " result " + result)
-    } while (term.compare(BigDecimal(0, mc)) != 0);
-    result;
+      println("               " + "Numer: " + numer.scale + " " + " term: " + term.scale + " result " + result.scale)
+
+      termIsNotZero = (term.compare(zero) != 0)
+
+    } while ( termIsNotZero )
+
+    // } while ( term.compare(zero) != 0 )
+    result
   }
 }
 
-object TestFibo {
+object RunPi {
   import JavaPi._
 
   def main(args: Array[String]) : Unit = {
-//    println("100: " + Computations.fibBigInt((100)))
-//    println("10000: " + Computations.fibBigInt((10000)))
-//    println("1000000: " + Computations.fibBigInt((1000000)))
-//    println("100000000: " + Computations.fibBigInt((100000000)))
 
+    println( "PI: " + PiComputations.computePiFor(0, 10000))
 
-    // println( "PI: " + Computations.computePiFor(0, 10000))
+    val digits = 5
+    println( "PI: " + JavaPi.computePi(digits))
+    println( "PI: " + PiComputations.computePi(digits))
 
-    println( "PI: " + JavaPi.computePi(5))
-    println( "PI: " + Computations.computePi(5))
-
-    // println("Arctan(3, 10) :   " + Computations.arctan(3, 10))
-    // println( "PI: " + Computations.computePi(10))
   }
 }

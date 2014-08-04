@@ -49,6 +49,7 @@ public class JavaPi implements java.io.Serializable {
                 result = result.add(term);
             }
             System.out.println("Java: " + i + " Numer: " + numer + " " + " term: " + term + " result " + result);
+            System.out.println("                Numer: " + numer.scale() + " " + " term: " + term.scale() + " result " + result.scale());
             i++;
         } while (term.compareTo(BigDecimal.ZERO) != 0);
         return result;
