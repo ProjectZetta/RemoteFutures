@@ -25,14 +25,15 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
   // =====================================================
   // this is the code to setup other nodes
   // =====================================================
-  println("Starting up pulling worker (final) cluster.")
+//  println("Starting up pulling worker (final) cluster.")
   val joinAddress = startMaster(None, "backend")
-  Thread.sleep(5000)
-  // startBackend(Some(joinAddress), "backend")
-  startWorker(joinAddress)
+//  Thread.sleep(5000)
+//  // startBackend(Some(joinAddress), "backend")
+//  // startWorker(joinAddress)
+//  startWorker
   // =====================================================
 
-  val frontendSetup: FrontendSetup = new FrontendSetup(joinAddress, systemName)
+  val frontendSetup: FrontendSetup = new FrontendSetup(joinAddress, masterSystemName)
 
 
   // TODO: This is really bloody. We need a mechanism to check, if cluster (master and worker nodes) are up.
@@ -119,7 +120,7 @@ class FrontendSetup(joinAddress: akka.actor.Address, systemName: String) {
 
 /**
  *
- * @param mediatorToMaster
+ * @param mediatorToMaster is the mediator (PubSub in the cluster of frontend nodes and master nodes)
  * @param promise
  */
 class RemoteProducerActor(mediatorToMaster: ActorRef, promise: Promise[Any]) extends Actor with ActorLogging {

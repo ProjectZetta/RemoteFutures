@@ -45,7 +45,7 @@ object Worker {
  *
  *  - in state '''waitForWorkIsDoneAck''' it
  *     - waits for acknowledgement from master via [[MasterWorkerProtocol.WorkStatusAck]] in which case
- *       the worker request new work [[MasterWorkerProtocol.RequestForWork]] and becomes idle
+ *       the worker requests new work [[MasterWorkerProtocol.RequestForWork]] and becomes idle
  *
  * @param clusterClient
  * @param workExecutorProps
@@ -59,7 +59,7 @@ class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval
 
   import context.dispatcher
 
-  // At a regular interval, worker registers at master (via clusterClient ! SendToAll)
+  // at a regular interval, worker registers at master (via clusterClient ! SendToAll)
   val registerTask = context.system.scheduler.schedule(0.seconds, registerInterval, clusterClient,
     SendToAll("/user/master/active", RegisterWorker(workerId)))
 

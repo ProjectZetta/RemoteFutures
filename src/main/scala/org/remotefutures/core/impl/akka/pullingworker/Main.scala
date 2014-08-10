@@ -5,14 +5,11 @@ package org.remotefutures.core.impl.akka.pullingworker
 
 import scala.concurrent.duration._
 import com.typesafe.config.ConfigFactory
-import akka.actor.ActorSystem
-import akka.actor.Address
-import akka.actor.PoisonPill
-import akka.actor.Props
-import akka.actor.RootActorPath
+import akka.actor._
 import akka.cluster.Cluster
 import akka.contrib.pattern.ClusterClient
 import akka.contrib.pattern.ClusterSingletonManager
+import akka.japi.Util.immutableSeq
 
 object Main extends Startup {
 
@@ -20,7 +17,8 @@ object Main extends Startup {
     val joinAddress = startMaster(None, "backend")
     Thread.sleep(5000)
     startMaster(Some(joinAddress), "backend")
-    startWorker(joinAddress)
+    // startWorker(joinAddress)
+    startWorker
     // Thread.sleep(5000)
     // startFrontend(joinAddress)
   }
@@ -29,7 +27,8 @@ object Main extends Startup {
 
 trait Startup {
 
-  def systemName = "Workers"
+  def masterSystemName = "Mastersystem"
+  def workerSystemName = "Workersystem"
   def workTimeout = 10.seconds
 
 
@@ -40,11 +39,18 @@ trait Startup {
    * @return
    */
   def startMaster(joinAddressOption: Option[Address], role: String): Address = {
+    println("Starting master")
+
     val conf = ConfigFactory.parseString(s"akka.cluster.roles=[$role]").
       withFallback(ConfigFactory.load())
-    val system = ActorSystem(systemName, conf)
+    val system = ActorSystem(masterSystemName, conf)
     val joinAddress = joinAddressOption.getOrElse(Cluster(system).selfAddress)
+
+    println("  Join address (for masters joining the cluster '" + masterSystemName + "' is : " + joinAddress)
+
     Cluster(system).join(joinAddress)
+
+    // create the master actor (as cluster singleton).
     system.actorOf(ClusterSingletonManager.props(Master.props(workTimeout), "active",
       PoisonPill, Some(role)), "master")
     joinAddress
@@ -58,11 +64,26 @@ trait Startup {
    *
    * @see http://doc.akka.io/docs/akka/2.3.3/contrib/cluster-client.html
    *
-   * @param contactAddress
    */
-  def startWorker(contactAddress: akka.actor.Address): Unit = {
-    val system = ActorSystem(systemName)
-    val initialContacts = Set(system.actorSelection(RootActorPath(contactAddress) / "user" / "receptionist"))
+  def startWorker(): Unit = {
+  // def startWorker(contactAddress: akka.actor.Address): Unit = {
+    println("Starting worker")
+
+    val workerConfigName = "worker"
+    // val workerConfigName = "application"
+
+    val conf = ConfigFactory.load( workerConfigName );
+
+
+    val system = ActorSystem(workerSystemName, conf)
+
+    val initialContacts: Set[ActorSelection] = immutableSeq(conf.getStringList("contact-points")).map {
+      case AddressFromURIString(addr) ⇒ system.actorSelection(RootActorPath(addr) / "user" / "receptionist")
+    }.toSet
+
+    println("  Worker uses contact points " + initialContacts)
+
+    // val initialContacts2: Set[ActorSelection] = Set(system.actorSelection(RootActorPath(contactAddress) / "user" / "receptionist"))
     val clusterClient = system.actorOf(ClusterClient.props(initialContacts), "clusterClient")
 
     // create the worker actor
