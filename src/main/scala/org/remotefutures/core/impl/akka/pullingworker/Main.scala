@@ -46,13 +46,14 @@ trait Startup {
     val system = ActorSystem(masterSystemName, conf)
     val joinAddress = joinAddressOption.getOrElse(Cluster(system).selfAddress)
 
-    println("  Join address (for masters joining the cluster '" + masterSystemName + "' is : " + joinAddress)
+    println("  This master node is joining the cluster at join address " + joinAddress)
+
 
     Cluster(system).join(joinAddress)
 
     // create the master actor (as cluster singleton).
-    system.actorOf(ClusterSingletonManager.props(Master.props(workTimeout), "active",
-      PoisonPill, Some(role)), "master")
+    system.actorOf(ClusterSingletonManager.props(Master.props(workTimeout), "active", PoisonPill, Some(role)), "master")
+
     joinAddress
   }
 
@@ -74,13 +75,18 @@ trait Startup {
 
     val conf = ConfigFactory.load( workerConfigName );
 
-
     val system = ActorSystem(workerSystemName, conf)
 
     val initialContacts: Set[ActorSelection] = immutableSeq(conf.getStringList("contact-points")).map {
       case AddressFromURIString(addr) ⇒ system.actorSelection(RootActorPath(addr) / "user" / "receptionist")
     }.toSet
 
+    val test: Set[Address] = immutableSeq(conf.getStringList("contact-points")).map {
+      case AddressFromURIString(addr) ⇒ addr
+    }.toSet
+
+    println("  Original list: " + conf.getStringList("contact-points"));
+    println("  Adresses: " + test)
     println("  Worker uses contact points " + initialContacts)
 
     // val initialContacts2: Set[ActorSelection] = Set(system.actorSelection(RootActorPath(contactAddress) / "user" / "receptionist"))

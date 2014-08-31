@@ -38,7 +38,7 @@ object Resolvers {
 object Dependencies {
   val scalaTestVersion = "2.2.0"
   val scalaCheckVersion = "1.11.4"
-  val akkaVersion = "2.3.3"
+  val akkaVersion = "2.3.4"
   val disruptorVersion = "3.2.1"
 
   val scalaAsync = "org.scala-lang.modules" %% "scala-async" % "0.9.1"

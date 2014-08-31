@@ -9,6 +9,8 @@ import akka.actor._
 import akka.cluster.Cluster
 import akka.contrib.pattern.{DistributedPubSubMediator, DistributedPubSubExtension}
 import akka.contrib.pattern.DistributedPubSubMediator.Send
+import org.remotefutures.core.impl.akka.pullingworker.messages.MasterStatus.{MasterOperable, MasterIsOperable, IsMasterOperable}
+import org.remotefutures.core.impl.akka.pullingworker.messages._
 import org.remotefutures.core.{RemoteExecutionContext, Settings}
 import scala.concurrent.forkjoin.ThreadLocalRandom
 import scala.concurrent.{Future, Promise}
@@ -98,6 +100,20 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
   override def reportFailure(cause: Throwable): Unit = {
     // report failure of asynchronous computation
   }
+
+  /**
+   * A blocking call, until the system is operable
+   */
+  override def isOperable(): Unit = {
+    import scala.concurrent.duration._
+    import akka.util.Timeout
+
+    implicit val timeout = Timeout(5 seconds)
+
+    val mediator = frontendSetup.mediator
+
+    val masterState: Future[MasterOperable] = (mediator ? IsMasterOperable).mapTo[MasterOperable]
+  }
 }
 
 /**
@@ -167,7 +183,7 @@ class RemoteProducerActor(mediatorToMaster: ActorRef, promise: Promise[Any]) ext
   }
 
   def waitForMasterAck(work: Work): Actor.Receive = {
-    case Master.Ack ⇒
+    case WorkIsAccepted ⇒
       context.become(waitForWorkResult, discardOld = false)
     // TODO: Error handling ( see FrontEnd.NotOk )
     case WorkResult(workId, result) ⇒
@@ -179,7 +195,7 @@ class RemoteProducerActor(mediatorToMaster: ActorRef, promise: Promise[Any]) ext
   }
 
   def waitForWorkResult: Actor.Receive = {
-    case Master.Ack ⇒
+    case WorkIsAccepted ⇒
       log.info("And Whoops. Received master ack after work result.")
     case WorkResult(workId, result) ⇒
       log.info("Consuming result: {}", result)

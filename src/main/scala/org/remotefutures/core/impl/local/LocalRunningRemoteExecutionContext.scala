@@ -8,7 +8,8 @@ import scala.concurrent.Promise
 import org.remotefutures.core.impl.RemoteExecutor
 
 
-private[core] class LocalRunningRemoteExecutionContext(settings : Settings, reporter: Throwable => Unit) extends RemoteExecutionContext {
+private[core] class LocalRunningRemoteExecutionContext(settings : Settings, reporter: Throwable => Unit)
+  extends RemoteExecutionContext {
 
   /**
    * Facility to create a RemoteExecutor used in the context
@@ -40,5 +41,10 @@ private[core] class LocalRunningRemoteExecutionContext(settings : Settings, repo
   override def shutdown(): Unit = {
     // nothing to do
   }
+
+  /**
+   * A blocking call, until the system is operable
+   */
+  override def isOperable(): Unit = ???
 }
 

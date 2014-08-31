@@ -37,6 +37,11 @@ trait RemoteExecutionContext {
    */
   def shutdown(): Unit
 
+  /**
+   * A blocking call, until the system is operable
+   */
+  def isOperable() : Unit
+
 }
 
 object RemoteExecutionContext {

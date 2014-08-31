@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014 Martin Senne
  */
-package org.remotefutures.core.impl.akka.pullingworker
+package org.remotefutures.core.impl.akka.pullingworker.messages
 
 /**
  * Execute case class. Used from caller site.
@@ -14,3 +14,6 @@ case class Work(workId: String, job: () => Any)
 
 
 case class WorkResult(workId: String, result: Any)
+
+/** Confirmation that work has been accepted by master */
+case class WorkIsAccepted(workId: String)

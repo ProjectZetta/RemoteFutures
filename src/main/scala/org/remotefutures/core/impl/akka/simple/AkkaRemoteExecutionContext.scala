@@ -85,4 +85,9 @@ class AkkaRemoteExecutionContext(settings : Settings, reporter: Throwable => Uni
   override def reportFailure(cause: Throwable): Unit = {
 
   }
+
+  /**
+   * A blocking call, until the system is operable
+   */
+  override def isOperable(): Unit = ???
 }
