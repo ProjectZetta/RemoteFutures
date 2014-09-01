@@ -21,19 +21,19 @@ import akka.util.Timeout
 
 
 class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwable ⇒ Unit)
-  extends RemoteExecutionContext
-  with Startup {
+  extends RemoteExecutionContext {
 
-  // =====================================================
-  // this is the code to setup other nodes
-  // =====================================================
-//  println("Starting up pulling worker (final) cluster.")
-  val joinAddress = startMaster(None, "backend")
-//  Thread.sleep(5000)
-//  // startBackend(Some(joinAddress), "backend")
-//  // startWorker(joinAddress)
-//  startWorker
-  // =====================================================
+//
+//  // =====================================================
+//  // this is the code to setup other nodes
+//  // =====================================================
+////  println("Starting up pulling worker (final) cluster.")
+//  val joinAddress = startMaster(None, "backend")
+////  Thread.sleep(5000)
+////  // startBackend(Some(joinAddress), "backend")
+////  // startWorker(joinAddress)
+////  startWorker
+//  // =====================================================
 
   val frontendSetup: FrontendSetup = new FrontendSetup(joinAddress, masterSystemName)
 
@@ -64,7 +64,7 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
     implicit val timeout = Timeout(5 seconds)
 
     // construct the message
-    val msg = Execute( body )
+    val executionMsg = Execute( body )
 
     // determine system and mediator
     val system = frontendSetup.system
@@ -75,7 +75,7 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
 
     println("Sending message to remote producer actor " + remoteProducerActor)
 
-    remoteProducerActor ! msg
+    remoteProducerActor ! executionMsg
   }
 
 
@@ -145,11 +145,11 @@ class RemoteProducerActor(mediatorToMaster: ActorRef, promise: Promise[Any]) ext
     // register this actor to listen to result topic messages
     // mediatorToMaster ! DistributedPubSubMediator.Subscribe(Master.ResultsTopic, self)
 
-  // private var workerStates = Map[String, Promise[T]]()
 
   def scheduler = context.system.scheduler
 
   def rnd = ThreadLocalRandom.current
+
   def nextWorkId(): String = UUID.randomUUID().toString
 
   //  override def preStart(): Unit =
@@ -183,9 +183,11 @@ class RemoteProducerActor(mediatorToMaster: ActorRef, promise: Promise[Any]) ext
   }
 
   def waitForMasterAck(work: Work): Actor.Receive = {
+
     case WorkIsAccepted ⇒
       context.become(waitForWorkResult, discardOld = false)
     // TODO: Error handling ( see FrontEnd.NotOk )
+
     case WorkResult(workId, result) ⇒
       log.info("Whoops. Received result before Master.Ack. Still consuming result: {}", result)
       promise.success(result)
@@ -195,8 +197,10 @@ class RemoteProducerActor(mediatorToMaster: ActorRef, promise: Promise[Any]) ext
   }
 
   def waitForWorkResult: Actor.Receive = {
+
     case WorkIsAccepted ⇒
       log.info("And Whoops. Received master ack after work result.")
+
     case WorkResult(workId, result) ⇒
       log.info("Consuming result: {}", result)
       promise.success(result)

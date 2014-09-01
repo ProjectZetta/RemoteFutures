@@ -78,6 +78,7 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
   def receive = {
     case IsMasterOperable ⇒
       log.info("Master is asked, if everything is alright.")
+      log.info("  Master knows of " + workerStates.size + " workers, that have registered.")
       if ( workerStates.size > 0 ) { // at least one worker is present
         sender ! MasterIsOperable
       } else {

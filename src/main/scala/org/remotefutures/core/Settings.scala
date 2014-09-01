@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Martin Senne, Marvin Hansen.
+ * Copyright (c) 2014 Martin Senne
  */
 package org.remotefutures.core
 
