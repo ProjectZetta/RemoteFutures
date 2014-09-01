@@ -76,7 +76,9 @@ trait Startup {
     val system = ActorSystem(workerSystemName, conf)
 
     val initialContacts: Set[ActorSelection] = immutableSeq(conf.getStringList("contact-points")).map {
-      case AddressFromURIString(addr) ⇒ system.actorSelection(RootActorPath(addr) / "user" / "receptionist")
+      case AddressFromURIString(addr) ⇒ {
+        system.actorSelection(RootActorPath(addr) / "user" / "receptionist")
+      }
     }.toSet
 
     println("  Worker uses contact points " + initialContacts + " to contact master.")
