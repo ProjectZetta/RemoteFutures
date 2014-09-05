@@ -3,6 +3,8 @@
  */
 package org.remotefutures.core.impl.akka.pullingworker
 
+import org.remotefutures.core.Settings
+
 import scala.concurrent.duration._
 import com.typesafe.config.ConfigFactory
 import akka.actor._
@@ -11,9 +13,12 @@ import akka.contrib.pattern.ClusterClient
 import akka.contrib.pattern.ClusterSingletonManager
 import akka.japi.Util.immutableSeq
 
-//object Main extends Startup {
-//
-//  def main(args: Array[String]): Unit = {
+object Main extends Startup {
+
+  def main(args: Array[String]): Unit = {
+
+
+
 //    val joinAddress = startMaster(None, "backend")
 //    Thread.sleep(5000)
 //    startMaster(Some(joinAddress), "backend")
@@ -21,16 +26,19 @@ import akka.japi.Util.immutableSeq
 //    startWorker
 //    // Thread.sleep(5000)
 //    // startFrontend(joinAddress)
-//  }
-//
-//}
+  }
+
+}
+
+
+
+
+
+
 
 trait Startup {
 
-  def masterSystemName = "Mastersystem"
-  def workerSystemName = "Workersystem"
   def workTimeout = 10.seconds
-
 
   /**
    *
@@ -44,7 +52,8 @@ trait Startup {
 
     val conf = ConfigFactory.parseString(s"akka.cluster.roles=[$role]").
       withFallback(ConfigFactory.load()) // using application.conf right now
-    val system = ActorSystem(masterSystemName, conf)
+    // val system = ActorSystem(masterSystemName, conf)
+    val system = ActorSystem("dummy", conf)
     val joinAddress = joinAddressOption.getOrElse(Cluster(system).selfAddress)
 
     println("  This master node is joining the cluster at join address " + joinAddress)
@@ -73,7 +82,8 @@ trait Startup {
 
     val conf = ConfigFactory.load( workerConfigName );
 
-    val system = ActorSystem(workerSystemName, conf)
+    // val system = ActorSystem(workerSystemName, conf)
+    val system = ActorSystem("dummy", conf)
 
     val initialContacts: Set[ActorSelection] = immutableSeq(conf.getStringList("contact-points")).map {
       case AddressFromURIString(addr) ⇒ {

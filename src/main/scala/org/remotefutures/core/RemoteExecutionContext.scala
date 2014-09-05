@@ -6,6 +6,8 @@ package org.remotefutures.core
 import scala.concurrent.Promise
 import com.typesafe.config.{ConfigFactory, Config}
 
+
+
 /**
  * Remote execution context provides methods to setup the execution environment
  * for remote execution (of futures, etc.)
@@ -28,14 +30,10 @@ trait RemoteExecutionContext {
   def reportFailure(cause: Throwable): Unit
 
   /**
-   * Startup the node system
+   * Get controllers to startup / shutdown nodes of different type.
+   * @return node controllers
    */
-  def startup(): Unit
-
-  /**
-   * Shutdown the node system
-   */
-  def shutdown(): Unit
+  def nodeControllers : NodeControllers
 
   /**
    * A blocking call, until the system is operable

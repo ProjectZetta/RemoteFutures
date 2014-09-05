@@ -10,7 +10,7 @@ import com.typesafe.config.Config
  *
  */
 private[core] object RemoteExecutionContextImpl {
-  def fromConfig( c: Config, reporter: Throwable => Unit = RemoteExecutionContext.defaultReporter): RemoteExecutionContext = {
+  def fromConfig( config: Config, reporter: Throwable => Unit = RemoteExecutionContext.defaultReporter): RemoteExecutionContext = {
 
     def instantiateByClassname[T](fqn: String)(args:AnyRef*): T = {
       val clazz = Class.forName(fqn)
@@ -21,14 +21,14 @@ private[core] object RemoteExecutionContextImpl {
       constructor.newInstance(args:_*).asInstanceOf[T]
     }
 
-    val settings = Settings(c)
+    val settings = Settings( config )
 
     /**
      * Constructed remote execution context via reflection and
-     * the classname given in [[settings.RemoteExecutionContextClassname]]
+     * the classname given in [[settings.RemoteExecutionContextFQCN]]
      */
     val rec: RemoteExecutionContext = {
-      instantiateByClassname[RemoteExecutionContext](settings.RemoteExecutionContextClassname)(settings, reporter)
+      instantiateByClassname[RemoteExecutionContext](settings.RemoteExecutionContextFQCN)( settings, reporter)
     }
     rec
   }

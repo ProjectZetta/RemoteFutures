@@ -9,9 +9,11 @@ import akka.actor._
 import akka.cluster.Cluster
 import akka.contrib.pattern.{DistributedPubSubMediator, DistributedPubSubExtension}
 import akka.contrib.pattern.DistributedPubSubMediator.Send
+import com.typesafe.config.Config
+import org.remotefutures.core.impl.akka.pullingworker.controllers._
 import org.remotefutures.core.impl.akka.pullingworker.messages.MasterStatus.{MasterOperable, MasterIsOperable, IsMasterOperable}
 import org.remotefutures.core.impl.akka.pullingworker.messages._
-import org.remotefutures.core.{RemoteExecutionContext, Settings}
+import org.remotefutures.core._
 import scala.concurrent.forkjoin.ThreadLocalRandom
 import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success, Try}
@@ -22,6 +24,11 @@ import akka.util.Timeout
 
 class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwable ⇒ Unit)
   extends RemoteExecutionContext {
+
+  // TODO: Add consistency check of config
+  val specificSettings = PullingWorkerSettings( settings.specificConfig )
+
+
 
 //
 //  // =====================================================
@@ -35,11 +42,22 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
 ////  startWorker
 //  // =====================================================
 
-  val frontendSetup: FrontendSetup = new FrontendSetup(joinAddress, masterSystemName)
+//  val joinAddress = null
+//  val masterSystemName = ""
+//
+//  val frontendSetup: FrontendSetup = new FrontendSetup(joinAddress, masterSystemName)
+//
+//
+//  // TODO: This is really bloody. We need a mechanism to check, if cluster (master and worker nodes) are up.
+//  Thread.sleep(5000)
 
 
-  // TODO: This is really bloody. We need a mechanism to check, if cluster (master and worker nodes) are up.
-  Thread.sleep(5000)
+  implicit val frontEndToConcrete = new ToConcreteType[NodeController, FrontendController]
+
+  val frontEndController = nodeControllers.specificNodeController(FrontEndNodeType)
+  
+  //val frontEndController: FrontendController = getNodeControllers.getNodeController(FrontEnd).asInstanceOf[FrontendController]
+  val frontendInformation = frontEndController.start(2345)
 
   def rnd = ThreadLocalRandom.current
 
@@ -67,8 +85,8 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
     val executionMsg = Execute( body )
 
     // determine system and mediator
-    val system = frontendSetup.system
-    val mediator = frontendSetup.mediator
+    val system = frontendInformation.system
+    val mediator = frontendInformation.mediator
 
     // create fresh actor (which handles master ack and does retries)
     val remoteProducerActor = system.actorOf( Props(classOf[RemoteProducerActor], mediator, promise))
@@ -78,21 +96,8 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
     remoteProducerActor ! executionMsg
   }
 
-
-  /**
-   * Startup the node system
-   */
-  override def startup(): Unit = {
-    // startup cluster
-  }
-
-  /**
-   * Shutdown the node system
-   */
-  override def shutdown(): Unit = {
-    // shutdown cluster
-  }
-
+  def nodeControllers = new PullingWorkerNodeControllers
+  
 
   /**
    * Reports that an asynchronous computation failed.
@@ -110,29 +115,13 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
 
     implicit val timeout = Timeout(5 seconds)
 
-    val mediator = frontendSetup.mediator
-
-    val masterState: Future[MasterOperable] = (mediator ? IsMasterOperable).mapTo[MasterOperable]
+//    val mediator = frontendSetup.mediator
+//
+//    val masterState: Future[MasterOperable] = (mediator ? IsMasterOperable).mapTo[MasterOperable]
   }
 }
 
-/**
- *
- * @param joinAddress
- * @param systemName
- */
-class FrontendSetup(joinAddress: akka.actor.Address, systemName: String) {
-  val system = ActorSystem(systemName)
-  Cluster(system).join(joinAddress)
-  val mediator = DistributedPubSubExtension(system).mediator
-  println("Frontend Setup finished. Mediator is " + mediator)
 
-//   val remoteProducerActor = system.actorOf( Props(classOf[RemoteProducerActor], mediator))
-
-  //  val frontend = actorSystem.actorOf(Props[Frontend], "frontend")
-  //  actorSystem.actorOf(Props(classOf[WorkProducer], frontend), "producer")
-  //  actorSystem.actorOf(Props[WorkConsumer], "consumer")
-}
 
 /**
  *
@@ -208,3 +197,4 @@ class RemoteProducerActor(mediatorToMaster: ActorRef, promise: Promise[Any]) ext
       context.stop(self)
   }
 }
+

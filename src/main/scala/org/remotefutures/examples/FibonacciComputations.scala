@@ -8,7 +8,7 @@ import java.math.MathContext
 import scala.annotation.tailrec
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
-import org.remotefutures.core.EnvironmentImplicits.DefaultConfigBasedRemoteExecutionContext
+import org.remotefutures.core.EnvironmentImplicits.configBasedRemoteExecutionContext
 import org.remotefutures.core.RemoteFuture
 
 

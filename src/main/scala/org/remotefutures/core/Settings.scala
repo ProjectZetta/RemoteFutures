@@ -20,9 +20,11 @@ class Settings(val config: Config) {
     }
   }
 
-  val RemoteExecutionContextClassname : String = {
-    cc.getString("remote-execution-context-classname")
+  val RemoteExecutionContextFQCN : String = {
+    cc.getString("remote-execution-context-FQCN")
   }
+
+  val specificConfig = config.getConfig( RemoteExecutionContextFQCN )
 }
 
 object Settings {

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2014 Martin Senne, Marvin Hansen.
+* Copyright (c) 2014 Martin Senne.
 */
 package org.remotefutures.core
 
@@ -10,7 +10,7 @@ object EnvironmentImplicits {
   /**
    * An remote execution context which uses the configuration given in remotefutures.conf to setup the context.
    */
-  implicit val DefaultConfigBasedRemoteExecutionContext: RemoteExecutionContext = {
+  implicit val configBasedRemoteExecutionContext: RemoteExecutionContext = {
     RemoteExecutionContext.fromDefaultConfig
   }
 }
