@@ -4,16 +4,18 @@
 package org.remotefutures.core.impl.akka.pullingworker
 
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 import akka.actor._
 import akka.contrib.pattern.{DistributedPubSubMediator}
 import akka.contrib.pattern.DistributedPubSubMediator.Send
+import akka.pattern.ask
 import org.remotefutures.core.impl.akka.pullingworker.controllers._
-import org.remotefutures.core.impl.akka.pullingworker.messages.MasterStatus.{MasterOperable, MasterIsOperable, IsMasterOperable}
+import org.remotefutures.core.impl.akka.pullingworker.messages.MasterStatus.{MasterIsNotOperable, MasterOperable, MasterIsOperable, IsMasterOperable}
 import org.remotefutures.core.impl.akka.pullingworker.messages._
 import org.remotefutures.core._
 import scala.concurrent.forkjoin.ThreadLocalRandom
-import scala.concurrent.{Promise}
+import scala.concurrent.{Await, Future, Promise}
 import scala.concurrent.duration._
 import akka.util.Timeout
 
@@ -81,22 +83,85 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
     import scala.concurrent.duration._
     import akka.util.Timeout
 
-    implicit val timeout = Timeout(5 seconds)
 
-//    val mediator = frontendSetup.mediator
-//
-//    val masterState: Future[MasterOperable] = (mediator ? IsMasterOperable).mapTo[MasterOperable]
+    val timeToWaitForMasterToBecomeOperable = Timeout(100 seconds)
+
+    val system = frontendInformation.system
+    val mediator = frontendInformation.mediator
+
+    // create fresh actor (which handles master ack and does retries)
+    val pingMasterActor = system.actorOf( Props(classOf[PingMasterActor], mediator))
+
+    println("Message 'IsMasterOperable' is send to ping master actor " + pingMasterActor)
+
+    try {
+      val fMasterOperable = pingMasterActor.?(IsMasterOperable)(timeToWaitForMasterToBecomeOperable).mapTo[MasterOperable]
+
+      println("Waiting for final answer from master.")
+      val x: MasterOperable = Await.result(fMasterOperable, Duration.Inf)
+
+    } catch {
+      // The ping actor hasn't answered within ask timeout [[PingMasterActor.retryInterval]], that the master is available
+      // this timeout is not thrown by Await.result.
+      // Instead the future is completed with a Failure(AskTimeoutException). When calling Await.result this
+      //   is thrown as real exception.
+      case e: akka.pattern.AskTimeoutException => {
+        println("AskTimeoutException")
+        throw new Exception("Master is not operable")
+      }
+    }
+
+  }
+}
+
+class PingMasterActor(mediator: ActorRef) extends Actor with ActorLogging {
+
+  import context.dispatcher
+
+  def scheduler = context.system.scheduler
+
+  val retryInterval = 2.seconds
+
+  case object Tick
+
+  override def receive: Actor.Receive = {
+    case IsMasterOperable => {
+      val originalSender = sender()
+      scheduler.scheduleOnce( 1.seconds, self, Tick)
+      context.become( waitingForMaster(originalSender) )
+    }
+  }
+
+  def waitingForMaster(recipient: ActorRef) : Actor.Receive = {
+    case MasterIsOperable => { // from master
+      log.info("Master is operable")
+      recipient ! MasterIsOperable // to caller
+      context.stop(self)
+    }
+    case MasterIsNotOperable => { // from master
+      log.info("Master is not operable yet. Retrying in " + retryInterval)
+      scheduler.scheduleOnce( retryInterval, self, Tick) // retry
+    }
+    case Tick => {
+      pingMaster
+    }
+  }
+  
+  def pingMaster : Unit = {
+    mediator ! Send("/user/master/active", IsMasterOperable, localAffinity = false)
   }
 }
 
 
-
 /**
+ * An actor, which is created for each new call to the [[RemoteExecutionContext.execute()]] method.
  *
- * @param mediatorToMaster is the mediator (PubSub in the cluster of frontend nodes and master nodes)
- * @param promise
+ * @param mediatorToMaster is the mediator (PubSuis used in n the cluster of frontend nodes and master nod
+ *                         to be able to proceed if master actor fails.es)
+ * @param promise is the promise which is completed, once the execution is done and the result is present
  */
 class RemoteProducerActor(mediatorToMaster: ActorRef, promise: Promise[Any]) extends Actor with ActorLogging {
+
 
   // not required anymore
     // register this actor to listen to result topic messages
