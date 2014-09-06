@@ -52,7 +52,7 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
 //  Thread.sleep(5000)
 
 
-  implicit val frontEndToConcrete = new ToConcreteType[NodeController, FrontendController]
+
 
   val frontEndController = nodeControllers.specificNodeController(FrontEndNodeType)
   

@@ -4,6 +4,7 @@ import java.net.InetAddress
 
 import akka.actor.Address
 import org.remotefutures.core.impl.akka.pullingworker.Startup
+import org.remotefutures.core.impl.akka.pullingworker.controllers.FrontendController
 
 
 /**
@@ -12,7 +13,16 @@ import org.remotefutures.core.impl.akka.pullingworker.Startup
 
 object MasterWorkerMultiJvmNode1 extends Startup {
   def main(args: Array[String]) {
-    val joinAddress = startMaster(None, "backend")
+
+    import org.remotefutures.core.impl.akka.pullingworker.controllers.FrontEndNodeType
+
+    implicit val rec = org.remotefutures.core.RemoteExecutionContextImplicits.defaultConfigBasedRemoteExecutionContext
+
+    val frontEndController  = rec.nodeControllers.nodeController( FrontEndNodeType )
+    frontEndController.start(123)
+
+
+    // val joinAddress = startMaster(None, "backend")
     // println("Master has default address: " + InetAddress.getLocalHost.getHostAddress );
     // startMaster(Some(joinAddress), "backend")
   }

@@ -144,7 +144,7 @@ object RemoteFutureExample2 {
 object RemoteFutureWithSporesExample__NotWorking {
   def main(args: Array[String]): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
-    import org.remotefutures.core.EnvironmentImplicits.configBasedRemoteExecutionContext
+    implicit val configBasedRemoteExecutionContext = org.remotefutures.core.RemoteExecutionContextImplicits.defaultConfigBasedRemoteExecutionContext
 
     // val xs1: List[Long] = List.fill(500)(1000000000 + (Random.nextInt(1000)))
 
@@ -214,8 +214,8 @@ object RemoteFutureWithSporesExample_Working {
   def main(args: Array[String]): Unit = {
     import scala.concurrent.duration._
     import scala.concurrent.ExecutionContext.Implicits.global
-    import org.remotefutures.core.EnvironmentImplicits.configBasedRemoteExecutionContext
 
+    implicit val configBasedRemoteExecutionContext = org.remotefutures.core.RemoteExecutionContextImplicits.defaultConfigBasedRemoteExecutionContext
     val nodeTypes = configBasedRemoteExecutionContext.nodeControllers.nodeTypes
 
     println(nodeTypes)

@@ -20,26 +20,28 @@ case object MasterInformation extends NodeInformation[MasterNodeType.type]
 
 class PullingWorkerNodeControllers extends NodeControllers {
 
-  type T = PullingWorkerNodeType
-
-  val controllers: Map[PullingWorkerNodeType, NodeController] = Map(
+  val controllers: Map[NodeType, NodeController] = Map(
     ( FrontEndNodeType, new FrontendController(null) ),
     ( WorkerNodeType, new WorkerController(null) ),
     ( MasterNodeType, new MasterController(null) )
   )
 
-  override def nodeController(nodeType: T): NodeController = {
+  override def nodeController(nodeType: NodeType): NodeController = {
     controllers(nodeType)
   }
 
   // override def specificNodeController[T, C](nodeType: T)(implicit toConcrete: ToConcreteType[NodeController, C]): C = {
-  override def specificNodeController[C](nodeType: T)(implicit toConcrete: ToConcreteType[NodeController, C]): C = {
+  override def specificNodeController[C](nodeType: NodeType)(implicit toConcrete: ToConcreteType[NodeController, C]): C = {
     toConcrete.convert( controllers(nodeType) )
   }
 
   override def nodeTypes: Set[NodeType] = Set(FrontEndNodeType, WorkerNodeType, MasterNodeType)
+}
 
-
+object Implicits {
+  implicit val frontEndToConcrete = new ToConcreteType[NodeController, FrontendController]
+  implicit val workerToConcrete = new ToConcreteType[NodeController, WorkerController]
+  implicit val masterToConcrete = new ToConcreteType[NodeController, MasterController]
 }
 
 

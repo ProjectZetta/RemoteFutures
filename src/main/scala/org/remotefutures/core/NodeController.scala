@@ -20,11 +20,9 @@ class ToConcreteType[S, SUB] {
 
 trait NodeControllers {
 
-  type T <: NodeType
+  def nodeController( nodeType : NodeType ) : NodeController
 
-  def nodeController( nodeType : T ) : NodeController
-
-  def specificNodeController[C](nodeType: T)(implicit toConcrete: ToConcreteType[NodeController, C]): C
+  def specificNodeController[C](nodeType: NodeType)(implicit toConcrete: ToConcreteType[NodeController, C]): C
 
   def nodeTypes : Set[NodeType]
 }
