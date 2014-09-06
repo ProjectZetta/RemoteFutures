@@ -101,8 +101,9 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
       val x: MasterOperable = Await.result(fMasterOperable, Duration.Inf)
 
     } catch {
-      // The ping actor hasn't answered within ask timeout [[PingMasterActor.retryInterval]], that the master is available
-      // this timeout is not thrown by Await.result.
+      // The ping actor hasn't answered within ask timeout [[PingMasterActor.retryInterval]].
+      // That means, that the master is not available.
+      // This timeout is never thrown by Await.result.
       // Instead the future is completed with a Failure(AskTimeoutException). When calling Await.result this
       //   is thrown as real exception.
       case e: akka.pattern.AskTimeoutException => {

@@ -3,7 +3,6 @@ package org.remotefutures.core
 import java.net.InetAddress
 
 import akka.actor.Address
-import org.remotefutures.core.impl.akka.pullingworker.Startup
 import org.remotefutures.core.impl.akka.pullingworker.controllers.FrontendController
 
 
@@ -16,7 +15,7 @@ import org.remotefutures.core.impl.akka.pullingworker.controllers.FrontendContro
  * - frontend
  */
 
-object MasterWorkerMultiJvmNode1 extends Startup {
+object MasterWorkerMultiJvmNode1 {
   def main(args: Array[String]) {
 
     implicit val rec = org.remotefutures.core.RemoteExecutionContextImplicits.defaultConfigBasedRemoteExecutionContext
@@ -35,10 +34,15 @@ object MasterWorkerMultiJvmNode1 extends Startup {
   }
 }
 
-object MasterWorkerMultiJvmNode2 extends Startup {
+object MasterWorkerMultiJvmNode2 {
   def main(args: Array[String]) {
-    Thread.sleep(5000)
-    startWorker
+    implicit val rec = org.remotefutures.core.RemoteExecutionContextImplicits.defaultConfigBasedRemoteExecutionContext
+
+    val masterController = rec.nodeControllers("master")
+    masterController match {
+      case Some(x) => x.start(234)
+      case None => throw new Exception("Can not start master node. Aborting")
+    }
   }
 }
 
