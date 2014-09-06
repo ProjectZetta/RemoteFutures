@@ -15,11 +15,13 @@ case object MasterNodeType extends PullingWorkerNodeType
  * Holds controllers for all three node types (frontend, master, worker) in the pulling working scenario.
  * @param settings to specify the setup of the nodes of different type.
  */
-class PullingWorkerNodeControllers(settings: PullingWorkerSettings) extends NodeControllers {
+class PullingWorkerNodeControllers(settings: Settings) extends NodeControllers {
 
-  val frontEndController = new FrontendController(settings)
-  val masterController = new MasterController(settings)
-  val workerController = new WorkerController(settings)
+  val pullingWorkerSettings = PullingWorkerSettings( settings.specificConfig )
+
+  val frontEndController = new FrontendController(pullingWorkerSettings)
+  val masterController = new MasterController(pullingWorkerSettings)
+  val workerController = new WorkerController(pullingWorkerSettings)
 
   val controllers: Map[NodeType, NodeController] = Map(
     ( FrontEndNodeType, frontEndController ),

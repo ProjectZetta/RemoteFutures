@@ -5,8 +5,8 @@ package org.remotefutures.core.impl.akka.pullingworker.controllers
 
 import akka.actor.{ActorRef, ActorSystem}
 import akka.contrib.pattern.DistributedPubSubExtension
-import org.remotefutures.core.{NodeInformation, NodeController}
-import org.remotefutures.core.impl.akka.pullingworker.PullingWorkerSettings
+import org.remotefutures.core.{RemoteExecutionContext, NodeInformation, NodeController}
+import org.remotefutures.core.impl.akka.pullingworker.{PullingWorkerRemoteExecutionContext, PullingWorkerSettings}
 
 case class FrontEndInformation( system: ActorSystem, mediator: ActorRef ) extends NodeInformation[FrontEndNodeType.type]
 
@@ -31,7 +31,9 @@ class FrontendController(settings: PullingWorkerSettings) extends NodeController
     FrontEndInformation(system, mediator)
   }
 
-  override def stop: Unit = {
+  override def stop: Unit = {}
 
-  }
+  override def executionContext(init: S) : Option[RemoteExecutionContext] =
+    Some(new PullingWorkerRemoteExecutionContext(init))
+
 }

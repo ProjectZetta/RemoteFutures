@@ -3,14 +3,14 @@
  */
 package org.remotefutures.core.impl
 
-import org.remotefutures.core.{Settings, RemoteExecutionContext}
+import org.remotefutures.core.{NodeControllers, Settings, RemoteExecutionContext}
 import com.typesafe.config.Config
 
 /**
  *
  */
-private[core] object RemoteExecutionContextImpl {
-  def fromConfig( config: Config, reporter: Throwable => Unit = RemoteExecutionContext.defaultReporter): RemoteExecutionContext = {
+private[core] object NodeControllersImpl {
+  def fromConfig( config: Config ): NodeControllers = {
 
     def instantiateByClassname[T](fqn: String)(args:AnyRef*): T = {
       val clazz = Class.forName(fqn)
@@ -25,11 +25,11 @@ private[core] object RemoteExecutionContextImpl {
 
     /**
      * Constructed remote execution context via reflection and
-     * the classname given in [[settings.RemoteExecutionContextFQCN]]
+     * the classname given in [[settings.NodeControllersFQCN]]
      */
-    val rec: RemoteExecutionContext = {
-      instantiateByClassname[RemoteExecutionContext]("NOT WORKING")( settings, reporter)
+    val nc: NodeControllers = {
+      instantiateByClassname[NodeControllers](settings.NodeControllersFQCN)( settings )
     }
-    rec
+    nc
   }
 }

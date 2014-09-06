@@ -7,7 +7,7 @@ import akka.actor.{PoisonPill, ActorSystem, Address}
 import akka.cluster.Cluster
 import akka.contrib.pattern.ClusterSingletonManager
 import com.typesafe.config.ConfigFactory
-import org.remotefutures.core.{NodeInformation, NodeController}
+import org.remotefutures.core.{RemoteExecutionContext, NodeInformation, NodeController}
 import org.remotefutures.core.impl.akka.pullingworker.{Master, PullingWorkerSettings}
 
 case object MasterInformation extends NodeInformation[MasterNodeType.type]
@@ -56,4 +56,6 @@ class MasterController(settings: PullingWorkerSettings) extends NodeController {
   }
 
   override def stop: Unit = ???
+
+  override def executionContext(init: S): Option[RemoteExecutionContext] = None
 }

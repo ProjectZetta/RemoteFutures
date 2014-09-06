@@ -20,15 +20,15 @@ import scala.concurrent.duration._
 import akka.util.Timeout
 
 
-class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwable ⇒ Unit)
+class PullingWorkerRemoteExecutionContext(frontendInformation: FrontEndInformation)
   extends RemoteExecutionContext {
 
   // TODO: Add consistency check of config
-  val specificSettings = PullingWorkerSettings( settings.specificConfig )
+  // val specificSettings = PullingWorkerSettings( settings.specificConfig )
 
-  val nodeControllers = new PullingWorkerNodeControllers(specificSettings)
+  // val nodeControllers = new PullingWorkerNodeControllers(specificSettings)
 
-  val frontendInformation = nodeControllers.frontEndController.start(2345)
+  // val frontendInformation = nodeControllers.frontEndController.start(2345)
 
   def rnd = ThreadLocalRandom.current
 

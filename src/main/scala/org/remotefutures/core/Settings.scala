@@ -20,11 +20,11 @@ class Settings(val config: Config) {
     }
   }
 
-  val RemoteExecutionContextFQCN : String = {
-    cc.getString("remote-execution-context-FQCN")
+  val NodeControllersFQCN : String = {
+    cc.getString("node-controllers-FQCN")
   }
 
-  val specificConfig = config.getConfig( RemoteExecutionContextFQCN )
+  val specificConfig = config.getConfig( NodeControllersFQCN )
 }
 
 object Settings {

@@ -78,9 +78,4 @@ class AkkaRemoteExecutionContext(settings : Settings, reporter: Throwable => Uni
    */
   override def isOperable(): Unit = ???
 
-  /**
-   * Get controllers to startup / shutdown nodes of different type.
-   * @return node controllers
-   */
-  override def nodeControllers: NodeControllers = ???
 }

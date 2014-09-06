@@ -39,10 +39,5 @@ private[core] class LocalRunningRemoteExecutionContext(settings : Settings, repo
    */
   override def isOperable(): Unit = ???
 
-  /**
-   * Get controllers to startup / shutdown nodes of different type.
-   * @return node controllers
-   */
-  override def nodeControllers: NodeControllers = ???
 }
 

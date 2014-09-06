@@ -7,7 +7,7 @@ import akka.actor._
 import akka.contrib.pattern.ClusterClient
 import akka.japi.Util._
 import com.typesafe.config.ConfigFactory
-import org.remotefutures.core.{NodeInformation, NodeController}
+import org.remotefutures.core.{RemoteExecutionContext, NodeInformation, NodeController}
 import org.remotefutures.core.impl.akka.pullingworker.{WorkExecutor, Worker, PullingWorkerSettings}
 
 case object WorkerInformation extends NodeInformation[WorkerNodeType.type]
@@ -57,4 +57,6 @@ class WorkerController(settings: PullingWorkerSettings) extends NodeController {
   }
 
   override def stop: Unit = ???
+
+  override def executionContext(init: S): Option[RemoteExecutionContext] = None
 }

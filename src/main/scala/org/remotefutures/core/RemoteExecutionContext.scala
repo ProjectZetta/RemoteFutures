@@ -29,11 +29,6 @@ trait RemoteExecutionContext {
    */
   def reportFailure(cause: Throwable): Unit
 
-  /**
-   * Get controllers to startup / shutdown nodes of different type.
-   * @return node controllers
-   */
-  def nodeControllers : NodeControllers
 
   /**
    * A blocking call, until the system is operable
@@ -41,6 +36,7 @@ trait RemoteExecutionContext {
   def isOperable() : Unit
 
 }
+
 
 object RemoteExecutionContext {
 
