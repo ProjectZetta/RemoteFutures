@@ -6,18 +6,14 @@ package org.remotefutures.core.impl.akka.pullingworker
 import java.util.UUID
 
 import akka.actor._
-import akka.cluster.Cluster
-import akka.contrib.pattern.{DistributedPubSubMediator, DistributedPubSubExtension}
+import akka.contrib.pattern.{DistributedPubSubMediator}
 import akka.contrib.pattern.DistributedPubSubMediator.Send
-import com.typesafe.config.Config
 import org.remotefutures.core.impl.akka.pullingworker.controllers._
 import org.remotefutures.core.impl.akka.pullingworker.messages.MasterStatus.{MasterOperable, MasterIsOperable, IsMasterOperable}
 import org.remotefutures.core.impl.akka.pullingworker.messages._
 import org.remotefutures.core._
 import scala.concurrent.forkjoin.ThreadLocalRandom
-import scala.concurrent.{Future, Promise}
-import scala.util.{Failure, Success, Try}
-import akka.pattern.ask
+import scala.concurrent.{Promise}
 import scala.concurrent.duration._
 import akka.util.Timeout
 
@@ -28,29 +24,7 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
   // TODO: Add consistency check of config
   val specificSettings = PullingWorkerSettings( settings.specificConfig )
 
-
-
-//
-//  // =====================================================
-//  // this is the code to setup other nodes
-//  // =====================================================
-////  println("Starting up pulling worker (final) cluster.")
-//  val joinAddress = startMaster(None, "backend")
-////  Thread.sleep(5000)
-////  // startBackend(Some(joinAddress), "backend")
-////  // startWorker(joinAddress)
-////  startWorker
-//  // =====================================================
-
-//  val joinAddress = null
-//  val masterSystemName = ""
-//
-//  val frontendSetup: FrontendSetup = new FrontendSetup(joinAddress, masterSystemName)
-//
-//
-//  // TODO: This is really bloody. We need a mechanism to check, if cluster (master and worker nodes) are up.
-//  Thread.sleep(5000)
-
+  val nodeControllers = new PullingWorkerNodeControllers(specificSettings)
 
   val frontendInformation = nodeControllers.frontEndController.start(2345)
 
@@ -91,8 +65,6 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
     remoteProducerActor ! executionMsg
   }
 
-  def nodeControllers = new PullingWorkerNodeControllers
-  
 
   /**
    * Reports that an asynchronous computation failed.
@@ -100,6 +72,7 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
   override def reportFailure(cause: Throwable): Unit = {
     // report failure of asynchronous computation
   }
+
 
   /**
    * A blocking call, until the system is operable

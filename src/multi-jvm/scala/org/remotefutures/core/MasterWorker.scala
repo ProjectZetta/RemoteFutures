@@ -9,6 +9,11 @@ import org.remotefutures.core.impl.akka.pullingworker.controllers.FrontendContro
 
 /**
  * Start the master worker example with "multi-jvm:run org.remotefutures.core.MasterWorker"
+ *
+ * The master worker example consists of three nodes:
+ * - master
+ * - worker
+ * - frontend
  */
 
 object MasterWorkerMultiJvmNode1 extends Startup {

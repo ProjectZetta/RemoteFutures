@@ -1,28 +1,25 @@
 package org.remotefutures.core.impl.akka.pullingworker.controllers
 
-import akka.actor.{ActorRef, ActorSystem}
-import akka.cluster.Cluster
-import akka.contrib.pattern.DistributedPubSubExtension
 import org.remotefutures.core.NodeController
 import org.remotefutures.core.impl.akka.pullingworker.PullingWorkerSettings
 import org.remotefutures.core._
 
 // specific node types for pulling worker scenario
+
 sealed trait PullingWorkerNodeType extends NodeType
 case object FrontEndNodeType extends PullingWorkerNodeType
 case object WorkerNodeType extends PullingWorkerNodeType
 case object MasterNodeType extends PullingWorkerNodeType
 
-case class FrontEndInformation( system: ActorSystem, mediator: ActorRef ) extends NodeInformation[FrontEndNodeType.type]
-case object WorkerInformation extends NodeInformation[WorkerNodeType.type]
-case object MasterInformation extends NodeInformation[MasterNodeType.type]
+/**
+ * Holds controllers for all three node types (frontend, master, worker) in the pulling working scenario.
+ * @param settings to specify the setup of the nodes of different type.
+ */
+class PullingWorkerNodeControllers(settings: PullingWorkerSettings) extends NodeControllers {
 
-
-class PullingWorkerNodeControllers extends NodeControllers {
-
-  val frontEndController = new FrontendController(null)
-  val masterController = new MasterController(null)
-  val workerController = new WorkerController(null)
+  val frontEndController = new FrontendController(settings)
+  val masterController = new MasterController(settings)
+  val workerController = new WorkerController(settings)
 
   val controllers: Map[NodeType, NodeController] = Map(
     ( FrontEndNodeType, frontEndController ),
@@ -46,49 +43,6 @@ class PullingWorkerNodeControllers extends NodeControllers {
 }
 
 
-/**
- * Front end controller
- * @param settings describing frontend settings
- */
-class FrontendController(settings: PullingWorkerSettings) extends NodeController {
-  type S = FrontEndInformation
-  type N = FrontEndNodeType.type
-
-  override def start(port: Int): S = {
-  // override def start(port: Int): NodeInformation[FrontEnd.type] = {
-    println("Frontend: Starting")
-
-    val systemname = settings.masterSystemname
-    val system = ActorSystem(systemname)
-    // Cluster(system).join(joinAddress)
-    val mediator = DistributedPubSubExtension(system).mediator
-
-    println("Frontend: Start finished. Mediator is " + mediator)
-
-    FrontEndInformation(system, mediator)
-  }
-
-  override def stop: Unit = ???
-}
-
-class WorkerController(settings: PullingWorkerSettings) extends NodeController {
-  type S = WorkerInformation.type
-  type N = WorkerNodeType.type
-
-  override def start(port: Int): S = ???
-
-  override def stop: Unit = ???
-}
-
-
-class MasterController(settings: PullingWorkerSettings) extends NodeController {
-  type S = MasterInformation.type
-  type N = MasterNodeType.type
-
-  override def start(port: Int): S = ???
-
-  override def stop: Unit = ???
-}
 
 
 
@@ -110,3 +64,22 @@ class MasterController(settings: PullingWorkerSettings) extends NodeController {
 //  //  actorSystem.actorOf(Props(classOf[WorkProducer], frontend), "producer")
 //  //  actorSystem.actorOf(Props[WorkConsumer], "consumer")
 //}
+
+
+
+
+//
+//  // =====================================================
+//  // this is the code to setup other nodes
+//  // =====================================================
+////  println("Starting up pulling worker (final) cluster.")
+//  val joinAddress = startMaster(None, "backend")
+////  Thread.sleep(5000)
+////  // startBackend(Some(joinAddress), "backend")
+////  // startWorker(joinAddress)
+////  startWorker
+//  // =====================================================
+
+//  val joinAddress = null
+//  val masterSystemName = ""
+//
