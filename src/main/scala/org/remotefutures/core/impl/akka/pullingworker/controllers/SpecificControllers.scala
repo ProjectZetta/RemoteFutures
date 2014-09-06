@@ -7,7 +7,7 @@ import org.remotefutures.core.NodeController
 import org.remotefutures.core.impl.akka.pullingworker.PullingWorkerSettings
 import org.remotefutures.core._
 
-// specific node types for pulling worker
+// specific node types for pulling worker scenario
 sealed trait PullingWorkerNodeType extends NodeType
 case object FrontEndNodeType extends PullingWorkerNodeType
 case object WorkerNodeType extends PullingWorkerNodeType
@@ -20,32 +20,36 @@ case object MasterInformation extends NodeInformation[MasterNodeType.type]
 
 class PullingWorkerNodeControllers extends NodeControllers {
 
+  val frontEndController = new FrontendController(null)
+  val masterController = new MasterController(null)
+  val workerController = new WorkerController(null)
+
   val controllers: Map[NodeType, NodeController] = Map(
-    ( FrontEndNodeType, new FrontendController(null) ),
-    ( WorkerNodeType, new WorkerController(null) ),
-    ( MasterNodeType, new MasterController(null) )
+    ( FrontEndNodeType, frontEndController ),
+    ( WorkerNodeType, workerController ),
+    ( MasterNodeType, masterController )
   )
 
-  override def nodeController(nodeType: NodeType): NodeController = {
+  val mapping: Map[String, NodeType] = Map(
+    ( "worker", WorkerNodeType ),
+    ( "master", MasterNodeType ),
+    ( "frontend", FrontEndNodeType )
+  )
+
+  override def apply(nodeType: NodeType): NodeController = {
     controllers(nodeType)
   }
 
-  // override def specificNodeController[T, C](nodeType: T)(implicit toConcrete: ToConcreteType[NodeController, C]): C = {
-  override def specificNodeController[C](nodeType: NodeType)(implicit toConcrete: ToConcreteType[NodeController, C]): C = {
-    toConcrete.convert( controllers(nodeType) )
+  override def apply(nodeTypeDesc: String): Option[NodeController] = {
+    mapping.get(nodeTypeDesc).map( x => apply(x) )
   }
-
-  override def nodeTypes: Set[NodeType] = Set(FrontEndNodeType, WorkerNodeType, MasterNodeType)
-}
-
-object Implicits {
-  implicit val frontEndToConcrete = new ToConcreteType[NodeController, FrontendController]
-  implicit val workerToConcrete = new ToConcreteType[NodeController, WorkerController]
-  implicit val masterToConcrete = new ToConcreteType[NodeController, MasterController]
 }
 
 
-
+/**
+ * Front end controller
+ * @param settings describing frontend settings
+ */
 class FrontendController(settings: PullingWorkerSettings) extends NodeController {
   type S = FrontEndInformation
   type N = FrontEndNodeType.type

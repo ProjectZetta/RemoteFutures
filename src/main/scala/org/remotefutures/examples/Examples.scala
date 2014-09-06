@@ -216,9 +216,6 @@ object RemoteFutureWithSporesExample_Working {
     import scala.concurrent.ExecutionContext.Implicits.global
 
     implicit val configBasedRemoteExecutionContext = org.remotefutures.core.RemoteExecutionContextImplicits.defaultConfigBasedRemoteExecutionContext
-    val nodeTypes = configBasedRemoteExecutionContext.nodeControllers.nodeTypes
-
-    println(nodeTypes)
 
     val from = 1000000000L
     val size = 10L

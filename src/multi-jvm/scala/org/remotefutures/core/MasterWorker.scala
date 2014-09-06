@@ -14,12 +14,14 @@ import org.remotefutures.core.impl.akka.pullingworker.controllers.FrontendContro
 object MasterWorkerMultiJvmNode1 extends Startup {
   def main(args: Array[String]) {
 
-    import org.remotefutures.core.impl.akka.pullingworker.controllers.FrontEndNodeType
-
     implicit val rec = org.remotefutures.core.RemoteExecutionContextImplicits.defaultConfigBasedRemoteExecutionContext
 
-    val frontEndController  = rec.nodeControllers.nodeController( FrontEndNodeType )
-    frontEndController.start(123)
+    val frontEndController  = rec.nodeControllers( "frontend" )
+    frontEndController match {
+      case Some(x) => x.start(123)
+      case None => throw new Exception("Can not start frontend node. Aborting")
+    }
+
 
 
     // val joinAddress = startMaster(None, "backend")

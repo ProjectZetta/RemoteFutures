@@ -20,11 +20,11 @@ class ToConcreteType[S, SUB] {
 
 trait NodeControllers {
 
-  def nodeController( nodeType : NodeType ) : NodeController
+  def apply( nodeTypeDesc: String ) : Option[NodeController]
 
-  def specificNodeController[C](nodeType: NodeType)(implicit toConcrete: ToConcreteType[NodeController, C]): C
+  def apply( nodeType : NodeType ) : NodeController
 
-  def nodeTypes : Set[NodeType]
+  // def specificNodeController[C](nodeType: NodeType)(implicit toConcrete: ToConcreteType[NodeController, C]): C
 }
 
 

@@ -52,12 +52,7 @@ class PullingWorkerRemoteExecutionContext(settings: Settings, reporter: Throwabl
 //  Thread.sleep(5000)
 
 
-
-
-  val frontEndController = nodeControllers.specificNodeController(FrontEndNodeType)
-  
-  //val frontEndController: FrontendController = getNodeControllers.getNodeController(FrontEnd).asInstanceOf[FrontendController]
-  val frontendInformation = frontEndController.start(2345)
+  val frontendInformation = nodeControllers.frontEndController.start(2345)
 
   def rnd = ThreadLocalRandom.current
 
