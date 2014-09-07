@@ -39,6 +39,7 @@ object FibonacciComputations extends Serializable {
   }
 
   def fibBigInt(n: Long): BigInt = {
+    println("Fibonacci computation for " + n)
     @tailrec
     def fib_tail(n: Long, a: BigInt, b: BigInt): BigInt = n match {
       case 0 => a

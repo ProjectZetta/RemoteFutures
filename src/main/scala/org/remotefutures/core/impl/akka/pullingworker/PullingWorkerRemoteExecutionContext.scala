@@ -143,12 +143,12 @@ class PingMasterActor(mediator: ActorRef) extends Actor with ActorLogging {
       context.stop(self)
     }
     case MasterIsNotOperable => { // from master
-      log.info("Master is not operable yet. Retrying in " + retryInterval)
-      scheduler.scheduleOnce( retryInterval, self, Tick) // retry
+      log.info("Master is not operable yet.")
     }
     case Tick => {
       log.info("Got ping at PingMasterActor")
       pingMaster
+      scheduler.scheduleOnce( retryInterval, self, Tick) // retry
     }
   }
   

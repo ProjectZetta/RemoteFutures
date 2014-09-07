@@ -93,8 +93,10 @@ class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval
   def receive = idle
 
   def idle: Receive = {
-    case WorkNeedsToBeDone ⇒
+    case WorkNeedsToBeDone ⇒ {
+      log.info("Worker receives 'WorkNeedsToBeDone'")
       sendToMaster(RequestForWork(workerId))
+    }
 
     case Work(workId, job) ⇒
       // log.info("Got work: {} with type {}", job, job.getClass)

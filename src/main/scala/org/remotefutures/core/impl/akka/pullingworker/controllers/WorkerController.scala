@@ -29,14 +29,12 @@ class WorkerController(settings: PullingWorkerSettings) extends NodeController {
     def startWorker(): Unit = {
       println("Starting worker")
 
-      val workerConfigName = "worker"
+      val workerAkkaConfig = settings.workerAkkaSettings
 
-      val conf = ConfigFactory.load( workerConfigName );
+      val system = ActorSystem( settings.workerSystemname, workerAkkaConfig )
 
-      // val system = ActorSystem(workerSystemName, conf)
-      val system = ActorSystem("dummy", conf)
-
-      val initialContacts: Set[ActorSelection] = immutableSeq(conf.getStringList("contact-points")).map {
+      // conf.getStringList("contact-points")
+      val initialContacts: Set[ActorSelection] = immutableSeq( settings.workerInitialContactPoint).map {
         case AddressFromURIString(addr) ⇒ {
           system.actorSelection(RootActorPath(addr) / "user" / "receptionist")
         }

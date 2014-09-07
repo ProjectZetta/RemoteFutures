@@ -21,6 +21,7 @@ class PullingWorkerSettings(config: Config) {
 
   val workerSystemname = config.getString("worker.systemname")
   val workerAkkaSettings = config.getConfig("worker")
+  val workerInitialContactPoint = config.getStringList("worker.contact-points")
 }
 
 object PullingWorkerSettings {

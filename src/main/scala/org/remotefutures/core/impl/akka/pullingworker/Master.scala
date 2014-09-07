@@ -75,6 +75,11 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
 
   override def postStop(): Unit = cleanupTask.cancel()
 
+  def logStats: Unit = {
+    log.info( "workerstates:" + workerStates)
+    log.info( "pendingWork:" + pendingWork)
+  }
+
   def receive = {
     case IsMasterOperable ⇒
       log.info("Master is asked, if everything is alright.")
@@ -89,6 +94,7 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
     // from frontend, client, whatever.......
     case work: Work ⇒
       log.info("Master got work.")
+      logStats
       // idempotent
       if (workIds.contains(work.workId)) {
         sender ! WorkIsAccepted(work.workId)
@@ -120,10 +126,12 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
       }
 
     // from worker
-    case RequestForWork(workerId) ⇒
+    case RequestForWork(workerId) ⇒ {
+      log.info("Master receives 'RequestForWork(" + workerId + ") from worker.")
+      logStats
       if (pendingWork.nonEmpty) {
         workerStates.get(workerId) match {
-          case Some(s @ WorkerState(_, Idle)) ⇒
+          case Some(s@WorkerState(_, Idle)) ⇒
             val (workAndClient, rest) = pendingWork.dequeue
             pendingWork = rest
             log.info("Giving worker {} some work {}", workerId, workAndClient.work.job)
@@ -133,7 +141,8 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
           case _ ⇒
 
         }
-      }
+  }
+    }
 
     // from worker
     case WorkSuccess(workerId, workId, result) ⇒
@@ -170,6 +179,8 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
 
       // from self (master)
     case CleanupTick ⇒
+      log.info("CleanupTick")
+      logStats
       for ((workerId, s @ WorkerState(_, Busy(workAndClient, timeout))) <- workerStates) {
         if (timeout.isOverdue) {
           log.info("Work timed out: {}", workAndClient)
