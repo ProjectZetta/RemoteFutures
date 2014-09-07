@@ -46,7 +46,7 @@ class MasterController(settings: PullingWorkerSettings) extends NodeController {
     }
 
     println("Master controller: Starting")
-    startMaster(null)
+    startMaster(None)
     println("Master controller: Start finished.")
     MasterInformation
 

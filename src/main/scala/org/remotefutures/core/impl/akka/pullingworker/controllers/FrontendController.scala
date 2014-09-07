@@ -3,8 +3,10 @@
  */
 package org.remotefutures.core.impl.akka.pullingworker.controllers
 
-import akka.actor.{ActorRef, ActorSystem}
+import akka.actor._
+import akka.cluster.Cluster
 import akka.contrib.pattern.DistributedPubSubExtension
+import akka.japi.Util._
 import org.remotefutures.core.{RemoteExecutionContext, NodeInformation, NodeController}
 import org.remotefutures.core.impl.akka.pullingworker.{PullingWorkerRemoteExecutionContext, PullingWorkerSettings}
 
@@ -21,9 +23,11 @@ class FrontendController(settings: PullingWorkerSettings) extends NodeController
   override def start(port: Int): S = {
     println("Frontend controller: Starting")
 
-    val systemname = settings.masterSystemname
-    val system = ActorSystem(systemname, settings.masterAkkaSettings)
-    // Cluster(system).join(joinAddress)
+    val systemname = settings.frontendSystemname
+    val system = ActorSystem(systemname, settings.frontendAkkaSettings)
+    val joinAddress = AddressFromURIString( settings.frontendJoinAddress )
+    println("  Join Address is : " + joinAddress)
+    Cluster(system).join(joinAddress)
     val mediator = DistributedPubSubExtension(system).mediator
 
     println("Frontend controller: Start finished. Mediator is " + mediator)

@@ -92,13 +92,14 @@ class PullingWorkerRemoteExecutionContext(frontendInformation: FrontEndInformati
     // create fresh actor (which handles master ack and does retries)
     val pingMasterActor = system.actorOf( Props(classOf[PingMasterActor], mediator))
 
-    println("Message 'IsMasterOperable' is send to ping master actor " + pingMasterActor)
+    println("Message 'IsMasterOperable' is send to master actor " + pingMasterActor)
 
     try {
       val fMasterOperable = pingMasterActor.?(IsMasterOperable)(timeToWaitForMasterToBecomeOperable).mapTo[MasterOperable]
 
-      println("Waiting for final answer from master.")
+      println("Waiting for answer from master.")
       val x: MasterOperable = Await.result(fMasterOperable, Duration.Inf)
+      println("Master is detected operable from frontend.")
 
     } catch {
       // The ping actor hasn't answered within ask timeout [[PingMasterActor.retryInterval]].
@@ -111,6 +112,7 @@ class PullingWorkerRemoteExecutionContext(frontendInformation: FrontEndInformati
         throw new Exception("Master is not operable")
       }
     }
+
 
   }
 }
@@ -127,6 +129,7 @@ class PingMasterActor(mediator: ActorRef) extends Actor with ActorLogging {
 
   override def receive: Actor.Receive = {
     case IsMasterOperable => {
+      log.info("Got 'IsMasterOperable' at PingMasterActor")
       val originalSender = sender()
       scheduler.scheduleOnce( 1.seconds, self, Tick)
       context.become( waitingForMaster(originalSender) )
@@ -144,6 +147,7 @@ class PingMasterActor(mediator: ActorRef) extends Actor with ActorLogging {
       scheduler.scheduleOnce( retryInterval, self, Tick) // retry
     }
     case Tick => {
+      log.info("Got ping at PingMasterActor")
       pingMaster
     }
   }

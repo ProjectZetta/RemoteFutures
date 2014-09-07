@@ -12,6 +12,10 @@ import akka.util.Helpers.Requiring
 
 class PullingWorkerSettings(config: Config) {
 
+  val frontendSystemname: String = config.getString("frontend.systemname")
+  val frontendAkkaSettings = config.getConfig("frontend")
+  val frontendJoinAddress = config.getString("frontend.joinaddress")
+
   val masterSystemname: String = config.getString("master.systemname")
   val masterAkkaSettings = config.getConfig("master")
 

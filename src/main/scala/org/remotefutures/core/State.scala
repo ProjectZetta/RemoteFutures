@@ -29,8 +29,8 @@ object State {
     }
   }
 
-  def state[S, A](a: A) : State[S,A] = {
-    State { s => (s, a)}
+  def state[S, A](a: A) : State[S, A] = {
+    State { s => (s, a) }
   }
 
   def get[S] : State[S, S] = {

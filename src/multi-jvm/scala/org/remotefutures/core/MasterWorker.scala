@@ -16,16 +16,29 @@ import org.remotefutures.core.NodeControllers
  * - frontend
  */
 
+/**
+ * Frontend Node
+ */
 object MasterWorkerMultiJvmNode1 {
   def main(args: Array[String]) {
     val controllers = NodeControllers.fromDefaultConfig
-    val frontEndController  = controllers("frontend")
-    frontEndController match {
-      case Some(x) => x.start(123)
+    val optFrontendController  = controllers("frontend")
+    optFrontendController match {
+      case Some(frontendController) => {
+        val initParams = frontendController.start(123)
+        val optRec = frontendController.executionContext( initParams )
+        optRec match {
+          case Some(rec) => {
+            println("Waiting for operable")
+            rec.isOperable()
+            println("Waiting for operable finished")
+          }
+          case None => throw new Exception("No exeuction context available. Aborting")
+        }
+
+      }
       case None => throw new Exception("Can not start frontend node. Aborting")
     }
-
-
 
     // val joinAddress = startMaster(None, "backend")
     // println("Master has default address: " + InetAddress.getLocalHost.getHostAddress );
