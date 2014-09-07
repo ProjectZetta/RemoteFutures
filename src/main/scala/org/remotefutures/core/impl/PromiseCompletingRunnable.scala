@@ -3,11 +3,11 @@
  */
 package org.remotefutures.core.impl
 
+import org.remotefutures.proposals.idea_runnable.PromiseBackedRunnable
 import org.remotefutures.util.Debug._
 import scala.concurrent.Promise
 import scala.util.{Failure, Success}
 import scala.util.control.NonFatal
-import org.remotefutures.core.PromiseBackedRunnable
 
 
 /**

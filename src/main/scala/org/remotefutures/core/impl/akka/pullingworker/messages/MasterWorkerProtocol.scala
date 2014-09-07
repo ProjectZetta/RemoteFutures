@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014 Martin Senne
  */
-package org.remotefutures.core.impl.akka.pullingworker
+package org.remotefutures.core.impl.akka.pullingworker.messages
 
 object MasterWorkerProtocol {
   // Messages from Workers

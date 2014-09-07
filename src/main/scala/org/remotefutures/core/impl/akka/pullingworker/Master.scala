@@ -3,16 +3,14 @@
  */
 package org.remotefutures.core.impl.akka.pullingworker
 
-import scala.collection.immutable.Queue
-import akka.actor.Actor
-import akka.actor.ActorLogging
-import akka.actor.ActorRef
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.contrib.pattern.DistributedPubSubExtension
-import akka.contrib.pattern.DistributedPubSubMediator
 import akka.contrib.pattern.DistributedPubSubMediator.Put
-import scala.concurrent.duration.Deadline
-import scala.concurrent.duration.FiniteDuration
-import akka.actor.Props
+import org.remotefutures.core.impl.akka.pullingworker.messages.MasterStatus.{MasterIsNotOperable, MasterIsOperable, IsMasterOperable}
+import org.remotefutures.core.impl.akka.pullingworker.messages.{MasterWorkerProtocol, Work, WorkResult}
+
+import scala.collection.immutable.Queue
+import scala.concurrent.duration.{Deadline, FiniteDuration}
 
 object Master {
 
@@ -21,7 +19,7 @@ object Master {
   def props(workTimeout: FiniteDuration): Props =
     Props(classOf[Master], workTimeout)
 
-  case class Ack(workId: String)
+
 
   private sealed trait WorkerStatus
   private case object Idle extends WorkerStatus
@@ -55,13 +53,16 @@ object Master {
  * @param workTimeout
  */
 class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
+  import org.remotefutures.core.impl.akka.pullingworker.messages.MasterWorkerProtocol._
   import Master._
-  import MasterWorkerProtocol._
+  import messages.Work
+  import messages.WorkIsAccepted
+
   val mediator = DistributedPubSubExtension(context.system).mediator
 
-  // in order allow node transparent communication:
-  // Allow messages from client, frontend (via PubSub - Send)
-  // Mediator Send <-> Mediator Put work hand in hand
+  // in order to allow node transparent communication:
+  //   allow messages from client side (frontend) via PubSub - Send
+  //   mediator Send <-> mediator Put work hand in hand
   mediator ! Put(self)
 
   private var workerStates = Map[String, WorkerState]()
@@ -74,19 +75,35 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
 
   override def postStop(): Unit = cleanupTask.cancel()
 
+  def logStats: Unit = {
+    log.info( "workerstates:" + workerStates)
+    log.info( "pendingWork:" + pendingWork)
+  }
+
   def receive = {
+    case IsMasterOperable ⇒
+      log.info("Master is asked, if everything is alright.")
+      log.info("  Master knows of " + workerStates.size + " workers, that have registered.")
+      if ( workerStates.size > 0 ) { // at least one worker is present
+        sender ! MasterIsOperable
+      } else {
+        sender ! MasterIsNotOperable
+      }
+
+
     // from frontend, client, whatever.......
     case work: Work ⇒
       log.info("Master got work.")
+      logStats
       // idempotent
       if (workIds.contains(work.workId)) {
-        sender ! Master.Ack(work.workId)
+        sender ! WorkIsAccepted(work.workId)
       } else {
         log.info("Accepted work: {}", work)
         // TODO store in Eventsourced
         pendingWork = pendingWork enqueue WorkAndClient(sender, work)
         workIds += work.workId
-        sender ! Master.Ack(work.workId)
+        sender ! WorkIsAccepted(work.workId)
         notifyWorkers()
       }
 
@@ -109,10 +126,12 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
       }
 
     // from worker
-    case RequestForWork(workerId) ⇒
+    case RequestForWork(workerId) ⇒ {
+      log.info("Master receives 'RequestForWork(" + workerId + ") from worker.")
+      logStats
       if (pendingWork.nonEmpty) {
         workerStates.get(workerId) match {
-          case Some(s @ WorkerState(_, Idle)) ⇒
+          case Some(s@WorkerState(_, Idle)) ⇒
             val (workAndClient, rest) = pendingWork.dequeue
             pendingWork = rest
             log.info("Giving worker {} some work {}", workerId, workAndClient.work.job)
@@ -122,7 +141,8 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
           case _ ⇒
 
         }
-      }
+  }
+    }
 
     // from worker
     case WorkSuccess(workerId, workId, result) ⇒
@@ -159,6 +179,8 @@ class Master(workTimeout: FiniteDuration) extends Actor with ActorLogging {
 
       // from self (master)
     case CleanupTick ⇒
+      log.info("CleanupTick")
+      logStats
       for ((workerId, s @ WorkerState(_, Busy(workAndClient, timeout))) <- workerStates) {
         if (timeout.isOverdue) {
           log.info("Work timed out: {}", workAndClient)

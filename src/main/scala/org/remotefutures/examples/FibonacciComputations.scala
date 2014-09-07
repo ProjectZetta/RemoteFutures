@@ -1,7 +1,9 @@
 /*
- * Copyright (c) 2014 Martin Senne, Marvin Hansen.
+ * Copyright (c) 2014 Martin Senne
  */
 package org.remotefutures.examples
+
+import java.math.MathContext
 
 import scala.annotation.tailrec
 import scala.util.{Failure, Success}
@@ -11,9 +13,9 @@ import org.remotefutures.core.RemoteFuture
 
 
 /**
- *
+ * Example computations which calculate Fibonacci numbers.
  */
-object Computations extends Serializable {
+object FibonacciComputations extends Serializable {
 
   /* Fibonacci code from
    * http://peter-braun.org/2012/06/fibonacci-numbers-in-scala/
@@ -35,31 +37,24 @@ object Computations extends Serializable {
     }
     fib_tail(n, 0, 1)
   }
+
+  def fibBigInt(n: Long): BigInt = {
+    println("Fibonacci computation for " + n)
+    @tailrec
+    def fib_tail(n: Long, a: BigInt, b: BigInt): BigInt = n match {
+      case 0 => a
+      case _ => fib_tail(n - 1, b, (a + b))
+    }
+    fib_tail(n, 0, 1)
+    }
 }
 
+object RunFibo {
 
-/**
- *
- */
-object RemoteExampleFibonacci extends App {
-
-  val n = 1000000000 // fib is 546875
-  remFib(n)
-
-
-  def remFib(m: Int) = {
-    val rmt = RemoteFuture {
-      Computations.fib(m)
-    }
-
-    rmt onComplete {
-      case Success(res) =>
-        println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        println("Fibonacci number is: " + res)
-        println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-
-      case Failure(t) => println("An error happened: " + t.getMessage)
-    }
-
+  def main(args: Array[String]) : Unit = {
+    println("100: " + FibonacciComputations.fibBigInt((100)))
+    println("10000: " + FibonacciComputations.fibBigInt((10000)))
+    println("1000000: " + FibonacciComputations.fibBigInt((1000000)))
+    println("100000000: " + FibonacciComputations.fibBigInt((100000000)))
   }
 }

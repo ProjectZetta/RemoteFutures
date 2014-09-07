@@ -9,7 +9,6 @@ import akka.actor._
 import akka.pattern.ask
 import scala.concurrent.duration._
 import akka.util.Timeout
-import org.remotefutures.core.PromiseBackedRunnable
 
 
 /**

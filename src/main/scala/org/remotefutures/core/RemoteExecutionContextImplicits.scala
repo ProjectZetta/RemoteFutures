@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Martin Senne, Marvin Hansen.
+ * Copyright (c) 2014 Martin Senne.
  */
 package org.remotefutures.core
 
@@ -14,14 +14,14 @@ object RemoteExecutionContextImplicits {
   /**
    * An remote execution context which uses the configuration given in remotefutures.conf to setup the context.
    */
-  implicit val DefaultConfigBasedRemoteExecutionContext: RemoteExecutionContext = {
+  implicit val defaultConfigBasedRemoteExecutionContext: RemoteExecutionContext = {
     RemoteExecutionContext.fromDefaultConfig
   }
 }
 
 
 /**
- * Implicits for the setup of the environment (execution context that is remotable, but NOT derived from RemotExeuctionContext) of regular futures.
+ * Implicits for the setup of the environment (execution context that is remotable, but NOT derived from RemotExecutionContext) of regular futures.
  */
 object RemoteAwareExecutionContextImplicits {
   implicit val SimpleAkkaRemoteAwareExecutionContext : ExecutionContext = {

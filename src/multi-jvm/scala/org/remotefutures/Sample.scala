@@ -1,5 +1,9 @@
 package org.remotefutures
 
+/**
+ * Start the example with "multi-jvm:run org.remotefutures.Sample"
+ */
+
 object SampleMultiJvmNode1 {
   def main(args: Array[String]) {
     println("Hello from node 1")

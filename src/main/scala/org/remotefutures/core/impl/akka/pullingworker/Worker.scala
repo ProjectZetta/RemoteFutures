@@ -4,6 +4,8 @@
 package org.remotefutures.core.impl.akka.pullingworker
 
 import java.util.UUID
+import org.remotefutures.core.impl.akka.pullingworker.messages.{MasterWorkerProtocol, Work}
+
 import scala.concurrent.duration._
 import akka.actor.Actor
 import akka.actor.ActorLogging
@@ -36,7 +38,7 @@ object Worker {
  *  - in state '''idle''' it can be
  *    - informed (from master), that new work is available at master via [[MasterWorkerProtocol.WorkNeedsToBeDone]]
  *      in which case it requests work from master via [[MasterWorkerProtocol.RequestForWork]]
- *    - receive concrete new work (from master) via [[org.remotefutures.core.impl.akka.pullingworker.Work]] which is
+ *    - receive concrete new work (from master) via [[Work]] which is
  *      delegated to the child actor "exec" and then switch to 'working' state.
 
  *  - in state '''working''' it can be
@@ -45,7 +47,7 @@ object Worker {
  *
  *  - in state '''waitForWorkIsDoneAck''' it
  *     - waits for acknowledgement from master via [[MasterWorkerProtocol.WorkStatusAck]] in which case
- *       the worker request new work [[MasterWorkerProtocol.RequestForWork]] and becomes idle
+ *       the worker requests new work [[MasterWorkerProtocol.RequestForWork]] and becomes idle
  *
  * @param clusterClient
  * @param workExecutorProps
@@ -59,7 +61,7 @@ class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval
 
   import context.dispatcher
 
-  // At a regular interval, worker registers at master (via clusterClient ! SendToAll)
+  // at a regular interval, worker registers at master (via clusterClient ! SendToAll)
   val registerTask = context.system.scheduler.schedule(0.seconds, registerInterval, clusterClient,
     SendToAll("/user/master/active", RegisterWorker(workerId)))
 
@@ -91,8 +93,10 @@ class Worker(clusterClient: ActorRef, workExecutorProps: Props, registerInterval
   def receive = idle
 
   def idle: Receive = {
-    case WorkNeedsToBeDone ⇒
+    case WorkNeedsToBeDone ⇒ {
+      log.info("Worker receives 'WorkNeedsToBeDone'")
       sendToMaster(RequestForWork(workerId))
+    }
 
     case Work(workId, job) ⇒
       // log.info("Got work: {} with type {}", job, job.getClass)

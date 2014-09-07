@@ -2,13 +2,13 @@
  * Copyright (c) 2014 Martin Senne, Marvin Hansen.
  */
 package org.remotefutures.core.impl.local
-
-import org.remotefutures.core.{RemoteExecutionContext, Settings}
+import org.remotefutures.core.{NodeControllers, RemoteExecutionContext, Settings}
 import scala.concurrent.Promise
 import org.remotefutures.core.impl.RemoteExecutor
 
 
-private[core] class LocalRunningRemoteExecutionContext(settings : Settings, reporter: Throwable => Unit) extends RemoteExecutionContext {
+private[core] class LocalRunningRemoteExecutionContext(settings : Settings, reporter: Throwable => Unit)
+  extends RemoteExecutionContext {
 
   /**
    * Facility to create a RemoteExecutor used in the context
@@ -33,12 +33,11 @@ private[core] class LocalRunningRemoteExecutionContext(settings : Settings, repo
 
   override def reportFailure(cause: Throwable) = reporter(cause)
 
-  override def startup(): Unit = {
-    // nothing to do
-  }
 
-  override def shutdown(): Unit = {
-    // nothing to do
-  }
+  /**
+   * A blocking call, until the system is operable
+   */
+  override def isOperable(): Unit = ???
+
 }
 

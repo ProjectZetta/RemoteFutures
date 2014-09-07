@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Martin Senne, Marvin Hansen.
+ * Copyright (c) 2014 Martin Senne
  */
 package org.remotefutures.core
 
@@ -20,9 +20,11 @@ class Settings(val config: Config) {
     }
   }
 
-  val RemoteExecutionContextClassname : String = {
-    cc.getString("remote-execution-context-classname")
+  val NodeControllersFQCN : String = {
+    cc.getString("node-controllers-FQCN")
   }
+
+  val specificConfig = config.getConfig( NodeControllersFQCN )
 }
 
 object Settings {

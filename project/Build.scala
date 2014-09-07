@@ -11,13 +11,13 @@ object BuildSettings {
     scalacOptions ++= Seq(
       "-deprecation",
       // "-feature",
-      "-unchecked",
+      "-unchecked"
       // "-Xlint",
       // "-Xlog-reflective-calls",
       // "-Ywarn-adapted-args",
       // "-encoding", "UTF-8",
       // "-target:jvm-1.6",
-      "-Ymacro-debug-lite" // information on macro expansion and switch this boy on demand since its flooding your console....
+      // "-Ymacro-debug-lite" // information on macro expansion and switch this boy on demand since its flooding your console....
       // "-optimize"
     )
   )
@@ -38,7 +38,7 @@ object Resolvers {
 object Dependencies {
   val scalaTestVersion = "2.2.0"
   val scalaCheckVersion = "1.11.4"
-  val akkaVersion = "2.3.3"
+  val akkaVersion = "2.3.4"
   val disruptorVersion = "3.2.1"
 
   val scalaAsync = "org.scala-lang.modules" %% "scala-async" % "0.9.1"

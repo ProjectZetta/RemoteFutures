@@ -3,8 +3,8 @@
  */
 package org.remotefutures.core.impl.akka.simple
 
-import _root_.akka.actor.ActorRef
-import org.remotefutures.core.{RemoteExecutionContext, Settings}
+import akka.actor.ActorRef
+import org.remotefutures.core.{NodeControllers, RemoteExecutionContext, Settings}
 import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success, Try}
 import akka.pattern.ask
@@ -64,19 +64,6 @@ class AkkaRemoteExecutionContext(settings : Settings, reporter: Throwable => Uni
   }
 
 
-  /**
-   * Startup the node system
-   */
-  override def startup(): Unit = {
-    // startup cluster
-  }
-
-  /**
-   * Shutdown the node system
-   */
-  override def shutdown(): Unit = {
-    // shutdown cluster
-  }
 
 
   /**
@@ -85,4 +72,10 @@ class AkkaRemoteExecutionContext(settings : Settings, reporter: Throwable => Uni
   override def reportFailure(cause: Throwable): Unit = {
 
   }
+
+  /**
+   * A blocking call, until the system is operable
+   */
+  override def isOperable(): Unit = ???
+
 }
