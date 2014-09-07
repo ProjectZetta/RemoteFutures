@@ -22,7 +22,7 @@ class FrontendController(settings: PullingWorkerSettings) extends NodeController
     println("Frontend controller: Starting")
 
     val systemname = settings.masterSystemname
-    val system = ActorSystem(systemname)
+    val system = ActorSystem(systemname, settings.masterAkkaSettings)
     // Cluster(system).join(joinAddress)
     val mediator = DistributedPubSubExtension(system).mediator
 

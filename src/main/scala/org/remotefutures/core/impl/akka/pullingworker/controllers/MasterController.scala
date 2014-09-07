@@ -30,12 +30,9 @@ class MasterController(settings: PullingWorkerSettings) extends NodeController {
     def startMaster(joinAddressOption: Option[Address]): Address = {
       val role: String = "backend"
 
-      println("Starting master")
-
       val conf = ConfigFactory.parseString(s"akka.cluster.roles=[$role]").
-        withFallback(ConfigFactory.load()) // using application.conf right now
-      // val system = ActorSystem(masterSystemName, conf)
-      val system = ActorSystem("dummy", conf)
+        withFallback( settings.masterAkkaSettings ) // using application.conf right now
+      val system = ActorSystem(settings.masterSystemname, conf)
       val joinAddress = joinAddressOption.getOrElse(Cluster(system).selfAddress)
 
       println("  This master node is joining the cluster at join address " + joinAddress)
@@ -59,3 +56,4 @@ class MasterController(settings: PullingWorkerSettings) extends NodeController {
 
   override def executionContext(init: S): Option[RemoteExecutionContext] = None
 }
+// for debugging: netstat -lntup
