@@ -69,6 +69,9 @@ object Dependencies {
   val sprayHttp        = "io.spray" %% "spray-http" % sprayVersion withSources() withJavadoc()
   val sprayRouting     = "io.spray" %% "spray-routing" % sprayVersion withSources() withJavadoc()
   val sprayTestkit     = "io.spray" %% "spray-testkit" % sprayVersion % "test" withSources() withJavadoc()
+  val sprayJson        = "io.spray" %% "spray-json" % "1.2.6"
+  val sprayClient      = "io.spray" %% "spray-client" % sprayVersion withSources() withJavadoc()
+  val sprayHttpx       = "io.spray" %% "spray-httpx" % sprayVersion withSources() withJavadoc()
 
   val specs2           = "org.specs2" %% "specs2-core" % "2.3.11" % "test"
 
@@ -135,15 +138,23 @@ object MyBuild extends Build {
   // ++ Seq( run <<= run in Compile in core )
   // aggregate(macros, core)
 
-  // import spray.revolver.RevolverPlugin._
-
   lazy val runner = Project (
     "runner",
     file("runner"),
     settings = buildSettings ++ Revolver.settings ++ Seq(
-      libraryDependencies ++= Seq(sprayCan, sprayHttp, sprayRouting, akkaActor, scalaXml, sprayTestkit, specs2)
+      libraryDependencies ++= Seq(sprayCan, sprayHttp, sprayHttpx, sprayRouting, akkaActor, scalaXml, sprayTestkit, specs2, sprayJson)
     )
   )
+
+  lazy val runner_client = Project (
+    "runner_client",
+    file("runner_client"),
+    settings = buildSettings ++ Revolver.settings ++ Seq(
+      libraryDependencies ++= Seq(sprayCan, sprayHttp, sprayHttpx, sprayRouting, akkaActor, scalaXml, sprayTestkit, specs2, sprayJson, sprayClient)
+    )
+  ) dependsOn( runner )
+
+
 
 
   /**
