@@ -1,16 +1,15 @@
-package org.remotefutures.runner_client
+package org.remotefutures.runner_client.old
 
 import akka.actor.ActorSystem
 import akka.io.IO
 import akka.pattern.ask
 import akka.util.Timeout
+import spray.can.Http
+import spray.http.HttpMethods._
+import spray.http._
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
-
-import spray.can.Http
-import spray.http._
-import HttpMethods._
 
 trait HostLevelApiDemo {
 
