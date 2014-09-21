@@ -1,6 +1,6 @@
 package org.remotefutures.runner_client
 
-import org.remotefutures.runner.ProcessDesc
+import org.remotefutures.runner.{NewProcess, ProcessDesc}
 import spray.http.HttpResponse
 
 import scala.util.{Success, Failure}
@@ -24,6 +24,8 @@ import spray.json._
 import DefaultJsonProtocol._ // THIS IMPORT IS   E-S-S-E-N-T-I-A-L, as it defines marshalling for T <-> JSON
 
 import org.remotefutures.runner.ProcessJsonProtocol.processDescFormat
+import org.remotefutures.runner.ProcessJsonProtocol.newProcessDescFormat
+import org.remotefutures.runner.ProcessJsonProtocol.fullProcessDescFormat
 
 
 /**
@@ -66,20 +68,37 @@ object Main extends App {
 
 
   val hostname = "http://127.0.0.1:8080"
-
+  val restUri = hostname + "/api"
+  val processesUri = restUri + "/processes"
 
   if (args.length >= 1) {
     val command: String = args(0)
     println("Command is '" + command + "'")
     command match {
       case "create" => {
-        log.info("Creating " + args(1))
-
-        // val pipeline = sendReceive → unmarshal[ProcessDesc]
+        val pipeline = sendReceive ~> unmarshal[ProcessDesc]
+        // log.info("Creating " + args(1))
+        log.info("Creating ")
+        val responseFuture = pipeline {
+          Post(processesUri, NewProcess("ls -la"))
+        }
+        responseFuture onComplete {
+          case Success(x: ProcessDesc) => {
+            log.info("Successful creation. Got new process description: " + x)
+            shutdown
+          }
+          case Success(unexpected) => {
+            log.info("Something unexpected")
+            shutdown
+          }
+          case Failure(error) => {
+            log.error("Error " + error)
+            shutdown
+          }
+        }
       }
       case "list" => {
         val pipeline = sendReceive ~> unmarshal[Array[ProcessDesc]]
-        val processesUri = hostname + "/api/processes"
 
         log.info("GET on " + processesUri)
 
