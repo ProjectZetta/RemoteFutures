@@ -1,4 +1,4 @@
-package org.remotefutures.runner_client
+package org.remotefutures.runner_client.old
 
 import akka.actor.ActorSystem
 import akka.event.Logging
@@ -14,7 +14,7 @@ with HostLevelApiDemo {
   // we always need an ActorSystem to host our application in
   implicit val system = ActorSystem( actorSystemName )
 
-  import system.dispatcher
+  import org.remotefutures.runner_client.old.Main2.system.dispatcher
 
   // execution context for future transformations below
   val log = Logging(system, getClass)

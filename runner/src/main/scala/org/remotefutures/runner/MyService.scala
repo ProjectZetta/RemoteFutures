@@ -34,10 +34,12 @@ class MyServiceActor extends Actor with MyService {
   def receive = runRoute(myRoute)
 }
 
+case class NewProcess(command: String)
 case class ProcessDesc(id: Int, description: String)
 case class FullProcessDesc(id: Int, description: String, command:String, status: Int)
 
 object ProcessJsonProtocol extends DefaultJsonProtocol {
+  implicit val newProcessDescFormat = jsonFormat1(NewProcess)
   implicit val processDescFormat = jsonFormat2(ProcessDesc)
   implicit val fullProcessDescFormat = jsonFormat4(FullProcessDesc)
 }
@@ -110,11 +112,14 @@ trait MyService extends HttpService {
           val process2: ProcessDesc = new ProcessDesc( 2634, "Another funny process")
           val processes = List( process1, process2 )
           // List[ProcessDesc]
-          ctx.complete(processes) // uses the in-scope Marshaller to convert the
+          ctx.complete(processes) // uses the in-scope Marshaller to convert the entity
         } ~
         post {
-          entity(as[ProcessDesc]) {pd =>
-            complete(s"Got processdescription: ${pd.id} - ${pd.description}")
+          entity(as[NewProcess]) { np =>
+            val pd = ProcessDesc( 1234, "a funny process, which executues '" + np.command +"'")
+            complete(pd)
+
+            // complete(s"Got processdescription: ${pd.id} - ${pd.description}")
           }
         }
       } ~
