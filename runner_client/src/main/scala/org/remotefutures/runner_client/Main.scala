@@ -29,120 +29,49 @@ import org.remotefutures.runner.ProcessJsonProtocol.newProcessDescFormat
 import org.remotefutures.runner.ProcessJsonProtocol.fullProcessDescFormat
 
 
-/**
- * Control processes
- */
-trait ProcessControl {
-
-  /**
-   * Execute a given command.
-   *
-   * @param command
-   * @return
-   */
-  def start(command: String): Future[ProcessDesc]
-
-  /**
-   * Stop the execution of the command.
-   *
-   * @param id
-   */
-  def stop(id: Int) : Future[ProcessDesc]
-
-  /**
-   *
-   * @param id
-   */
-  def status(id: Int) : Future[FullProcessDesc]
-
-  /**
-   *
-   * @return
-   */
-  def list() : Future[List[ProcessDesc]]
-}
-
-object SimpleProcessControl {
-  def apply(hostname: String) : SimpleProcessControl = {
-    new SimpleProcessControl(hostname)
-  }
-}
-
-class SimpleProcessControl(hostname: String)
-extends ProcessControl {
-
-  // we need an ActorSystem to host our application in
-  implicit val system = ActorSystem("runner-client")
-
-  val log = Logging(system, getClass)
-
-  import system.dispatcher
-
-  // execution context for futures below
-
-  val restUri = hostname + "/api"
-  val processesUri = restUri + "/processes"
-
-  /**
-   * Execute a given command.
-   *
-   * @param command
-   * @return id
-   */
-  override def start(command: String): Future[ProcessDesc] = {
-    val pipeline = sendReceive ~> unmarshal[ProcessDesc]
-    // log.info("Creating " + args(1))
-    log.info("Creating new process.")
-    val responseFuture = pipeline {
-      Post(processesUri, NewProcess(command))
-    }
-    responseFuture
-  }
-
-  /**
-   * Stop the execution of the command.
-   *
-   * @param id
-   */
-  override def stop(id: Int): Future[ProcessDesc] = ???
-
-  /**
-   *
-   * @return
-   */
-  override def list(): Future[List[ProcessDesc]] = {
-    val pipeline = sendReceive ~> unmarshal[List[ProcessDesc]]
-
-    log.info("Retrieving list of processes. (GET on (" + processesUri + "))")
-
-    val responseFuture = pipeline {
-      Get(processesUri)
-    }
-
-    responseFuture
-  }
-
-  /**
-   *
-   * @param id
-   */
-  override def status(id: Int): Future[FullProcessDesc] = ???
 
 
-
-  def shutdown(): Unit = {
-    IO(Http).ask(Http.CloseAll)(1.second).await
-    system.shutdown()
-  }
-}
+//val pipeline: Future[SendReceive] =
+//for (
+//  Http.HostConnectorInfo(connector, _) <-
+//      IO(Http) ? Http.HostConnectorSetup("www.spray.io", port = 80)
+//  ) yield sendReceive(connector)
+//
+//val request = Get("/")
+//val response: Future[HttpResponse] = pipeline.flatMap(_(request))
 
 object Main extends App {
 
-  val hostname = "http://127.0.0.1:8080"
+  // val hostname = "http://127.0.0.1:8080"
 
-  val control = SimpleProcessControl(hostname)
+  val system = ActorSystem("runner-client")
+  val control = SimpleProcessControl("127.0.0.1", 8080, system)
+  import system.dispatcher
 
-  import control.system.dispatcher
+  def shutdown(): Unit = {
+    IO(Http)(system).ask(Http.CloseAll)(1.second).await
+    system.shutdown()
+  }
+
+  def createProcess(commandToExecute: String): Future[ProcessDesc] = {
+    val res = control.start(commandToExecute)
+
+    res andThen {
+      case Success(x: ProcessDesc) => {
+        println("Started successfully " + x)
+      }
+      case Success(unexpected) => {
+        println("Warning: Something unexpected has happened: " + unexpected)
+      }
+      case Failure(error) => {
+        println("Error " + error)
+      }
+    } andThen {
+      case _ => shutdown
+    }
+  }
+
+
 
 
   val argLength = args.length
@@ -157,20 +86,8 @@ object Main extends App {
       case "create" => {
         if (argLength == 2) {
 
-          val res = control.start( args(1) )
-
-          res onComplete {
-            case Success(x: ProcessDesc) => {
-              println("Started successfully " + x)
-            }
-            case Success(unexpected) => {
-              println("Warning: Something unexpected has happened: " + unexpected)
-            }
-            case Failure(error) => {
-              println("Error " + error)
-            }
-          }
-          res onComplete { x => control.shutdown }
+          val commandToExecute = args(1)
+          createProcess( commandToExecute )
 
           // val res = Await.result(responseFuture, 10 seconds)
 
@@ -185,7 +102,7 @@ object Main extends App {
 
         val res = control.list()
 
-        res onComplete {
+        res andThen {
           case Success(x: List[ProcessDesc]) => {
             x.foreach(x => println(x))
           }
@@ -195,8 +112,9 @@ object Main extends App {
           case Failure(error) => {
             println("Error " + error)
           }
+        } andThen {
+          case _ =>  shutdown
         }
-        res onComplete { x => control.shutdown }
       }
 
       case _ => {
