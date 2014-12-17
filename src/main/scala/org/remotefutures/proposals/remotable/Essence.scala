@@ -36,93 +36,104 @@ object A {
 }
 
 object Essence {
+
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  def bar1(): Unit = {
+    val x = Future("asdf")
+    val y = x.map(x => x.length) // executed locally
+  }
+
+  def r(y: Int) : (String => Int ) = {
+    x => x.length * y
+  }
+
+  def bar_first(): Unit = {
+    val x: Future[Int] = Remote {
+      spore {
+        () => {
+            println("first __ inside")
+            Future {
+              "asdf"
+            }
+        }
+      }
+    }.map(x => x.length)
+
+    x.onComplete {
+      case Success(x) => { println(x)}
+      case Failure(x) => { println("error in future")}
+    }
+  }
+
+
+  def bar_second(): Unit = {
+    val x: Future[Int] = Remote {
+      spore {
+        () => {
+          Future {
+            println("second __ inside")
+            "asdf"
+          }.map( x => capture(x).length )
+        }
+      }
+    }
+
+    x.onComplete {
+      case Success(x) => { println(x)}
+      case Failure(x) => { println("error in future")}
+    }
+  }
+
+  def main(args:Array[String]) : Unit = {
+    println("First")
+    bar_first()
+
+    println("Second")
+    bar_second()
+  }
+
+//  def example() : Unit = {
+////    val r: Spore[String, String] =
+////      spore {
+////        x => capture(x).replace('a', 'b')
+////      }
 //
-//  import scala.concurrent.ExecutionContext.Implicits.global
+////      val a: Spore[String, Int] = spore {
+////        (x:String) => x.length
+////      }
 //
-//  def bar1(): Unit = {
-//    val x = Future("asdf")
-//    val y = x.map(x => x.length) // executed locally
 //  }
 //
-//  def r(y: Int) : (String => Int ) = {
-//    x => x.length * y
-//  }
-//
-//  def bar_first(): Unit = {
-//    val x: Future[Int] = Remote {
-//      spore {
-//        () => {
-//            println("first __ inside")
-//            Future {
-//              "asdf"
-//            }
-//        }
+//  def example1() : Unit = {
+//    val s: Spore[String, Int] = spore {
+//      val y = 3
+//      (x: String) => {
+//        x.length
 //      }
-//    }.map(x => x.length)
-//
-//    x.onComplete {
-//      case Success(x) => { println(x)}
-//      case Failure(x) => { println("error in future")}
 //    }
 //  }
-
-  def example() : Unit = {
-//    val r: Spore[String, String] =
-//      spore {
-//        x => capture(x).replace('a', 'b')
+//
+//  def examples2() : Unit = {
+//    val s = spore {
+//      (x: Int) => {
+//        x
 //      }
-
-//      val a: Spore[String, Int] = spore {
-//        (x:String) => x.length
+//    }
+//  }
+//
+//  def examples3() : Unit = {
+//    val s = spore {
+//      val y = 3
+//      (x: Int) => {
+//        // x * y
+//        A.foo(x, y)
 //      }
-
-  }
-
-  def examples2() : Unit = {
-    val s = spore {
-      (x: Int) => {
-        x
-      }
-    }
-  }
-
-  def examples3() : Unit = {
-    val s = spore {
-      val y = 3
-      (x: Int) => {
-        // x * y
-        A.foo(x, y)
-      }
-    }
-  }
+//    }
+//  }
 
   // all objects, that are referenced within a spore need to be declared
   // either as val or as parameter
 
 
-//  def bar_second(): Unit = {
-//    val x: Future[Int] = Remote {
-//      spore {
-//        () => {
-//          Future {
-//            println("second __ inside")
-//            "asdf"
-//          }.map( x => capture(x).length )
-//        }
-//      }
-//    }
-//
-//    x.onComplete {
-//      case Success(x) => { println(x)}
-//      case Failure(x) => { println("error in future")}
-//    }
-//  }
-//
-//  def main(args:Array[String]) : Unit = {
-//    println("First")
-//    bar_first()
-//
-//    println("Second")
-//    // bar_second()
-//  }
 }
