@@ -7,7 +7,7 @@ object BuildSettings {
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := "org.remotefutures",
     version := "0.0.1",
-    scalaVersion := "2.11.2",
+    scalaVersion := "2.11.4",
 
     scalacOptions ++= Seq(
       "-deprecation",
@@ -39,7 +39,7 @@ object Resolvers {
 object Dependencies {
   val scalaTestVersion  = "2.2.0"
   val scalaCheckVersion = "1.11.4"
-  val akkaVersion       = "2.3.5"
+  val akkaVersion       = "2.3.8"
   val disruptorVersion  = "3.2.1"
   val sprayVersion      = "1.3.1"
 
