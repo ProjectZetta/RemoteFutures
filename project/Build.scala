@@ -10,9 +10,15 @@ object BuildSettings {
     scalaVersion := "2.11.4",
 
     scalacOptions ++= Seq(
+      // "-Xprint:typer",
+      // "-Xprint:parser",
+      // "-Xprint:tailcalls",
+      // "-Xprint:flatten",
+      // "-Xprint:jvm",
       "-deprecation",
       // "-feature",
       "-unchecked"
+
       // "-Xlint",
       // "-Xlog-reflective-calls",
       // "-Ywarn-adapted-args",
@@ -69,7 +75,7 @@ object Dependencies {
   val sprayHttp        = "io.spray" %% "spray-http" % sprayVersion withSources() withJavadoc()
   val sprayRouting     = "io.spray" %% "spray-routing" % sprayVersion withSources() withJavadoc()
   val sprayTestkit     = "io.spray" %% "spray-testkit" % sprayVersion % "test" withSources() withJavadoc()
-  val sprayJson        = "io.spray" %% "spray-json" % "1.2.6"
+  val sprayJson        = "io.spray" %% "spray-json" % sprayVersion
   val sprayClient      = "io.spray" %% "spray-client" % sprayVersion withSources() withJavadoc()
   val sprayHttpx       = "io.spray" %% "spray-httpx" % sprayVersion withSources() withJavadoc()
 
