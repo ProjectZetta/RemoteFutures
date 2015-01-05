@@ -52,6 +52,28 @@ object MasterWorkerMultiJvmNode1 {
 
             implicit val implicitRemoteExecutionContext = rec
 
+
+            // not working???? seems to seriealize whole this, that contains "s"
+//            val s: Spore[Long, BigInt] = spore {
+//              (a: Long) => FibonacciComputations.fibBigInt(a)
+//            }
+
+
+            // works as to proper serialization of Function1 .... more explanations here
+//            val fs: List[Future[BigInt]] = xs3.map(x => {
+//              println("Inside map: " + x)
+//              RemoteFuture {
+//                println("Inside remote: " + x)
+//                FibonacciComputations.fibBigInt(x)
+//              }
+//              // // s(x)
+//              // val s = spore {
+//              //   (a: Long) => FibonacciComputations.fibBigInt(a)
+//              // }
+//              // println("Spore is " + s + " for x=" + x)
+//              // s(x)
+//            })
+
             // uses new apply method in RemoteFuture
             //   def apply[T](spore: NullarySpore[T])(implicit res: RemoteExecutionContext): Future[T] = impl.RemoteFutureImpl[T](spore)
             val fs: List[Future[BigInt]] = xs3.map(x => RemoteFuture {

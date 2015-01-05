@@ -80,7 +80,7 @@ class NullarySporeImpl[+R](f: () => R) extends NullarySpore[R] with Serializable
   def apply(): R = f()
 }
 
-class SporeImpl[-T, +R](f: T => R) extends Spore[T, R] {
+class SporeImpl[-T, +R](f: T => R) extends Spore[T, R] with Serializable {
   def apply(x: T): R = f(x)
 }
 
