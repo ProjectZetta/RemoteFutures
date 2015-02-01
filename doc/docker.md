@@ -19,8 +19,17 @@ The container has all java / scala / sbt / clone of git repo
 & everything pre-compliled
 
 
+# Docker & AWS integration 
+RHEL Atomic Host Beta 
+http://www.redhat.com/en/about/blog/small-footprint-big-impact-red-hat-enterprise-linux-7-atomic-host-beta-now-available
 
+Kubernetes Docker Cluster managment.
 
+Kubernetes enables users to ask a cluster to run a set of containers. 
+The system automatically chooses hosts to run those containers on. 
+Scaling, and availability is supported by auto-restarting, re-scheduling, and replicating containers. 
+
+https://github.com/GoogleCloudPlatform/kubernetes/blob/master/DESIGN.md#the-kubernetes-control-plane 
 
 
 ## Links 
