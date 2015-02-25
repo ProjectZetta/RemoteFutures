@@ -15,52 +15,50 @@ adding more computational power according to changing demand. In the end, distri
 - very fast to program
 - easy to maintain.
 
-## Example
+## Usage and syntax
 
-To illustrate the key idea underlying a RemoteFuture, the example below
-shows the basic usage in three steps. First, some imports:
+### A simple future that is executed remotely
+```scala
+val rf: Future[String] = Remote {
+  Future {"asdf"}
+}
+```
 
-    import org.remotefutures.core._
+### A simple future that is executed *remotely* and then mapped *locally*
+```scala
+val rf : Future[Int] = Remote {
+  Future {"asdf"}
+}.map( x => x.length )
+```
 
-Second, a Remote Future is written in the same way one would write a Future in Scala,
-for instance:
+### A simple future that is executed *remotely* and then mapped *remotely*
+```scala
+val rf : Future[Int] = Remote {
+  Future {"asdf"}.map( x => x.length )
+}
+```
 
-        object RemoteExampleSimple extends App {
+### Two simple futures, both executed *remotely*, but joined *locally*
+```scala
+val rf1 = Remote { Future { "asdf" }}
+val rf2 = Remote { Future { "ghjk" }}
 
-            final val T = Duration(2, TimeUnit.SECONDS)
+val lf : Future[String] = for {
+  v1 <- rf1
+  v2 <- rf2
+} yield v1 + v2
+```
 
-            val rmt = RemoteFuture {
-            println(Thread.currentThread.getName)
-            42 * 42 * 233
-            }
-         }
+### A collection that executes the map function remotely
+```scala
+// setup input list to compute Fibonacci numbers for
+val xs: List[Long] = (1000000 to (1000000 + 1000)).toList
 
- Finally, a Remote seamlessly combines with a Future using monadic composition, for instance:
+// type of fs is List[Future[BigInt]]
+val fs = xs.map( Remote(x => Future{FibonacciComputations.fibBigInt(x)}) )
 
-           val fut = Future {
-             println(Thread.currentThread.getName)
-             24 * 99 * 399
-           }
-
-           println("Combining remotes and futures ")
-           val comb = for {
-             r <- rmt
-             f <- fut
-           } yield r + f
-
-           println("final result of remote AND future")
-           comb onComplete {
-             case Success(all) => println(all)
-             case Failure(t) => println("An error happened: " + t.getMessage)
-           }
-
- Output of the example looks like:
-
-        Done, remote result is: 411012
-        Done, future result is: 948024
-        Combining remotes and futures
-        Final result of remote AND future is: 1359036
-
+val r: Future[List[BigInt]] = Future sequence (fs)
+```
 
 More examples are in the [repo](https://github.com/DistributedRemoteFutures/DistributedRemoteFutures/tree/master/src/main/scala/org/remotefutures/examples)
 
