@@ -14,6 +14,11 @@ adding more computational power according to changing demand. In the end, distri
 - simple and efficient distributed execution
 - very fast to program
 - easy to maintain.
+ 
+### Mailing list
+https://groups.google.com/forum/#!forum/remotefutures
+### Project website
+http://remotefutures.org
 
 ## Usage and syntax
 
