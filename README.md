@@ -1,6 +1,6 @@
 # Distributed Remote Futures
 
-Distributed programming but simple, efficient and very fast.
+Distributed programming: Simple, efficient and very fast.
 
 <!-- [![Build Status](https://secure.travis-ci.org/scala/async.png)](http://travis-ci.org/scala/async) -->
 [![Build Status](https://travis-ci.org/DistributedRemoteFutures/DistributedRemoteFutures.svg?branch=master)](https://travis-ci.org/DistributedRemoteFutures/DistributedRemoteFutures)
