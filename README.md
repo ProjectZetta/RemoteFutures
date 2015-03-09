@@ -3,7 +3,7 @@
 Programming of distributed asynchronous function execution: Simple, efficient and fast.
 
 <!-- [![Build Status](https://secure.travis-ci.org/scala/async.png)](http://travis-ci.org/scala/async) -->
-[![Build Status](https://travis-ci.org/DistributedRemoteFutures/DistributedRemoteFutures.svg?branch=master)](https://travis-ci.org/DistributedRemoteFutures/DistributedRemoteFutures)
+[![Build Status](https://travis-ci.org/ProjectZetta/RemoteFutures.svg?branch=master)](https://travis-ci.org/ProjectZetta/RemoteFutures)
 
 
 ## About
