@@ -3,7 +3,6 @@
  */
 package org.remotefutures.core.impl
 
-import org.remotefutures.proposals.idea_runnable.PromiseBackedRunnable
 import org.remotefutures.util.Debug._
 import scala.concurrent.Promise
 import scala.util.{Failure, Success}
@@ -36,7 +35,18 @@ class PromiseCompletingRunnable[T](body: () => T, val promise: Promise[T]) exten
       }
     }
   }
+}
 
+/**
+ * A runnable which holds a promise, which is completed / written to from within run().
+ * @tparam T is the type of the promise.
+ */
+abstract class PromiseBackedRunnable[T] extends Runnable {
+
+  /**
+   * The promise that is written to in order to return back a value
+   */
+  val promise : Promise[T]
 }
 
 
