@@ -84,11 +84,11 @@ by the extension to nodes of a distributed system, without introducing more comp
 Requirements:
 --------
 
-1) JDK 7 [Download](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html)
+1) JDK [Download](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 
-2) SBT 0.13 [Download] (http://www.scala-sbt.org/release/docs/Getting-Started/Setup.html)
+2) SBT [Download] (http://www.scala-sbt.org/release/docs/Getting-Started/Setup.html)
 
-3) Scala 2.10 / 2.11 [Download] (http://scala-lang.org/download/)
+3) Scala [Download] (http://scala-lang.org/download/)
 
 
 
