@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Remotefutures by ProjectZetta</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Remotefutures</h1>
+          <h2>Remote execution of futures in a distributed system.</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/ProjectZetta/RemoteFutures/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/ProjectZetta/RemoteFutures/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/ProjectZetta/RemoteFutures" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>
+<a id="remote-futures" class="anchor" href="#remote-futures" aria-hidden="true"><span class="octicon octicon-link"></span></a>Remote Futures</h1>
+
+<p>Programming of distributed asynchronous function execution: Simple, efficient and fast.</p>
+
+
+
+<p><a href="https://travis-ci.org/ProjectZetta/RemoteFutures"><img src="https://travis-ci.org/ProjectZetta/RemoteFutures.svg?branch=master" alt="Build Status"></a></p>
+
+<h2>
+<a id="about" class="anchor" href="#about" aria-hidden="true"><span class="octicon octicon-link"></span></a>About</h2>
+
+<p>The project "DistributedRemoteFutures" provides a programming model that seamlessly integrates additional cloud computing resources
+but without tampering with distributed models and code. It does so by extending Scala's Futures towards a remote execution for simply
+adding more computational power according to changing demand. Essentially, distributed remote futures allow you:</p>
+
+<ul>
+<li>simple and efficient distributed execution</li>
+<li>very fast to program</li>
+<li>easy to maintain.</li>
+</ul>
+
+<h3>
+<a id="mailing-list" class="anchor" href="#mailing-list" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mailing list</h3>
+
+<p><a href="https://groups.google.com/forum/#!forum/remotefutures">https://groups.google.com/forum/#!forum/remotefutures</a></p>
+
+<h3>
+<a id="project-website" class="anchor" href="#project-website" aria-hidden="true"><span class="octicon octicon-link"></span></a>Project website</h3>
+
+<p><a href="http://remotefutures.org">http://remotefutures.org</a></p>
+
+<h2>
+<a id="usage-and-syntax" class="anchor" href="#usage-and-syntax" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage and syntax</h2>
+
+<h3>
+<a id="a-simple-future-that-is-executed-remotely" class="anchor" href="#a-simple-future-that-is-executed-remotely" aria-hidden="true"><span class="octicon octicon-link"></span></a>A simple future that is executed remotely</h3>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">val</span> <span class="pl-en">rf</span><span class="pl-k">:</span> <span class="pl-en">Future</span>[<span class="pl-st">String</span>] <span class="pl-k">=</span> <span class="pl-en">Remote</span> {
+  <span class="pl-en">Future</span> {<span class="pl-s1"><span class="pl-pds">"</span>asdf<span class="pl-pds">"</span></span>}
+}</pre></div>
+
+<h3>
+<a id="a-simple-future-that-is-executed-remotely-and-then-mapped-locally" class="anchor" href="#a-simple-future-that-is-executed-remotely-and-then-mapped-locally" aria-hidden="true"><span class="octicon octicon-link"></span></a>A simple future that is executed <em>remotely</em> and then mapped <em>locally</em>
+</h3>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">val</span> <span class="pl-en">rf</span> <span class="pl-k">:</span> <span class="pl-en">Future</span>[<span class="pl-st">Int</span>] <span class="pl-k">=</span> <span class="pl-en">Remote</span> {
+  <span class="pl-en">Future</span> {<span class="pl-s1"><span class="pl-pds">"</span>asdf<span class="pl-pds">"</span></span>}
+}.map( x <span class="pl-k">=&gt;</span> x.length )</pre></div>
+
+<h3>
+<a id="a-simple-future-that-is-executed-remotely-and-then-mapped-remotely" class="anchor" href="#a-simple-future-that-is-executed-remotely-and-then-mapped-remotely" aria-hidden="true"><span class="octicon octicon-link"></span></a>A simple future that is executed <em>remotely</em> and then mapped <em>remotely</em>
+</h3>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">val</span> <span class="pl-en">rf</span> <span class="pl-k">:</span> <span class="pl-en">Future</span>[<span class="pl-st">Int</span>] <span class="pl-k">=</span> <span class="pl-en">Remote</span> {
+  <span class="pl-en">Future</span> {<span class="pl-s1"><span class="pl-pds">"</span>asdf<span class="pl-pds">"</span></span>}.map( x <span class="pl-k">=&gt;</span> x.length )
+}</pre></div>
+
+<h3>
+<a id="two-simple-futures-both-executed-remotely-but-joined-locally" class="anchor" href="#two-simple-futures-both-executed-remotely-but-joined-locally" aria-hidden="true"><span class="octicon octicon-link"></span></a>Two simple futures, both executed <em>remotely</em>, but joined <em>locally</em>
+</h3>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">val</span> <span class="pl-en">rf1</span> <span class="pl-k">=</span> <span class="pl-en">Remote</span> { <span class="pl-en">Future</span> { <span class="pl-s1"><span class="pl-pds">"</span>asdf<span class="pl-pds">"</span></span> }}
+<span class="pl-k">val</span> <span class="pl-en">rf2</span> <span class="pl-k">=</span> <span class="pl-en">Remote</span> { <span class="pl-en">Future</span> { <span class="pl-s1"><span class="pl-pds">"</span>ghjk<span class="pl-pds">"</span></span> }}
+
+<span class="pl-k">val</span> <span class="pl-en">lf</span> <span class="pl-k">:</span> <span class="pl-en">Future</span>[<span class="pl-st">String</span>] <span class="pl-k">=</span> <span class="pl-k">for</span> {
+  v1 <span class="pl-k">&lt;</span><span class="pl-k">-</span> rf1
+  v2 <span class="pl-k">&lt;</span><span class="pl-k">-</span> rf2
+} <span class="pl-k">yield</span> v1 <span class="pl-k">+</span> v2</pre></div>
+
+<h3>
+<a id="a-collection-that-executes-the-map-function-remotely" class="anchor" href="#a-collection-that-executes-the-map-function-remotely" aria-hidden="true"><span class="octicon octicon-link"></span></a>A collection that executes the map function remotely</h3>
+
+<div class="highlight highlight-scala"><pre><span class="pl-c">// setup input list to compute Fibonacci numbers for</span>
+<span class="pl-k">val</span> <span class="pl-en">xs</span><span class="pl-k">:</span> <span class="pl-en">List</span>[<span class="pl-st">Long</span>] <span class="pl-k">=</span> (<span class="pl-c1">1000000</span> to (<span class="pl-c1">1000000</span> <span class="pl-k">+</span> <span class="pl-c1">1000</span>)).toList
+
+<span class="pl-c">// type of fs is List[Future[BigInt]]</span>
+<span class="pl-k">val</span> <span class="pl-en">fs</span> <span class="pl-k">=</span> xs.map( <span class="pl-en">Remote</span>(x <span class="pl-k">=&gt;</span> <span class="pl-en">Future</span>{<span class="pl-en">FibonacciComputations</span>.fibBigInt(x)}) )
+
+<span class="pl-k">val</span> <span class="pl-en">r</span><span class="pl-k">:</span> <span class="pl-en">Future</span>[<span class="pl-en">List</span>[<span class="pl-en">BigInt</span>]] <span class="pl-k">=</span> <span class="pl-en">Future</span> sequence (fs)</pre></div>
+
+<p>More examples are in the <a href="https://github.com/DistributedRemoteFutures/DistributedRemoteFutures/tree/master/src/main/scala/org/remotefutures/examples">repo</a></p>
+
+<h2>
+<a id="background" class="anchor" href="#background" aria-hidden="true"><span class="octicon octicon-link"></span></a>Background</h2>
+
+<p>Futures are the abstraction of asynchronous execution of code, whose result will be eventually available.</p>
+
+<p>The main purpose of this project is to extend the execution context of futures to gain advantage from the computational power of remote nodes.
+Instead of using the local machine's capabilities only, the execution of futures is extended towards a distributed system
+while still fulfilling a concise, but not intrusive syntax and programming model.</p>
+
+<p>Thus, extending this context of execution yields substantial gain in execution speed and performance
+by the extension to nodes of a distributed system, without introducing more complexity from the developer's perspective.</p>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements:</h2>
+
+<p>1) JDK 7 <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html">Download</a></p>
+
+<p>2) SBT 0.13 <a href="http://www.scala-sbt.org/release/docs/Getting-Started/Setup.html">Download</a></p>
+
+<p>3) Scala 2.10 / 2.11 <a href="http://scala-lang.org/download/">Download</a></p>
+
+<h2>
+<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting started</h2>
+
+<pre><code>git clone https://github.com/DistributedRemoteFutures/DistributedRemoteFutures.git
+sbt compile
+</code></pre>
+
+<h2>
+<a id="contribute" class="anchor" href="#contribute" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contribute</h2>
+
+<ul>
+<li><p>Issue Tracker: <a href="https://github.com/DistributedRemoteFutures/DistributedRemoteFutures/issues?state=open">https://github.com/DistributedRemoteFutures/DistributedRemoteFutures/issues?state=open</a></p></li>
+<li><p>Source Code: <a href="https://github.com/DistributedRemoteFutures/DistributedRemoteFutures">https://github.com/DistributedRemoteFutures/DistributedRemoteFutures</a></p></li>
+</ul>
+
+<h2>
+<a id="team" class="anchor" href="#team" aria-hidden="true"><span class="octicon octicon-link"></span></a>Team:</h2>
+
+<ul>
+<li><a href="https://github.com/MartinSenne/">Martin Senne</a></li>
+<li><a href="https://github.com/marvin-hansen">Marvin Hansen</a></li>
+</ul>
+
+<h2>
+<a id="licnse" class="anchor" href="#licnse" aria-hidden="true"><span class="octicon octicon-link"></span></a>Licnse</h2>
+
+<p>This software is licensed under the Apache 2 license.</p>
+        </section>
+
+        <footer>
+          Remotefutures is maintained by <a href="https://github.com/ProjectZetta">ProjectZetta</a><br>
+          This page was generated by <a href="https://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
