@@ -10,7 +10,7 @@ Programming of distributed asynchronous function execution: Simple, efficient an
 
 The project "DistributedRemoteFutures" provides a programming model that seamlessly integrates additional cloud computing resources
 but without tampering with distributed models and code. It does so by extending Scala's Futures towards a remote execution for simply
-adding more computational power according to changing demand. In the end, distributed remote futures allow you:
+adding more computational power according to changing demand. Essentially, distributed remote futures allow you:
 - simple and efficient distributed execution
 - very fast to program
 - easy to maintain.
