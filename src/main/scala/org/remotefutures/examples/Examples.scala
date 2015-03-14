@@ -14,10 +14,6 @@ object FutureExample {
   def main(args: Array[String]): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    // val xs1: List[Long] = List.fill(500)(1000000000 + (Random.nextInt(1000)))
-
-    // val xs2 : List[Long] = List(15, 25, 17, 12, 28, 81, 324, 812, 12, 15)
-
     val from = 1000000000L
     val size = 100L
 
@@ -26,19 +22,15 @@ object FutureExample {
     println("Future: " + xs3)
 
     val fs: List[Future[Long]] = xs3.map(x => Future {
-      // println(Thread.currentThread.getName)
+      println(Thread.currentThread.getName)
       FibonacciComputations.fibLong(x)
     })
 
     val r: Future[List[Long]] = Future sequence fs
 
     r onComplete {
-      case Success(x) => {
-        println(x)
-      }
-      case Failure(t) => {
-        println("Problem " + t)
-      }
+      case Success(x) => println(x)
+      case Failure(t) => println("Problem " + t)
     }
   }
 }
@@ -82,17 +74,13 @@ object RemoteFutureExample {
       FibonacciComputations.fibLong(x)
     })
 
-    val r: Future[List[Long]] = Future sequence (fs)
+    val r: Future[List[Long]] = Future sequence fs
 
     r onComplete {
-      case Success(x) => {
-        println(x)
+      case Success(x) => println(x)
         // DefaultConfigBasedRemoteExecutionContext.shutdown()
-      }
-      case Failure(t) => {
-        println("Problem " + t)
+      case Failure(t) => println("Problem " + t)
         // DefaultConfigBasedRemoteExecutionContext.shutdown()
-      }
     }
   }
 }
@@ -124,62 +112,13 @@ object RemoteFutureExample2 {
       s(x)
     })
 
-    val r: Future[List[Long]] = Future sequence (fs)
+    val r: Future[List[Long]] = Future sequence fs
 
     r onComplete {
-      case Success(x) => {
-        println(x)
+      case Success(x) => println(x)
         // DefaultConfigBasedRemoteExecutionContext.shutdown()
-      }
-      case Failure(t) => {
-        println("Problem " + t)
+      case Failure(t) => println("Problem " + t)
         // DefaultConfigBasedRemoteExecutionContext.shutdown()
-      }
-    }
-  }
-}
-
-// TODO: Remove this example, as it uses spores incorrectly
-// Especially, the spore is created and used, without binding the input variable
-object RemoteFutureWithSporesExample__NotWorking {
-  def main(args: Array[String]): Unit = {
-    import scala.concurrent.ExecutionContext.Implicits.global
-    implicit val configBasedRemoteExecutionContext = org.remotefutures.core.RemoteExecutionContextImplicits.defaultConfigBasedRemoteExecutionContext
-
-    // val xs1: List[Long] = List.fill(500)(1000000000 + (Random.nextInt(1000)))
-
-    // val xs2 : List[Long] = List(15, 25, 17, 12, 28, 81, 324, 812, 12, 15)
-
-    println("===========================")
-    println("= DO NOT USE THIS EXAMPLE =")
-    println("===========================")
-
-    val from = 1000000000L
-    val size = 10L
-
-    val xs3: List[Long] = (from to from + size).toList
-
-    println("Remote: " + xs3)
-
-    val s: Spore[Long, Long] = spore {
-      (a: Long) => FibonacciComputations.fibLong(a)
-    }
-
-    val fs: List[Future[Long]] = xs3.map(x => RemoteFuture {
-      s(x)
-    })
-
-    val r: Future[List[Long]] = Future sequence (fs)
-
-    r onComplete {
-      case Success(x) => {
-        println(x)
-        // DefaultConfigBasedRemoteExecutionContext.shutdown()
-      }
-      case Failure(t) => {
-        println("Problem " + t)
-        // DefaultConfigBasedRemoteExecutionContext.shutdown()
-      }
     }
   }
 }
@@ -236,16 +175,11 @@ object RemoteFutureWithSporesExample_Working {
       }
     })
 
-    val r: Future[List[BigInt]] = Future sequence (fs)
+    val r: Future[List[BigInt]] = Future sequence fs
 
     r onComplete {
-      case Success(x) => {
-        println(x)
-      }
-      case Failure(t) => {
-        println("Problem " + t)
-
-      }
+      case Success(x) =>  println(x)
+      case Failure(t) =>  println("Problem " + t)
     }
 
     Await.result(r, 10.seconds)
@@ -253,78 +187,3 @@ object RemoteFutureWithSporesExample_Working {
     // DefaultConfigBasedRemoteExecutionContext.shutdown()
   }
 }
-
-
-
-
-
-//object RunIt {
-//
-//
-//  def main(args: Array[String]) : Unit = {
-//
-//
-//
-//    def start( port:Int ) : State[NodeState, NodeInformation[FrontEndNodeType.type]] = {
-//      State {
-//        s => s match {
-//          case NodeDown => {
-//            println("This is frontend. Starting frontend node.")
-//            (NodeUp, FrontEndInformation(null, null))
-//          }
-//          case NodeUp => {
-//            println("Node is already up.")
-//            (NodeUp, FrontEndInformation(null, null))
-//          }
-//        }
-//      }
-//    }
-//
-//    def stop() : State[NodeState, NodeInformation[FrontEndNodeType.type]] = {
-//      State {
-//        s => s match {
-//          case NodeDown => {
-//            println("This is frontend. Trying to stop an already stopped frontend node.")
-//            (NodeDown, FrontEndInformation(null, null))
-//          }
-//          case NodeUp => {
-//            println("This is frontend. Stopping frontend node.")
-//            (NodeDown, FrontEndInformation(null, null))
-//          }
-//        }
-//      }
-//    }
-//
-//    val node: State[NodeState, NodeInformation[FrontEndNodeType.type]] = start(3)
-//    // val node_s2: State[NodeState, Int] = node.map( ni => 3 )
-//    val node_s3 = node.flatMap( (a: NodeInformation[FrontEndNodeType.type]) => stop )
-//
-//
-//    val r = node_s3.run(NodeDown)
-//    println("result: " + r)
-//
-//    println("=====")
-//
-//    val x: State[NodeState, NodeInformation[FrontEndNodeType.type]] = for {
-//      r <- start(3)
-//      s <- stop()
-//    } yield s
-//
-//    val forResult: (NodeState, NodeInformation[FrontEndNodeType.type]) = x.run( NodeDown )
-//    println(forResult)
-//
-//
-//
-//    val s = State[String, Int] {
-//      s => ( s + "a", s.length)
-//    }
-//    val sa2: (String, Int) = s.run("start")
-//    println("sa2: " + sa2)
-//
-//    val s2: State[String, Double] = s.map( x => x*2.1)
-//    val sa3: (String, Double) = s2.run("run")
-//    println("sa3: " + sa3)
-//
-//    println(s)
-//  }
-//}
