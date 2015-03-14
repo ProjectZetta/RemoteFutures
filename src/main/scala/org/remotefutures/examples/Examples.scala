@@ -33,12 +33,8 @@ object FutureExample {
     val r: Future[List[Long]] = Future sequence fs
 
     r onComplete {
-      case Success(x) => {
-        println(x)
-      }
-      case Failure(t) => {
-        println("Problem " + t)
-      }
+      case Success(x) => println(x)
+      case Failure(t) => println("Problem " + t)
     }
   }
 }
@@ -82,17 +78,13 @@ object RemoteFutureExample {
       FibonacciComputations.fibLong(x)
     })
 
-    val r: Future[List[Long]] = Future sequence (fs)
+    val r: Future[List[Long]] = Future sequence fs
 
     r onComplete {
-      case Success(x) => {
-        println(x)
+      case Success(x) => println(x)
         // DefaultConfigBasedRemoteExecutionContext.shutdown()
-      }
-      case Failure(t) => {
-        println("Problem " + t)
+      case Failure(t) => println("Problem " + t)
         // DefaultConfigBasedRemoteExecutionContext.shutdown()
-      }
     }
   }
 }
@@ -124,62 +116,13 @@ object RemoteFutureExample2 {
       s(x)
     })
 
-    val r: Future[List[Long]] = Future sequence (fs)
+    val r: Future[List[Long]] = Future sequence fs
 
     r onComplete {
-      case Success(x) => {
-        println(x)
+      case Success(x) => println(x)
         // DefaultConfigBasedRemoteExecutionContext.shutdown()
-      }
-      case Failure(t) => {
-        println("Problem " + t)
+      case Failure(t) => println("Problem " + t)
         // DefaultConfigBasedRemoteExecutionContext.shutdown()
-      }
-    }
-  }
-}
-
-// TODO: Remove this example, as it uses spores incorrectly
-// Especially, the spore is created and used, without binding the input variable
-object RemoteFutureWithSporesExample__NotWorking {
-  def main(args: Array[String]): Unit = {
-    import scala.concurrent.ExecutionContext.Implicits.global
-    implicit val configBasedRemoteExecutionContext = org.remotefutures.core.RemoteExecutionContextImplicits.defaultConfigBasedRemoteExecutionContext
-
-    // val xs1: List[Long] = List.fill(500)(1000000000 + (Random.nextInt(1000)))
-
-    // val xs2 : List[Long] = List(15, 25, 17, 12, 28, 81, 324, 812, 12, 15)
-
-    println("===========================")
-    println("= DO NOT USE THIS EXAMPLE =")
-    println("===========================")
-
-    val from = 1000000000L
-    val size = 10L
-
-    val xs3: List[Long] = (from to from + size).toList
-
-    println("Remote: " + xs3)
-
-    val s: Spore[Long, Long] = spore {
-      (a: Long) => FibonacciComputations.fibLong(a)
-    }
-
-    val fs: List[Future[Long]] = xs3.map(x => RemoteFuture {
-      s(x)
-    })
-
-    val r: Future[List[Long]] = Future sequence (fs)
-
-    r onComplete {
-      case Success(x) => {
-        println(x)
-        // DefaultConfigBasedRemoteExecutionContext.shutdown()
-      }
-      case Failure(t) => {
-        println("Problem " + t)
-        // DefaultConfigBasedRemoteExecutionContext.shutdown()
-      }
     }
   }
 }
@@ -236,16 +179,11 @@ object RemoteFutureWithSporesExample_Working {
       }
     })
 
-    val r: Future[List[BigInt]] = Future sequence (fs)
+    val r: Future[List[BigInt]] = Future sequence fs
 
     r onComplete {
-      case Success(x) => {
-        println(x)
-      }
-      case Failure(t) => {
-        println("Problem " + t)
-
-      }
+      case Success(x) =>  println(x)
+      case Failure(t) =>  println("Problem " + t)
     }
 
     Await.result(r, 10.seconds)

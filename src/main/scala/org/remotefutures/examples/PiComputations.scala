@@ -4,13 +4,7 @@
 package org.remotefutures.examples
 
 import java.math.MathContext
-
-import scala.annotation.tailrec
 import scala.math.BigDecimal.RoundingMode
-import scala.util.{Failure, Success}
-import scala.concurrent.ExecutionContext.Implicits.global
-import org.remotefutures.core.RemoteExecutionContextImplicits.defaultConfigBasedRemoteExecutionContext
-import org.remotefutures.core.RemoteFuture
 
 
 /**
@@ -28,16 +22,16 @@ object PiComputations extends Serializable {
     val scale = digits + 5
     val arctan1_5 = arctan(5, scale)
     val arctan1_239 = arctan(239, scale)
-    val pi = ((arctan1_5 * BigDecimal(4)) - (arctan1_239)) * BigDecimal(4)
-    return pi.setScale(digits, BigDecimal.RoundingMode.HALF_UP);
+    val pi = ((arctan1_5 * BigDecimal(4)) - arctan1_239) * BigDecimal(4)
+    pi.setScale(digits, BigDecimal.RoundingMode.HALF_UP)
   }
 
 
   /**
    * Calculate sum elements from start to start+nrOfElements.
    *
-   * @param start
-   * @param nrOfElements
+   * @param start starting number of PI
+   * @param nrOfElements number of elements
    * @return
    */
   def computePiFor(start: Int, nrOfElements: Int): Double = {
@@ -62,12 +56,12 @@ object PiComputations extends Serializable {
 
     // val roundingMode = BigDecimal.RoundingMode.HALF_EVEN
 
-    val invX = BigDecimal(inverseX, mc);
-    val invX2 = BigDecimal(inverseX * inverseX, mc);
+    val invX = BigDecimal(inverseX, mc)
+    val invX2 = BigDecimal(inverseX * inverseX, mc)
 
     // var numer = BigDecimal(1).divide(invX, scale, roundingMode);
     var numer = BigDecimal(1, mc) / invX
-    var result = numer;
+    var result = numer
     var i:Int = 1
     var term= BigDecimal(0.0, mc)
     val zero = BigDecimal(0, mc)
@@ -81,7 +75,7 @@ object PiComputations extends Serializable {
       numer = numer.setScale( scale, RoundingMode.HALF_EVEN)
       println("3." + numer + " " + numer.scale)
 
-      val denom = 2 * i + 1;
+      val denom = 2 * i + 1
       // term = numer.divide(BigDecimal.valueOf(denom), scale, roundingMode);
       val term = numer / BigDecimal(denom, mc)
       if ((i % 2) != 0) {
@@ -93,7 +87,7 @@ object PiComputations extends Serializable {
       println("Scala: " + i + " Numer: " + numer + " " + " term: " + term + " result " + result)
       println("               " + "Numer: " + numer.scale + " " + " term: " + term.scale + " result " + result.scale)
 
-      termIsNotZero = (term.compare(zero) != 0)
+      termIsNotZero = term.compare(zero) != 0
 
     } while ( termIsNotZero )
 
@@ -103,7 +97,6 @@ object PiComputations extends Serializable {
 }
 
 object RunPi {
-  import JavaPi._
 
   def main(args: Array[String]) : Unit = {
 
